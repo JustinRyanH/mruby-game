@@ -63,6 +63,15 @@ VType :: enum i32 {
 	BigInt,
 }
 
+FiberState :: enum i32 {
+	MRB_FIBER_CREATED = 0,
+	MRB_FIBER_RUNNING,
+	MRB_FIBER_RESUMED,
+	MRB_FIBER_SUSPENDED,
+	MRB_FIBER_TRANSFERRED,
+	MRB_FIBER_TERMINATED,
+}
+
 Sym :: distinct u32
 Code :: distinct u8
 
@@ -160,10 +169,6 @@ foreign lib {
 	// TODO: Document
 	cmp :: proc(state: ^State, obj1, obj2: Value) -> i32 ---
 
-	// TODO: Implement - GC
-	// #define mrb_gc_arena_save(mrb) ((mrb)->gc.arena_idx)
-	//#define mrb_gc_arena_restore(mrb, idx) ((mrb)->gc.arena_idx = (idx))
-
 	// Prints the Backtrace
 	print_backtrace :: proc(state: ^State) ---
 	// Prints the Error
@@ -173,5 +178,69 @@ foreign lib {
 @(link_prefix = "mrb_c_")
 @(default_calling_convention = "c")
 foreign compat {
+	// Gets the Exception from State
+	// Returns nil if no error, otherwise error is on the RObject
 	state_get_exc :: proc(mrb: ^State) -> ^RObject ---
+
+	// Set an Exception on the State
+	state_set_exec :: proc(mrb: ^State, exe: ^RObject) ---
+
+	// Get a Reference to ruby global `self`
+	state_get_top_self :: proc(mrb: ^State) -> ^RObject ---
+
+	// Get a Reference to ruby `Object`
+	state_get_obj_class :: proc(mrb: ^State) -> ^RClass ---
+
+	// Get a Reference to ruby `Class`
+	state_get_class_class :: proc(mrb: ^State) -> ^RClass ---
+
+	// Get a Reference to ruby `Module`
+	state_get_module_class :: proc(mrb: ^State) -> ^RClass ---
+
+	// Get a Reference to ruby `Proc`
+	state_get_proc_class :: proc(mrb: ^State) -> ^RClass ---
+
+	// Get a Reference to ruby `String`
+	state_get_string_class :: proc(mrb: ^State) -> ^RClass ---
+
+	// Get a Reference to ruby `Array`
+	state_get_array_class :: proc(mrb: ^State) -> ^RClass ---
+
+	// Get a Reference to ruby `Hash`
+	state_get_hash_class :: proc(mrb: ^State) -> ^RClass ---
+
+	// Get a Reference to ruby `Range`
+	state_get_range_class :: proc(mrb: ^State) -> ^RClass ---
+
+	// Get a Reference to ruby `Float`
+	state_get_float_class :: proc(mrb: ^State) -> ^RClass ---
+
+	// Get a Reference to ruby `Integer`
+	state_get_integer_class :: proc(mrb: ^State) -> ^RClass ---
+
+	// Get a Reference to ruby `True`
+	state_get_true_class :: proc(mrb: ^State) -> ^RClass ---
+
+	// Get a Reference to ruby `False`
+	state_get_false_class :: proc(mrb: ^State) -> ^RClass ---
+
+	// Get a Reference to ruby `Nil`
+	state_get_nil_class :: proc(mrb: ^State) -> ^RClass ---
+
+	// Get a Reference to ruby `Symbol`
+	state_get_symbol_class :: proc(mrb: ^State) -> ^RClass ---
+
+	// Get a Reference to ruby `Kernel`
+	state_get_kernel_module :: proc(mrb: ^State) -> ^RClass ---
+
+	state_get_context :: proc(mrb: ^State) -> ^Context ---
+	state_get_root_context :: proc(mrb: ^State) -> ^Context ---
+
+	context_prev :: proc(mrb: ^Context) -> ^Context ---
+
+	context_callinfo :: proc(mrb: ^Context) -> ^CallInfo ---
+
+	context_fiber_state :: proc(mrb: ^Context) -> FiberState ---
+
+	context_fiber :: proc(mrb: ^Context) -> ^RFiber ---
 }
