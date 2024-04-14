@@ -61,4 +61,17 @@ foreign lib {
 	//      Pointer to the mrb_state to be closed.
 	//
 	close :: proc(state: ^State) ---
+
+	// Displays copyright of mruby to stdout
+	//
+	// @param state
+	//      Pointer to the mrb_state to be closed.
+	show_copyright :: proc(state: ^State) ---
+
+	// Displays mruby version of mruby to stdout
+	//
+	// @param state
+	//      Pointer to the mrb_state to be closed.
+	show_version :: proc(state: ^State) ---
+
 }
