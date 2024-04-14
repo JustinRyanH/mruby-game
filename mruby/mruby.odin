@@ -4,8 +4,64 @@ when ODIN_OS == .Darwin {
 	foreign import lib "vendor/darwin/libmruby.a"
 }
 
+RFloat :: struct {}
+RInteger :: struct {}
+RCptr :: struct {}
+RObject :: struct {}
+RClass :: struct {}
+RProc :: struct {}
+RArray :: struct {}
+RHash :: struct {}
+RString :: struct {}
+RRange :: struct {}
+RException :: struct {}
+REnv :: struct {}
+RData :: struct {}
+RFiber :: struct {}
+RIStruct :: struct {}
+RBreak :: struct {}
+RComplex :: struct {}
+RRational :: struct {}
+RBigInt :: struct {}
+
+VType :: enum i32 {
+	False,
+	True,
+	Symbol,
+	Undef,
+	Free,
+	Float,
+	Integer,
+	Cptr,
+	Object,
+	Class,
+	Module,
+	IClass,
+	SClass,
+	Proc,
+	Hash,
+	String,
+	Range,
+	Exception,
+	Env,
+	CData,
+	Fiber,
+	Struct,
+	IStruct,
+	Break,
+	Complex,
+	Rational,
+	BigInt,
+}
+
+Sym :: distinct u32
+Code :: distinct u8
+
+CallInfo :: struct {}
+Context :: struct {}
+
 Value :: struct {
-	v: u64,
+	v: uintptr,
 }
 
 State :: struct {}
@@ -74,4 +130,33 @@ foreign lib {
 	//      Pointer to the mrb_state to be closed.
 	show_version :: proc(state: ^State) ---
 
+	// TODO: Document
+	p :: proc(state: ^State, v: Value) ---
+
+	// TODO: Document
+	obj_id :: proc(obj: Value) -> i32 ---
+
+	// TODO: Document
+	obj_to_sym :: proc(state: ^State, name: Value) -> Sym ---
+
+	// TODO: Document
+	obj_eq :: proc(state: ^State, a, b: Value) -> bool ---
+
+	// TODO: Document
+	obj_equal :: proc(state: ^State, a, b: Value) -> bool ---
+
+	// TODO: Document
+	equal :: proc(state: ^State, obj1, obj2: Value) -> bool ---
+
+	// TODO: Document
+	cmp :: proc(state: ^State, obj1, obj2: Value) -> i32 ---
+
+	// TODO: Implement - GC
+	// #define mrb_gc_arena_save(mrb) ((mrb)->gc.arena_idx)
+	//#define mrb_gc_arena_restore(mrb, idx) ((mrb)->gc.arena_idx = (idx))
+
+	// Prints the Backtrace
+	print_backtrace :: proc(state: ^State) ---
+	// Prints the Error
+	print_error :: proc(state: ^State) ---
 }
