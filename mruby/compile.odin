@@ -1,7 +1,13 @@
 package mruby
 
+import c "core:c/libc"
+
+
 when ODIN_OS == .Darwin {
 	foreign import lib "vendor/darwin/libmruby.a"
+} else when ODIN_OS == .Windows {
+	@(extra_linker_flags = "/NODEFAULTLIB:libcmt")
+	foreign import lib "vendor/windows/libmruby.lib"
 }
 
 
