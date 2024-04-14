@@ -1,16 +1,13 @@
 package mruby
 
-import c "core:c/libc"
-
 when ODIN_OS == .Darwin {
 	foreign import lib "vendor/darwin/libmruby.a"
+	foreign import compat "vendor/darwin/libmruby_compat.a"
 } else when ODIN_OS == .Windows {
 	@(extra_linker_flags = "/NODEFAULTLIB:libcmt")
 	foreign import lib "vendor/windows/libmruby.lib"
 	foreign import compat "vendor/windows/mruby_compat.lib"
 }
-
-#assert(size_of(c.int) == size_of(i32))
 
 
 RFloat :: struct {}

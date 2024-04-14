@@ -12,11 +12,10 @@ main :: proc() {
 	mrb.show_copyright(state)
 	mrb.show_version(state)
 
-	mrb.load_string(state, "require('./foo.rb')")
+	mrb.load_string(state, "print 'Foo'")
+
 	if mrb.state_get_exc(state) != nil {
 		mrb.print_backtrace(state)
 	}
-	assert(mrb.state_get_exc(state) == nil, "No Exceptions for Hello World")
-
-	fmt.println("Test")
+	assert(mrb.state_get_exc(state) == nil, "No Exceptions expected")
 }
