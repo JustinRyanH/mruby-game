@@ -1,0 +1,1 @@
+[ ] Recompile libmruby without require
