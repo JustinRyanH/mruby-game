@@ -78,6 +78,9 @@ Code :: distinct u8
 CallInfo :: struct {}
 Context :: struct {}
 
+Gc :: struct {}
+ArenaIdx :: distinct i32
+
 Value :: struct {
 	v: uintptr,
 }
@@ -243,4 +246,10 @@ foreign compat {
 	context_fiber_state :: proc(mrb: ^Context) -> FiberState ---
 
 	context_fiber :: proc(mrb: ^Context) -> ^RFiber ---
+
+	// Saves the current arena location
+	gc_arena_save :: proc(mrb: ^Context) -> ArenaIdx ---
+
+	// Sets the Arena Index
+	gc_arena_restore :: proc(mrb: ^Context, idx: ArenaIdx) ---
 }

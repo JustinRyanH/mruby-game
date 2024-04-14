@@ -84,3 +84,10 @@ extern enum mrb_fiber_state mrb_c_context_fiber_state(struct mrb_context *cxt) {
 extern struct RFiber *mrb_c_context_fiber(struct mrb_context *cxt) {
   return cxt->fib;
 }
+
+extern int mrb_c_gc_arena_save(struct mrb_state *mrb) {
+  return mrb->gc.arena_idx;
+}
+extern void mrb_c_gc_arena_restore(struct mrb_state *mrb, int idx) {
+  mrb->gc.arena_idx = idx;
+}
