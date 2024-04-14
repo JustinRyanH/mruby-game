@@ -53,4 +53,12 @@ foreign lib {
 	//      Pointer to the newly created mrb_state.
 	//
 	open_core :: proc(alloc: allocf, user_data: rawptr) -> ^State ---
+
+	//
+	// Closes and frees a mrb_state.
+	//
+	// @param state
+	//      Pointer to the mrb_state to be closed.
+	//
+	close :: proc(state: ^State) ---
 }
