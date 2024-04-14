@@ -13,6 +13,7 @@ main :: proc() {
 	mrb.show_version(state)
 
 	mrb.load_string(state, "puts 'Hello World'")
+	assert(mrb.state_get_exc(state) == nil, "No Exceptions for Hello World")
 
 	fmt.println("Test")
 }

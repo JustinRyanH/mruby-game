@@ -7,6 +7,7 @@ when ODIN_OS == .Darwin {
 } else when ODIN_OS == .Windows {
 	@(extra_linker_flags = "/NODEFAULTLIB:libcmt")
 	foreign import lib "vendor/windows/libmruby.lib"
+	foreign import compat "vendor/windows/mruby_compat.lib"
 }
 
 #assert(size_of(c.int) == size_of(i32))
@@ -167,4 +168,10 @@ foreign lib {
 	print_backtrace :: proc(state: ^State) ---
 	// Prints the Error
 	print_error :: proc(state: ^State) ---
+}
+
+@(link_prefix = "mrb_c_")
+@(default_calling_convention = "c")
+foreign compat {
+	state_get_exc :: proc(mrb: ^State) -> ^RObject ---
 }
