@@ -23,12 +23,20 @@ when ODIN_OS == .Darwin {
 ParserState :: struct {}
 CompilerContext :: struct {}
 
+load_cstring :: proc(mrb: ^State, s: cstring) -> Value {
+	return mrb_load_string(mrb, s)
+}
 
-@(link_prefix = "mrb_")
+load_string :: proc(mrb: ^State, s: string) -> Value {
+	return mrb_load_nstring(mrb, raw_data(s), len(s))
+}
+
+
+@(private)
 @(default_calling_convention = "c")
 foreign lib {
-	load_string :: proc(mrb: ^State, s: cstring) -> Value ---
-	load_nstring :: proc(mrb: ^State, s: cstring, len: uint) -> Value ---
-	load_string_ctx :: proc(mrb: ^State, s: cstring, ctx: ^CompilerContext) -> Value ---
-	load_nstring_ctx :: proc(mrb: ^State, s: cstring, len: uint, ctx: ^CompilerContext) -> Value ---
+	mrb_load_string :: proc(mrb: ^State, s: cstring) -> Value ---
+	mrb_load_nstring :: proc(mrb: ^State, s: [^]u8, len: uint) -> Value ---
+	mrb_load_string_ctx :: proc(mrb: ^State, s: cstring, ctx: ^CompilerContext) -> Value ---
+	mrb_load_nstring_ctx :: proc(mrb: ^State, s: [^]u8, len: uint, ctx: ^CompilerContext) -> Value ---
 }
