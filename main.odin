@@ -7,11 +7,7 @@ import mrb "./mruby"
 
 mrb_rawr :: proc "c" (state: ^mrb.State, value: mrb.Value) -> mrb.Value {
 	context = runtime.default_context()
-	v := mrb.float_value(state, 1)
-	fmt.printf("%b", v)
-
-
-	return v
+	return mrb.float_value(state, 13.5)
 }
 
 main :: proc() {
@@ -27,7 +23,7 @@ main :: proc() {
 
 	kernel := mrb.state_get_kernel_module(state)
 	mrb.define_method(state, kernel, "rawr", mrb_rawr, 0)
-	mrb.load_string(state, "puts rawr.class")
+	mrb.load_string(state, "puts rawr")
 
 
 	if mrb.state_get_exc(state) != nil {
