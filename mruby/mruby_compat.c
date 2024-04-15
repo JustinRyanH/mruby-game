@@ -92,9 +92,9 @@ extern void mrb_c_gc_arena_restore(struct mrb_state *mrb, int idx) {
   mrb->gc.arena_idx = idx;
 }
 
-/*
- *  mruby/data.h
- */
+//
+//  mruby/data.h
+//
 
 void mrb_c_data_init(mrb_value v, void *ptr, const mrb_data_type *type) {
   mrb_data_init(v, ptr, type);
@@ -104,9 +104,9 @@ const struct mrb_c_data_type *mrb_c_rdata_type(struct RData *data) {
   return data->type;
 }
 
-/*
- *  mruby/value.h
- */
+//
+//  mruby/value.h
+//
 
 mrb_value mrb_c_float_value(struct mrb_state *mrb, mrb_float f) {
   return mrb_float_value(mrb, f);
