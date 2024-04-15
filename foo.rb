@@ -1,1 +1,2 @@
-print 'FOO'
+a = Foo.new
+puts a.rawr

@@ -12,6 +12,10 @@ Game :: struct {
 
 mrb_rawr :: proc "c" (state: ^mrb.State, value: mrb.Value) -> mrb.Value {
 	context = runtime.default_context()
+	// test_cstr: f32 = 0
+	// res := mrb.get_args(state, "f", &test_cstr)
+	// fmt.println("test_cstr", test_cstr)
+
 	return mrb.float_value(state, g.f)
 }
 
@@ -32,17 +36,17 @@ main :: proc() {
 	kernel := mrb.state_get_kernel_module(state)
 	foo_class := mrb.define_class(state, "Foo", mrb.state_get_object_class(state))
 
-	mrb.define_method(state, foo_class, "rawr", mrb_rawr, 0)
+	mrb.define_method(state, foo_class, "rawr", mrb_rawr, mrb.args(1, 0))
 
 	mrb.load_string(state, `
     $a = Foo.new
-    puts $a.rawr
+    puts $a.rawr(30)
   `)
 
 	g.f = math.PI
 
 	mrb.load_string(state, `
-    puts $a.rawr
+    puts $a.rawr(10)
   `)
 
 

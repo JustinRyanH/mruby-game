@@ -303,6 +303,45 @@ foreign compat {
 @(default_calling_convention = "c")
 foreign lib {
 
+	//  Format specifiers for {mrb_get_args} function
+	//
+	//  Must be a C string composed of the following format specifiers:
+	//
+	//  | char | Ruby type      | C types           | Notes                                              |
+	//  |:----:|----------------|-------------------|----------------------------------------------------|
+	//  | `o`  | {Object}       | {mrb_value}       | Could be used to retrieve any type of argument     |
+	//  | `C`  | {Class}/{Module} | {mrb_value}     | when `!` follows, the value may be `nil`           |
+	//  | `S`  | {String}       | {mrb_value}       | when `!` follows, the value may be `nil`           |
+	//  | `A`  | {Array}        | {mrb_value}       | when `!` follows, the value may be `nil`           |
+	//  | `H`  | {Hash}         | {mrb_value}       | when `!` follows, the value may be `nil`           |
+	//  | `s`  | {String}       | const char *, {mrb_int} | Receive two arguments; `s!` gives (`NULL`,`0`) for `nil` |
+	//  | `z`  | {String}       | const char *      | `NULL` terminated string; `z!` gives `NULL` for `nil` |
+	//  | `a`  | {Array}        | const {mrb_value} *, {mrb_int} | Receive two arguments; `a!` gives (`NULL`,`0`) for `nil` |
+	//  | `c`  | {Class}/{Module} | strcut RClass * | `c!` gives `NULL` for `nil`                        |
+	//  | `f`  | {Integer}/{Float} | {mrb_float}    |                                                    |
+	//  | `i`  | {Integer}/{Float} | {mrb_int}      |                                                    |
+	//  | `b`  | boolean        | {mrb_bool}        |                                                    |
+	//  | `n`  | {String}/{Symbol} | {mrb_sym}         |                                                    |
+	//  | `d`  | data           | void *, {mrb_data_type} const | 2nd argument will be used to check data type so it won't be modified; when `!` follows, the value may be `nil` |
+	//  | `I`  | inline struct  | void *, struct RClass | `I!` gives `NULL` for `nil`                    |
+	//  | `&`  | block          | {mrb_value}       | &! raises exception if no block given.             |
+	//  | `*`  | rest arguments | const {mrb_value} *, {mrb_int} | Receive the rest of arguments as an array; `*!` avoid copy of the stack.  |
+	//  | <code>\|</code> | optional     |                   | After this spec following specs would be optional. |
+	//  | `?`  | optional given | {mrb_bool}        | `TRUE` if preceding argument is given. Used to check optional argument is given. |
+	//  | `:`  | keyword args   | {mrb_kwargs} const | Get keyword arguments. @see mrb_kwargs |
+	//
+	//
+	// Retrieve arguments from mrb_state.
+	//
+	// @param mrb The current mruby state.
+	// @param format is a list of format specifiers
+	// @param ... The passing variadic arguments must be a pointer of retrieving type.
+	// @return the number of arguments retrieved.
+	// @see mrb_args_format
+	// @see mrb_kwargs
+	//
+	get_args :: proc(state: ^State, format: cstring, args: ..rawptr) -> i32 ---
+
 	//
 	// Defines a new class.
 	//
