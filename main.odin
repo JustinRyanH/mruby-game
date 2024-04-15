@@ -1,21 +1,25 @@
 package main
 
 import "core:fmt"
+import "core:math"
 import "core:runtime"
 
 import mrb "./mruby"
 
 Game :: struct {
-	f: f32,
+	f: f64,
 }
 
 mrb_rawr :: proc "c" (state: ^mrb.State, value: mrb.Value) -> mrb.Value {
 	context = runtime.default_context()
-	return mrb.float_value(state, 13.5)
+	return mrb.float_value(state, g.f)
 }
 
-main :: proc() {
+g: ^Game
 
+main :: proc() {
+	g = new(Game)
+	defer free(g)
 	state := mrb.open()
 	defer mrb.close(state)
 
@@ -29,6 +33,14 @@ main :: proc() {
 	foo_class := mrb.define_class(state, "Foo", mrb.state_get_object_class(state))
 
 	mrb.define_method(state, foo_class, "rawr", mrb_rawr, 0)
+
+	mrb.load_string(state, `
+    a = Foo.new
+    puts a.rawr
+  `)
+
+	g.f = math.PI
+
 	mrb.load_string(state, `
     a = Foo.new
     puts a.rawr
