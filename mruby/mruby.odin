@@ -82,7 +82,7 @@ Aspec :: distinct u32
  * @param n
  *      The number of optional arguments.
  */
-optional_args :: proc(n: int) -> Aspec {
+optional_args :: proc(n: u32) -> Aspec {
 	return cast(Aspec)(n & 0x1f) << 13
 }
 
@@ -92,7 +92,7 @@ optional_args :: proc(n: int) -> Aspec {
  * @param n
  *      The number of required arguments.
  */
-require_args :: proc(n: int) -> Aspec {
+require_args :: proc(n: u32) -> Aspec {
 	return cast(Aspec)(n & 0x1f) << 18
 }
 
@@ -104,7 +104,7 @@ require_args :: proc(n: int) -> Aspec {
  * @param n2
  *      The number of optional arguments.
  */
-args :: proc(required: int, optional: int) -> Aspec {
+args :: proc(required: u32, optional: u32) -> Aspec {
 	return require_args(required) | optional_args(optional)
 }
 
