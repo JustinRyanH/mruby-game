@@ -9,7 +9,7 @@ when ODIN_OS == .Darwin {
 	foreign import compat "vendor/windows/mruby_compat.lib"
 }
 
-
+RBasic :: struct {}
 RFloat :: struct {}
 RInteger :: struct {}
 RCptr :: struct {}
@@ -72,15 +72,53 @@ FiberState :: enum i32 {
 Sym :: distinct u32
 Code :: distinct u8
 
+
+Aspec :: distinct u32
+
+
+/**
+ * Function takes n optional arguments
+ *
+ * @param n
+ *      The number of optional arguments.
+ */
+optional_args :: proc(n: int) -> Aspec {
+	return cast(Aspec)(n & 0x1f) << 13
+}
+
+/**
+ * Function requires n arguments.
+ *
+ * @param n
+ *      The number of required arguments.
+ */
+require_args :: proc(n: int) -> Aspec {
+	return cast(Aspec)(n & 0x1f) << 18
+}
+
+/**
+ * Function takes n1 mandatory arguments and n2 optional arguments
+ *
+ * @param n1
+ *      The number of required arguments.
+ * @param n2
+ *      The number of optional arguments.
+ */
+args :: proc(required: int, optional: int) -> Aspec {
+	return require_args(required) | optional_args(optional)
+}
+
+args_rest :: proc() -> Aspec {
+	return cast(Aspec)(1 << 12)
+}
+
 CallInfo :: struct {}
 Context :: struct {}
 
 Gc :: struct {}
 ArenaIdx :: distinct i32
 
-Value :: struct {
-	v: uintptr,
-}
+Value :: distinct uint
 
 State :: struct {}
 
@@ -93,6 +131,15 @@ State :: struct {}
 //
 // See @see mrb_default_allocf for the default implementation.
 allocf :: #type proc "c" (state: ^State, ptr: rawptr, size: int, user_data: rawptr) -> rawptr
+
+// Function pointer type for a function callable by mruby.
+// 
+// The arguments to the function are stored on the mrb_state. To get them see mrb_get_args
+// 
+// @param state The mruby state
+// @param self The self object
+// @return [mrb_value] The function's return value
+MrbFunc :: #type proc "c" (state: ^State, value: Value) -> Value
 
 @(link_prefix = "mrb_")
 @(default_calling_convention = "c")
@@ -249,4 +296,109 @@ foreign compat {
 
 	// Sets the Arena Index
 	gc_arena_restore :: proc(mrb: ^Context, idx: ArenaIdx) ---
+}
+
+
+@(link_prefix = "mrb_")
+@(default_calling_convention = "c")
+foreign lib {
+
+	//
+	// Defines a new class.
+	//
+	// If you're creating a gem it may look something like this:
+	//
+	// @param state The current mruby state.
+	// @param name The name of the defined class.
+	// @param super The new class parent.
+	// @return Reference to the newly defined class.
+	// 
+	define_class :: proc(state: ^State, name: cstring, super: ^RClass) -> ^RClass ---
+	define_class_id :: proc(state: ^State, name: Sym, super: ^RClass) -> ^RClass ---
+
+	//
+	//  Defines a new module.
+	//
+	//  @param State The current mruby state.
+	//  @param name The name of the module.
+	//  @return Reference to the newly defined module.
+	define_module :: proc(state: ^State, name: cstring) -> ^RClass ---
+	define_module_id :: proc(state: ^State, name: Sym) -> ^RClass ---
+
+	//
+	//  Returns the singleton class of an object.
+	//
+	//  Raises a `TypeError` exception for immediate values.
+	//
+	singleton_class :: proc(state: ^State, val: Value) -> Value ---
+
+	//
+	//  Returns the singleton class of an object.
+	//
+	//  Returns `nil` for immediate values,
+	//
+	singleton_class_ptr :: proc(state: ^State, val: Value) -> ^RClass ---
+
+	//
+	//Include a module in another class or module.
+	//Equivalent to:
+	//
+	//  module B
+	//    include A
+	//  end
+	//@param state The current mruby state.
+	//@param class A reference to module or a class.
+	//@param included A reference to the module to be included.
+	include_module :: proc(state: ^State, class: ^RClass, included: ^RClass) ---
+
+	//
+	// Prepends a module in another class or module.
+	//
+	// Equivalent to:
+	//  module B
+	//    prepend A
+	//  end
+	// @param state The current mruby state.
+	// @param class A reference to module or a class.
+	// @param prepended A reference to the module to be prepended.
+	//
+	prepend_module :: proc(state: ^State, class: ^RClass, prepended: ^RClass) ---
+
+
+	//
+	// Defines a global function in ruby.
+	// 
+	// If you're creating a gem it may look something like this
+	// 
+	// Example: TODO:
+	// 
+	// @param state The mruby state reference.
+	// @param class The class pointer where the method will be defined.
+	// @param name The name of the method being defined.
+	// @param func The function pointer to the method definition.
+	// @param aspec The method parameters declaration.
+	define_method :: proc(state: ^State, class: ^RClass, name: cstring, fn: MrbFunc, aspec: Aspec) ---
+	define_method_id :: proc(state: ^State, class: ^RClass, sym: Sym, fn: MrbFunc, aspec: Aspec) ---
+
+
+	//
+	// Defines a class method.
+	//
+	// Example:
+	//
+	//     # Ruby style
+	//     class Foo
+	//       def Foo.bar
+	//       end
+	//     end
+	//     // TODO: Odin Style
+	//
+	// @param mrb The mruby state reference.
+	// @param cla The class where the class method will be defined.
+	// @param name The name of the class method being defined.
+	// @param fun The function pointer to the class method definition.
+	// @param aspec The method parameters declaration.
+	//
+	define_class_method :: proc(state: ^State, class: ^RClass, name: cstring, fn: MrbFunc, aspec: Aspec) ---
+	define_class_method_id :: proc(state: ^State, class: ^RClass, name: Sym, fn: MrbFunc, aspec: Aspec) ---
 }
