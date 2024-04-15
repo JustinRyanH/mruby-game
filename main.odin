@@ -35,15 +35,14 @@ main :: proc() {
 	mrb.define_method(state, foo_class, "rawr", mrb_rawr, 0)
 
 	mrb.load_string(state, `
-    a = Foo.new
-    puts a.rawr
+    $a = Foo.new
+    puts $a.rawr
   `)
 
 	g.f = math.PI
 
 	mrb.load_string(state, `
-    a = Foo.new
-    puts a.rawr
+    puts $a.rawr
   `)
 
 

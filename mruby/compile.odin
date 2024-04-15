@@ -7,7 +7,7 @@ import c "core:c/libc"
 // leak one RProc object per function call.
 // To prevent this save the current memory arena before calling and restore the arena
 // right after, like so
-// int ai = mrb.gc_arena_save(mrb);
+// ai = mrb.gc_arena_save(mrb);
 // status := mrb.load_string(mrb, buffer);
 // mrb.gc_arena_restore(mrb, ai);
 
@@ -23,12 +23,20 @@ when ODIN_OS == .Darwin {
 ParserState :: struct {}
 CompilerContext :: struct {}
 
-load_cstring :: proc(mrb: ^State, s: cstring) -> Value {
-	return mrb_load_string(mrb, s)
+load_cstring :: proc(state: ^State, s: cstring) -> Value {
+	ctx := state_get_context(state)
+	ai := gc_arena_save(ctx)
+	defer gc_arena_restore(ctx, ai)
+
+	return mrb_load_string(state, s)
 }
 
-load_string :: proc(mrb: ^State, s: string) -> Value {
-	return mrb_load_nstring(mrb, raw_data(s), len(s))
+load_string :: proc(state: ^State, s: string) -> Value {
+	ctx := state_get_context(state)
+	ai := gc_arena_save(ctx)
+	defer gc_arena_restore(ctx, ai)
+
+	return mrb_load_nstring(state, raw_data(s), len(s))
 }
 
 
