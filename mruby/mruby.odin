@@ -236,7 +236,7 @@ foreign compat {
 	state_get_top_self :: proc(mrb: ^State) -> ^RObject ---
 
 	// Get a Reference to ruby `Object`
-	state_get_obj_class :: proc(mrb: ^State) -> ^RClass ---
+	state_get_object_class :: proc(mrb: ^State) -> ^RClass ---
 
 	// Get a Reference to ruby `Class`
 	state_get_class_class :: proc(mrb: ^State) -> ^RClass ---

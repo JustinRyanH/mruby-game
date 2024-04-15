@@ -5,6 +5,10 @@ import "core:runtime"
 
 import mrb "./mruby"
 
+Game :: struct {
+	f: f32,
+}
+
 mrb_rawr :: proc "c" (state: ^mrb.State, value: mrb.Value) -> mrb.Value {
 	context = runtime.default_context()
 	return mrb.float_value(state, 13.5)
@@ -22,8 +26,13 @@ main :: proc() {
 	assert(mrb.state_get_exc(state) == nil, "No Exceptions expected")
 
 	kernel := mrb.state_get_kernel_module(state)
-	mrb.define_method(state, kernel, "rawr", mrb_rawr, 0)
-	mrb.load_string(state, "puts rawr")
+	foo_class := mrb.define_class(state, "Foo", mrb.state_get_object_class(state))
+
+	mrb.define_method(state, foo_class, "rawr", mrb_rawr, 0)
+	mrb.load_string(state, `
+    a = Foo.new
+    puts a.rawr
+  `)
 
 
 	if mrb.state_get_exc(state) != nil {
