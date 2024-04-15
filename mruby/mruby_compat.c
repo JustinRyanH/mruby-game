@@ -91,3 +91,37 @@ extern int mrb_c_gc_arena_save(struct mrb_state *mrb) {
 extern void mrb_c_gc_arena_restore(struct mrb_state *mrb, int idx) {
   mrb->gc.arena_idx = idx;
 }
+
+/*
+ *  mruby/data.h
+ */
+
+void mrb_c_data_init(mrb_value v, void *ptr, const mrb_data_type *type) {
+  mrb_data_init(v, ptr, type);
+}
+void *mrb_c_rdata_data(struct RData *data) { return data->data; }
+const struct mrb_c_data_type *mrb_c_rdata_type(struct RData *data) {
+  return data->type;
+}
+
+/*
+ *  mruby/value.h
+ */
+
+mrb_value mrb_c_float_value(struct mrb_state *mrb, mrb_float f) {
+  return mrb_float_value(mrb, f);
+}
+mrb_value mrb_c_cptr_value(struct mrb_state *mrb, void *p) {
+  return mrb_cptr_value(mrb, p);
+}
+mrb_value mrb_c_int_value(struct mrb_state *mrb, mrb_int i) {
+  return mrb_int_value(mrb, i);
+}
+mrb_value mrb_c_fixnum_value(mrb_int i) { return mrb_fixnum_value(i); }
+mrb_value mrb_c_symbol_value(mrb_sym i) { return mrb_symbol_value(i); }
+mrb_value mrb_c_obj_value(void *p) { return mrb_obj_value(p); }
+mrb_value mrb_c_nil_value(void) { return mrb_nil_value(); }
+mrb_value mrb_c_false_value(void) { return mrb_false_value(); }
+mrb_value mrb_c_true_value(void) { return mrb_true_value(); }
+mrb_value mrb_c_bool_value(mrb_bool boolean) { return mrb_bool_value(boolean); }
+mrb_value mrb_c_undef_value(void) { return mrb_undef_value(); }
