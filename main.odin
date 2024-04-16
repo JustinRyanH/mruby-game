@@ -12,7 +12,16 @@ import mrb "./mruby"
 
 
 Game :: struct {
-	f: f64,
+	f:    f64,
+	ruby: ^mrb.State,
+}
+
+game_init :: proc(game: ^Game) {
+	game.ruby = mrb.open()
+}
+
+game_deinit :: proc(game: ^Game) {
+	defer mrb.close(game.ruby)
 }
 
 
@@ -21,8 +30,9 @@ g: ^Game
 main :: proc() {
 	g = new(Game)
 	defer free(g)
-	state := mrb.open()
-	defer mrb.close(state)
+
+	game_init(g)
+	defer game_deinit(g)
 
 	rl.InitWindow(1280, 800, "Odin-Ruby Game Demo")
 	defer rl.CloseWindow()
