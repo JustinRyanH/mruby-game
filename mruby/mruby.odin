@@ -76,40 +76,17 @@ Code :: distinct u8
 Aspec :: distinct u32
 
 
-// /**
-//  * Function takes n optional arguments
-//  *
-//  * @param n
-//  *      The number of optional arguments.
-//  */
-// optional_args :: proc(n: u32) -> Aspec {
-// 	return cast(Aspec)(n & 0x1f) << 13
-// }
-// 
-// /**
-//  * Function requires n arguments.
-//  *
-//  * @param n
-//  *      The number of required arguments.
-//  */
-// require_args :: proc(n: u32) -> Aspec {
-// 	return cast(Aspec)(n & 0x1f) << 18
-// }
-// 
-// /**
-//  * Function takes n1 mandatory arguments and n2 optional arguments
-//  *
-//  * @param n1
-//  *      The number of required arguments.
-//  * @param n2
-//  *      The number of optional arguments.
-//  */
-// args :: proc(required: u32, optional: u32) -> Aspec {
-// 	return require_args(required) | optional_args(optional)
-// }
-// args_rest :: proc() -> Aspec {
-// 	return cast(Aspec)(1 << 12)
-// }
+//
+// Function takes n1 mandatory arguments and n2 optional arguments
+//
+// @param n1
+//      The number of required arguments.
+// @param n2
+//      The number of optional arguments.
+//
+args :: proc(required: u32, optional: u32) -> Aspec {
+	return args_req(required) | args_opt(optional)
+}
 
 CallInfo :: struct {}
 Context :: struct {}
@@ -296,12 +273,17 @@ foreign compat {
 	// Sets the Arena Index
 	gc_arena_restore :: proc(mrb: ^Context, idx: ArenaIdx) ---
 
+	// ARGs
 	args_req :: proc(n: u32) -> Aspec ---
 	args_opt :: proc(n: u32) -> Aspec ---
 	args_rest :: proc() -> Aspec ---
 	args_block :: proc() -> Aspec ---
 	args_none :: proc() -> Aspec ---
 	args_key :: proc(nk: u32, kd: u32) -> Aspec ---
+
+	intern_cstr :: proc(state: ^State, cstr: cstring) -> Sym ---
+	intern :: proc(state: ^State, rstr: [^]u8, size: uint) -> Sym ---
+
 }
 
 @(link_prefix = "mrb_")
@@ -456,4 +438,21 @@ foreign lib {
 	//
 	define_class_method :: proc(state: ^State, class: ^RClass, name: cstring, fn: MrbFunc, aspec: Aspec) ---
 	define_class_method_id :: proc(state: ^State, class: ^RClass, name: Sym, fn: MrbFunc, aspec: Aspec) ---
+
+
+	// Gets an attribute off a class
+	attr_get :: proc(state: ^State, obj: Value, id: Sym) -> Value ---
+
+	// Checks if a class will respond to a call
+	//
+	// Example:
+	//    #Ruby style
+	//    foo = Bar.new
+	//    assert(foo.respond_to?(:update), "Bar does have `update` method")
+	respond_to :: proc(state: ^State, obj: Value, id: Sym) -> bool ---
+
+
+	// TODO: Implement
+	// MRB_API mrb_bool mrb_obj_is_instance_of(mrb_state *mrb, mrb_value obj, struct RClass* c);
+	// MRB_API mrb_bool mrb_func_basic_p(mrb_state *mrb, mrb_value obj, mrb_sym mid, mrb_func_t func);
 }
