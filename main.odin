@@ -19,6 +19,11 @@ AssetError :: enum {
 
 RubyCodeHandle :: distinct u64
 
+ruby_code_handle :: proc(str: string) -> RubyCodeHandle {
+	return cast(RubyCodeHandle)utils.generate_u64_from_string(str)
+
+}
+
 RubyCode :: struct {
 	id:            RubyCodeHandle,
 	file_path:     string,
@@ -39,7 +44,7 @@ asset_system_deinit :: proc(as: ^AssetSystem) {
 }
 
 asset_system_load_ruby :: proc(as: ^AssetSystem, file: string) {
-	handle := transmute(RubyCodeHandle)utils.generate_u64_from_string(file)
+	handle := ruby_code_handle(file)
 	if handle in as.ruby {
 		// TODO: Reload if the mod time has changed
 		panic("Unimplemented")
@@ -56,6 +61,10 @@ asset_system_load_ruby :: proc(as: ^AssetSystem, file: string) {
 
 	code := RubyCode{handle, file, cast(u64)write_time, string(ruby_code)}
 	as.ruby[handle] = code
+}
+
+asset_system_find_ruby :: proc(as: ^AssetSystem, handle: RubyCodeHandle) -> (RubyCode, bool) {
+	return as.ruby[handle]
 }
 
 Game :: struct {
@@ -84,6 +93,10 @@ main :: proc() {
 	defer game_deinit(g)
 
 	asset_system_load_ruby(&g.assets, "foo.rb")
+	code, found := asset_system_find_ruby(&g.assets, ruby_code_handle("foo.rb"))
+	assert(found, "Ruby Code 'foo.rb' not found")
+
+	mrb.load_string(g.ruby, code.code)
 
 	rl.InitWindow(1280, 800, "Odin-Ruby Game Demo")
 	defer rl.CloseWindow()

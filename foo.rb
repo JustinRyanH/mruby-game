@@ -1,2 +1,1 @@
-a = Foo.new
-puts a.rawr
+puts "Foo Bar Biz Baz"
