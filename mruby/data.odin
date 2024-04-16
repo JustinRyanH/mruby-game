@@ -22,6 +22,13 @@ DataType :: struct {
 	free:        proc "c" (state: ^State, data: rawptr),
 }
 
+
+@(link_prefix = "mrb_")
+@(default_calling_convention = "c")
+foreign lib {
+	data_object_alloc :: proc(state: ^State, class: ^RClass, data: rawptr, type: VType) -> ^RData ---
+}
+
 @(link_prefix = "mrb_c_")
 @(default_calling_convention = "c")
 foreign compat {
