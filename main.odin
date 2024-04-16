@@ -2,6 +2,7 @@ package main
 
 import "core:fmt"
 import "core:math"
+import "core:mem"
 import "core:runtime"
 import "core:strings"
 
@@ -37,6 +38,11 @@ fish_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return self
 }
 
+fish_name :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	foo: ^FishData = cast(^FishData)mrb.rdata_data(self)
+	return mrb.str_new_cstr(state, foo.name)
+}
+
 mrb_rawr :: proc "c" (state: ^mrb.State, value: mrb.Value) -> mrb.Value {
 	context = runtime.default_context()
 	test_str: cstring
@@ -62,8 +68,9 @@ main :: proc() {
 
 	fish_class := mrb.define_class(state, "Fish", mrb.state_get_object_class(state))
 	mrb.define_method(state, fish_class, "initialize", fish_init, mrb.args_req(1))
+	mrb.define_method(state, fish_class, "name", fish_init, mrb.args_none())
 
-	mrb.load_string(state, "Fish.new('foo')")
+	mrb.load_string(state, "Fish.new('\"fish foo\"')")
 
 	if mrb.state_get_exc(state) != nil {
 		mrb.print_backtrace(state)

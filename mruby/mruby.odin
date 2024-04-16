@@ -284,6 +284,7 @@ foreign compat {
 	intern_cstr :: proc(state: ^State, cstr: cstring) -> Sym ---
 	intern :: proc(state: ^State, rstr: [^]u8, size: uint) -> Sym ---
 
+
 }
 
 @(link_prefix = "mrb_")
@@ -451,6 +452,41 @@ foreign lib {
 	//    assert(foo.respond_to?(:update), "Bar does have `update` method")
 	respond_to :: proc(state: ^State, obj: Value, id: Sym) -> bool ---
 
+
+	//
+	// Initialize a new object instance of c class.
+	//
+	// Example:
+	//
+	//     # Ruby style
+	//     class ExampleClass
+	//     end
+	//
+	//     p ExampleClass # => #<ExampleClass:0x9958588>
+	//     // C style
+	//     #include <stdio.h>
+	//     #include <mruby.h>
+	//
+	//     void
+	//     mrb_example_gem_init(mrb_state* mrb) {
+	//       struct RClass *example_class;
+	//       mrb_value obj;
+	//       example_class = mrb_define_class(mrb, "ExampleClass", mrb->object_class); # => class ExampleClass; end
+	//       obj = mrb_obj_new(mrb, example_class, 0, NULL); # => ExampleClass.new
+	//       mrb_p(mrb, obj); // => Kernel#p
+	//      }
+	// @param state The current mruby state.
+	// @param class Reference to the class of the new object.
+	// @param argc Number of arguments in argv
+	// @param argv Array of mrb_value to initialize the object
+	// @return [mrb_value] The newly initialized object
+	//
+	// MRB_API mrb_value mrb_obj_new(mrb_state *mrb, struct RClass *c, mrb_int argc, const mrb_value *argv);
+
+	obj_new :: proc(state: ^State, class: ^RClass, argc: uint, argv: [^]Value) -> Value ---
+
+	str_new_cstr :: proc(state: ^State, cstr: cstring) -> Value ---
+	str_new_static :: proc(state: ^State, p: [^]u8, len: uint) -> Value ---
 
 	// TODO: Implement
 	// MRB_API mrb_bool mrb_obj_is_instance_of(mrb_state *mrb, mrb_value obj, struct RClass* c);
