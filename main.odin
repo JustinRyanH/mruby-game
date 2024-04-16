@@ -85,6 +85,14 @@ game_deinit :: proc(game: ^Game) {
 
 g: ^Game
 
+logger_info :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = runtime.default_context()
+	cstr: cstring
+	mrb.get_args(state, "z", &cstr)
+	rl.TraceLog(.INFO, cstr)
+	return mrb.nil_value()
+}
+
 main :: proc() {
 	g = new(Game)
 	defer free(g)
@@ -96,7 +104,14 @@ main :: proc() {
 	code, found := asset_system_find_ruby(&g.assets, ruby_code_handle("foo.rb"))
 	assert(found, "Ruby Code 'foo.rb' not found")
 
+	logger := mrb.define_class(g.ruby, "Log", mrb.state_get_object_class(g.ruby))
+	mrb.define_class_method(g.ruby, logger, "info", logger_info, mrb.args_req(1))
+
 	mrb.load_string(g.ruby, code.code)
+	if mrb.state_get_exc(g.ruby) != nil {
+		mrb.print_error(g.ruby)
+	}
+	assert(mrb.state_get_exc(g.ruby) == nil, "There should be no exceptions")
 
 	rl.InitWindow(1280, 800, "Odin-Ruby Game Demo")
 	defer rl.CloseWindow()
