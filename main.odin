@@ -12,9 +12,10 @@ Game :: struct {
 
 mrb_rawr :: proc "c" (state: ^mrb.State, value: mrb.Value) -> mrb.Value {
 	context = runtime.default_context()
-	// test_cstr: f32 = 0
-	// res := mrb.get_args(state, "f", &test_cstr)
-	// fmt.println("test_cstr", test_cstr)
+	test_cstr: f64 = 0
+	res := mrb.get_args(state, "f", &test_cstr)
+	fmt.println("res", res)
+	fmt.println("test_cstr", test_cstr)
 
 	return mrb.float_value(state, g.f)
 }

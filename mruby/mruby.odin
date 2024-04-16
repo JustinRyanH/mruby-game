@@ -340,7 +340,7 @@ foreign lib {
 	// @see mrb_args_format
 	// @see mrb_kwargs
 	//
-	get_args :: proc(state: ^State, format: cstring, args: ..rawptr) -> i32 ---
+	get_args :: proc(state: ^State, format: cstring, #c_varargs args: ..any) -> i32 ---
 
 	//
 	// Defines a new class.
