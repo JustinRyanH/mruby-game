@@ -92,6 +92,15 @@ extern void mrb_c_gc_arena_restore(struct mrb_state *mrb, int idx) {
   mrb->gc.arena_idx = idx;
 }
 
+extern mrb_aspec mrb_c_args_req(uint32_t n) { return MRB_ARGS_REQ(n); }
+extern mrb_aspec mrb_c_args_opt(uint32_t n) { return MRB_ARGS_REQ(n); }
+extern mrb_aspec mrb_c_args_rest() { return MRB_ARGS_REST(); }
+extern mrb_aspec mrb_c_args_block() { return MRB_ARGS_BLOCK(); }
+extern mrb_aspec mrb_c_args_key(uint32_t nk, uint32_t kd) {
+  return MRB_ARGS_KEY(nk, kd);
+}
+extern mrb_aspec mrb_c_args_none() { return MRB_ARGS_NONE(); }
+
 //
 //  mruby/data.h
 //
@@ -99,13 +108,13 @@ extern void mrb_c_gc_arena_restore(struct mrb_state *mrb, int idx) {
 void mrb_c_data_init(mrb_value v, void *ptr, const mrb_data_type *type) {
   mrb_data_init(v, ptr, type);
 }
-void *mrb_c_rdata_data(struct RData *data) { return data->data; }
-const struct mrb_c_data_type *mrb_c_rdata_type(struct RData *data) {
-  return data->type;
+void *mrb_c_rdata_data(struct RData data) { return data.data; }
+const struct mrb_c_data_type *mrb_c_rdata_type(struct RData data) {
+  return data.type;
 }
 
 //
-//  mruby/value.h
+//  mruby/value h
 //
 
 mrb_value mrb_c_float_value(struct mrb_state *mrb, mrb_float f) {

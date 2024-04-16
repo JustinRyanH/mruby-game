@@ -76,41 +76,40 @@ Code :: distinct u8
 Aspec :: distinct u32
 
 
-/**
- * Function takes n optional arguments
- *
- * @param n
- *      The number of optional arguments.
- */
-optional_args :: proc(n: u32) -> Aspec {
-	return cast(Aspec)(n & 0x1f) << 13
-}
-
-/**
- * Function requires n arguments.
- *
- * @param n
- *      The number of required arguments.
- */
-require_args :: proc(n: u32) -> Aspec {
-	return cast(Aspec)(n & 0x1f) << 18
-}
-
-/**
- * Function takes n1 mandatory arguments and n2 optional arguments
- *
- * @param n1
- *      The number of required arguments.
- * @param n2
- *      The number of optional arguments.
- */
-args :: proc(required: u32, optional: u32) -> Aspec {
-	return require_args(required) | optional_args(optional)
-}
-
-args_rest :: proc() -> Aspec {
-	return cast(Aspec)(1 << 12)
-}
+// /**
+//  * Function takes n optional arguments
+//  *
+//  * @param n
+//  *      The number of optional arguments.
+//  */
+// optional_args :: proc(n: u32) -> Aspec {
+// 	return cast(Aspec)(n & 0x1f) << 13
+// }
+// 
+// /**
+//  * Function requires n arguments.
+//  *
+//  * @param n
+//  *      The number of required arguments.
+//  */
+// require_args :: proc(n: u32) -> Aspec {
+// 	return cast(Aspec)(n & 0x1f) << 18
+// }
+// 
+// /**
+//  * Function takes n1 mandatory arguments and n2 optional arguments
+//  *
+//  * @param n1
+//  *      The number of required arguments.
+//  * @param n2
+//  *      The number of optional arguments.
+//  */
+// args :: proc(required: u32, optional: u32) -> Aspec {
+// 	return require_args(required) | optional_args(optional)
+// }
+// args_rest :: proc() -> Aspec {
+// 	return cast(Aspec)(1 << 12)
+// }
 
 CallInfo :: struct {}
 Context :: struct {}
@@ -296,8 +295,25 @@ foreign compat {
 
 	// Sets the Arena Index
 	gc_arena_restore :: proc(mrb: ^Context, idx: ArenaIdx) ---
+
+	args_req :: proc(n: u32) -> Aspec ---
+	args_opt :: proc(n: u32) -> Aspec ---
+	args_rest :: proc() -> Aspec ---
+	args_block :: proc() -> Aspec ---
+	args_none :: proc() -> Aspec ---
+	args_key :: proc(nk: u32, kd: u32) -> Aspec ---
 }
 
+@(link_prefix = "mrb_")
+@(default_calling_convention = "c")
+foreign lib {
+	malloc :: proc(state: ^State, size: int) -> rawptr ---
+	calloc :: proc(state: ^State, num, size: int) -> rawptr ---
+	realloc :: proc(state: ^State, p: rawptr, size: int) -> rawptr ---
+	realloc_simple :: proc(state: ^State, p: rawptr, size: int) -> rawptr ---
+	obj_alloc :: proc(state: ^State, type: VType, class: ^RClass) -> ^RBasic ---
+	free :: proc(state: ^State, p: rawptr) ---
+}
 
 @(link_prefix = "mrb_")
 @(default_calling_convention = "c")
