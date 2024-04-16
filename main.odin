@@ -12,8 +12,8 @@ import mrb "./mruby"
 
 
 Game :: struct {
-	f:    f64,
 	ruby: ^mrb.State,
+	f:    f64,
 }
 
 game_init :: proc(game: ^Game) {
