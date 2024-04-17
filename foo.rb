@@ -2,10 +2,11 @@
 
 input = FrameInput.new
 
-id = input.id
-puts "ID(#{id})"
+# id = input.id
+# puts "ID(#{id})"
 
-input.is_key_down(:down)
+is_down = input.is_key_down(:down)
+puts 'Down Key is Down' if is_down
 # is_up = Input.is_key_down(:up)
 
 # was_left = Input.was_key_just_release(:left)

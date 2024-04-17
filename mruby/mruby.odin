@@ -1,5 +1,7 @@
 package mruby
 
+import "core:strings"
+
 when ODIN_OS == .Darwin {
 	foreign import lib "vendor/darwin/libmruby.a"
 	foreign import compat "vendor/darwin/libmruby_compat.a"
@@ -198,10 +200,20 @@ foreign lib {
 	print_error :: proc(state: ^State) ---
 
 	// Returns a symbol as a cstring
+	// TODO: Figure out if this allocs?
 	sym_name :: proc(state: ^State, sym: Sym) -> cstring ---
 
 	// Returns a byte array to to turn into a proper `string`
+	// TODO: Figure out if this allocs?
 	sym_name_len :: proc(state: ^State, sym: Sym, len: ^i32) -> [^]u8 ---
+}
+
+sym_to_string :: proc(state: ^State, sym: Sym) -> string {
+	len: i32
+
+	data := sym_name_len(state, sym, &len)
+
+	return strings.string_from_ptr(data, cast(int)len)
 }
 
 @(link_prefix = "mrb_c_")

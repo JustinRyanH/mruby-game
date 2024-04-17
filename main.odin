@@ -4,6 +4,7 @@ import "core:fmt"
 import "core:math"
 import "core:mem"
 import "core:os"
+import "core:reflect"
 import "core:runtime"
 import "core:strings"
 
@@ -107,14 +108,21 @@ mrb_frame_input_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 
 mrb_frame_is_key_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = runtime.default_context()
-	key: mrb.Sym
-	mrb.get_args(state, "n", &key)
+	key_sym: mrb.Sym
+	mrb.get_args(state, "n", &key_sym)
 
-	cstr_key := mrb.sym_name(state, key)
+	sym_name := mrb.sym_to_string(state, key_sym)
+	sym_upper, success_upper := strings.to_upper(sym_name, context.temp_allocator)
+	assert(success_upper == .None, "Allocation Error")
+	key, is_success := reflect.enum_from_name(input.KeyboardKey, sym_upper)
 
-	fmt.println("key", cstr_key)
 	i: ^input.FrameInput = cast(^input.FrameInput)mrb.rdata_data(self)
-	return mrb.nil_value()
+
+	// TODO: Let's get a Ruby exception raised instead, return false
+	assert(is_success, "Could not parse out Key")
+	value := input.is_pressed(i^, key)
+
+	return mrb.bool_value(value)
 }
 
 g: ^Game
