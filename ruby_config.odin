@@ -25,7 +25,14 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 		g.ruby,
 		fi,
 		mrb.intern_cstr(g.ruby, "key_down?"),
-		mrb_frame_is_key_down,
+		frame_input_is_down,
+		mrb.args_req(1),
+	)
+	mrb.define_method_id(
+		g.ruby,
+		fi,
+		mrb.intern_cstr(g.ruby, "key_was_down?"),
+		frame_input_was_down,
 		mrb.args_req(1),
 	)
 }
@@ -76,7 +83,7 @@ sym_to_keyboard_key :: proc(state: ^mrb.State) -> (key: input.KeyboardKey, succe
 }
 
 @(private = "file")
-mrb_frame_is_key_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+frame_input_is_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = runtime.default_context()
 
 	key, success := sym_to_keyboard_key(state)
@@ -86,6 +93,21 @@ mrb_frame_is_key_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Va
 
 	i := mrb.get_data_from_value(input.FrameInput, self)
 	value := input.is_pressed(i^, key)
+	return mrb.bool_value(value)
+}
+
+
+@(private = "file")
+frame_input_was_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = runtime.default_context()
+
+	key, success := sym_to_keyboard_key(state)
+	if !success {
+		return mrb.nil_value()
+	}
+
+	i := mrb.get_data_from_value(input.FrameInput, self)
+	value := input.was_just_released(i^, key)
 	return mrb.bool_value(value)
 }
 

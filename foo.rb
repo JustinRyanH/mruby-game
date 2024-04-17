@@ -5,8 +5,8 @@ input = FrameInput.new
 # id = input.id
 # puts "ID(#{id})"
 
-is_down = input.key_down?(:down)
-puts 'Down Key is Down?' if is_down
+puts 'Down Key is Down?' if input.key_down?(:down)
+puts 'Down Key was Down?' if input.key_was_down?(:down)
 # is_down = input.key_down?(:down)
 
 # was_left = Input.was_key_just_release(:left)

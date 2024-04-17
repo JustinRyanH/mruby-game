@@ -108,7 +108,7 @@ main :: proc() {
 	defer rl.CloseWindow()
 
 
-	rl.SetTargetFPS(10)
+	rl.SetTargetFPS(5)
 
 	for !rl.WindowShouldClose() {
 		input.update_input(&g.input)
