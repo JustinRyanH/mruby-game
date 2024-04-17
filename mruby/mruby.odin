@@ -174,15 +174,15 @@ foreign lib {
 	show_version :: proc(state: ^State) ---
 
 	// TODO: Document
-	p :: proc(state: ^State, v: Value) ---
-
-	// TODO: Document
 	obj_id :: proc(obj: Value) -> i32 ---
 
 	// TODO: Document
 	obj_to_sym :: proc(state: ^State, name: Value) -> Sym ---
 
-	// TODO: Document
+	// Kernel#p
+	p :: proc(state: ^State, obj: ^RObject) ---
+
+	// Object#eq
 	obj_eq :: proc(state: ^State, a, b: Value) -> bool ---
 
 	// TODO: Document
@@ -455,7 +455,6 @@ foreign lib {
 	define_class_method :: proc(state: ^State, class: ^RClass, name: cstring, fn: MrbFunc, aspec: Aspec) ---
 	define_class_method_id :: proc(state: ^State, class: ^RClass, name: Sym, fn: MrbFunc, aspec: Aspec) ---
 
-
 	// Gets an attribute off a class
 	attr_get :: proc(state: ^State, obj: Value, id: Sym) -> Value ---
 
@@ -467,6 +466,11 @@ foreign lib {
 	//    assert(foo.respond_to?(:update), "Bar does have `update` method")
 	respond_to :: proc(state: ^State, obj: Value, id: Sym) -> bool ---
 
+
+	// a function to raise NotImplementedError with current method name
+	notimplement :: proc(state: ^State) ---
+	// a function to be replacement of unimplemented method
+	notimplement_m :: proc(state: ^State, value: Value) -> Value ---
 
 	//
 	// Initialize a new object instance of c class.
@@ -496,9 +500,24 @@ foreign lib {
 	// @param argv Array of mrb_value to initialize the object
 	// @return [mrb_value] The newly initialized object
 	//
-	// MRB_API mrb_value mrb_obj_new(mrb_state *mrb, struct RClass *c, mrb_int argc, const mrb_value *argv);
-
 	obj_new :: proc(state: ^State, class: ^RClass, argc: uint, argv: [^]Value) -> Value ---
+
+	//
+	// Creates a new instance of Class, Class.
+	//
+	// Example:
+	//
+	//      mrb_example_gem_init :: proc(state: ^mrb.State) {
+	//        example_class := class_new(state, mrb->object_class);
+	//        obj := mrb.obj_new(state, example_class, 0, NULL); // => #<#<Class:0x9a945b8>:0x9a94588>
+	//        mrb.p(mrb, obj); // => Kernel#p
+	//      }
+	//
+	// @param state The current mruby state.
+	// @param super The super class or parent.
+	// @return [struct RClass *] Reference to the new class.
+	//
+	class_new :: proc(state: ^State, super: ^RClass) -> ^RClass ---
 
 	str_new_cstr :: proc(state: ^State, cstr: cstring) -> Value ---
 	str_new_static :: proc(state: ^State, p: [^]u8, len: uint) -> Value ---
