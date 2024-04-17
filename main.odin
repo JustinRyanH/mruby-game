@@ -121,5 +121,6 @@ main :: proc() {
 			mrb.print_error(g.ruby)
 		}
 		assert(mrb.state_get_exc(g.ruby) == nil, "There should be no exceptions")
+		mrb.incremental_gc(g.ruby)
 	}
 }

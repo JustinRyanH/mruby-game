@@ -206,6 +206,16 @@ foreign lib {
 	// Returns a byte array to to turn into a proper `string`
 	// TODO: Figure out if this allocs?
 	sym_name_len :: proc(state: ^State, sym: Sym, len: ^i32) -> [^]u8 ---
+
+	// Performs full GC
+	garbage_collect :: proc(mrb: ^State) ---
+
+	// Performs a heavy full gc
+	full_gc :: proc(mrb: ^State) ---
+
+	// Cleans up dead fresh items, Performs
+	// a full_gc pass threshold
+	incremental_gc :: proc(mrb: ^State) ---
 }
 
 sym_to_string :: proc(state: ^State, sym: Sym) -> string {
@@ -293,6 +303,7 @@ foreign compat {
 
 	// Sets the Arena Index
 	gc_arena_restore :: proc(mrb: ^Context, idx: ArenaIdx) ---
+
 
 	// ARGs
 	args_req :: proc(n: u32) -> Aspec ---
