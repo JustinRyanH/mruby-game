@@ -9,6 +9,7 @@ import "core:strings"
 
 import rl "vendor:raylib"
 
+import "./input"
 import mrb "./mruby"
 import "./utils"
 
@@ -70,6 +71,7 @@ asset_system_find_ruby :: proc(as: ^AssetSystem, handle: RubyCodeHandle) -> (Rub
 Game :: struct {
 	ruby:   ^mrb.State,
 	assets: AssetSystem,
+	input:  input.FrameInput,
 	f:      f64,
 }
 
@@ -97,17 +99,23 @@ main :: proc() {
 	code, found := asset_system_find_ruby(&g.assets, ruby_code_handle("foo.rb"))
 	assert(found, "Ruby Code 'foo.rb' not found")
 
-	mrb.load_string(g.ruby, code.code)
-	if mrb.state_get_exc(g.ruby) != nil {
-		mrb.print_error(g.ruby)
-	}
-	assert(mrb.state_get_exc(g.ruby) == nil, "There should be no exceptions")
 
 	rl.InitWindow(1280, 800, "Odin-Ruby Game Demo")
 	defer rl.CloseWindow()
 
+
+	// mrb.load_string(g.ruby, code.code)
+	// if mrb.state_get_exc(g.ruby) != nil {
+	// 	mrb.print_error(g.ruby)
+	// }
+	// assert(mrb.state_get_exc(g.ruby) == nil, "There should be no exceptions")
+	rl.SetTargetFPS(10)
+
 	for !rl.WindowShouldClose() {
+		input.update_input(&g.input)
 		rl.BeginDrawing()
+
 		defer rl.EndDrawing()
+		fmt.printf("%v\n\n", g.input.current_frame)
 	}
 }
