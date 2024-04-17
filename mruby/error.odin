@@ -1,10 +1,19 @@
 package mruby
 
+import "core:fmt"
+
 when ODIN_OS == .Darwin {
 	foreign import lib "vendor/darwin/libmruby.a"
 } else when ODIN_OS == .Windows {
 	@(extra_linker_flags = "/NODEFAULTLIB:libcmt")
 	foreign import lib "vendor/windows/libmruby.lib"
+}
+
+raise_exception :: proc(state: ^State, msg: string, args: ..any) {
+	exception_class := state_get_exception_class(state)
+	err_msg := fmt.ctprintf(msg, ..args)
+	raise(state, exception_class, err_msg)
+
 }
 
 @(link_prefix = "mrb_")
