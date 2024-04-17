@@ -17,6 +17,10 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	mrb.define_class_method(g.ruby, logger, "fatal", logger_fatal, mrb.args_req(1))
 	mrb.define_class_method(g.ruby, logger, "warning", logger_warning, mrb.args_req(1))
 
+	setup_input(game)
+}
+
+setup_input :: proc(game: ^Game) {
 	fi := mrb.define_class(g.ruby, "FrameInput", mrb.state_get_object_class(g.ruby))
 
 	mrb.define_method(g.ruby, fi, "initialize", frame_input_init, mrb.args_none())
