@@ -148,7 +148,13 @@ main :: proc() {
 	fi := mrb.define_class(g.ruby, "FrameInput", mrb.state_get_object_class(g.ruby))
 	mrb.define_method(g.ruby, fi, "initialize", mrb_frame_input_init, mrb.args_none())
 	mrb.define_method(g.ruby, fi, "id", mrb_frame_input_id, mrb.args_none())
-	mrb.define_method(g.ruby, fi, "is_key_down", mrb_frame_is_key_down, mrb.args_req(1))
+	mrb.define_method_id(
+		g.ruby,
+		fi,
+		mrb.intern_cstr(g.ruby, "is_key_down"),
+		mrb_frame_is_key_down,
+		mrb.args_req(1),
+	)
 
 
 	rl.SetTargetFPS(10)

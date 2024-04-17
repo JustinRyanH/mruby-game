@@ -7,7 +7,7 @@ input = FrameInput.new
 
 is_down = input.is_key_down(:down)
 puts 'Down Key is Down' if is_down
-# is_up = Input.is_key_down(:up)
+# is_down = input.key_down?(:down)
 
 # was_left = Input.was_key_just_release(:left)
 

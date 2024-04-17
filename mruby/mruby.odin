@@ -299,8 +299,6 @@ foreign compat {
 	args_none :: proc() -> Aspec ---
 	args_key :: proc(nk: u32, kd: u32) -> Aspec ---
 
-	intern_cstr :: proc(state: ^State, cstr: cstring) -> Sym ---
-	intern :: proc(state: ^State, rstr: [^]u8, size: uint) -> Sym ---
 
 }
 
@@ -504,6 +502,9 @@ foreign lib {
 
 	str_new_cstr :: proc(state: ^State, cstr: cstring) -> Value ---
 	str_new_static :: proc(state: ^State, p: [^]u8, len: uint) -> Value ---
+
+	intern_cstr :: proc(state: ^State, cstr: cstring) -> Sym ---
+	intern :: proc(state: ^State, rstr: [^]u8, size: uint) -> Sym ---
 
 	// TODO: Implement
 	// MRB_API mrb_bool mrb_obj_is_instance_of(mrb_state *mrb, mrb_value obj, struct RClass* c);
