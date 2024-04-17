@@ -85,8 +85,14 @@ game_deinit :: proc(game: ^Game) {
 	mrb.close(game.ruby)
 }
 
+mrb_frame_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return mrb.int_value(state, 300)
+}
+
 g: ^Game
 main :: proc() {
+
+
 	g = new(Game)
 	defer free(g)
 
@@ -103,12 +109,10 @@ main :: proc() {
 	rl.InitWindow(1280, 800, "Odin-Ruby Game Demo")
 	defer rl.CloseWindow()
 
+	fi := mrb.define_class(g.ruby, "FrameInput", mrb.state_get_object_class(g.ruby))
+	mrb.define_method(g.ruby, fi, "id", mrb_frame_id, mrb.args_none())
 
-	// mrb.load_string(g.ruby, code.code)
-	// if mrb.state_get_exc(g.ruby) != nil {
-	// 	mrb.print_error(g.ruby)
-	// }
-	// assert(mrb.state_get_exc(g.ruby) == nil, "There should be no exceptions")
+
 	rl.SetTargetFPS(10)
 
 	for !rl.WindowShouldClose() {
@@ -116,6 +120,11 @@ main :: proc() {
 		rl.BeginDrawing()
 
 		defer rl.EndDrawing()
-		fmt.printf("%v\n\n", g.input.current_frame)
+
+		mrb.load_string(g.ruby, code.code)
+		if mrb.state_get_exc(g.ruby) != nil {
+			mrb.print_error(g.ruby)
+		}
+		assert(mrb.state_get_exc(g.ruby) == nil, "There should be no exceptions")
 	}
 }

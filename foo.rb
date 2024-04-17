@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-# FrameInput = Input.new
+input = FrameInput.new
 
-id = 1
+id = input.id
 puts "ID(#{id})"
 
 # is_down = Input.is_key_down(:down)
