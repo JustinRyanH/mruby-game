@@ -108,7 +108,6 @@ mrb_frame_input_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 
 @(private = "file")
 sym_to_keyboard_key :: proc(state: ^mrb.State) -> (key: input.KeyboardKey, success: bool) {
-
 	key_sym: mrb.Sym
 	mrb.get_args(state, "n", &key_sym)
 
