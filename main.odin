@@ -151,7 +151,7 @@ main :: proc() {
 	mrb.define_method_id(
 		g.ruby,
 		fi,
-		mrb.intern_cstr(g.ruby, "is_key_down"),
+		mrb.intern_cstr(g.ruby, "key_down?"),
 		mrb_frame_is_key_down,
 		mrb.args_req(1),
 	)
