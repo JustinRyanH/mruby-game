@@ -72,11 +72,12 @@ extern struct mrb_context *mrb_c_state_get_root_context(mrb_state *mrb) {
   return mrb->root_c;
 }
 
-extern struct RClass *mrb_c_get_exception_class(struct mrb_state *mrb) {
+extern struct RClass *mrb_c_state_get_exception_class(struct mrb_state *mrb) {
   return E_EXCEPTION;
 }
 
-extern struct RClass *mrb_c_get_std_exception_class(struct mrb_state *mrb) {
+extern struct RClass *
+mrb_c_state_get_std_exception_class(struct mrb_state *mrb) {
   return E_STANDARD_ERROR;
 }
 

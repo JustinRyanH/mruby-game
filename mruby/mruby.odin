@@ -274,6 +274,9 @@ foreign compat {
 	// Get a Reference to ruby `Kernel`
 	state_get_kernel_module :: proc(mrb: ^State) -> ^RClass ---
 
+	state_get_exception_class :: proc(mrb: ^State) -> ^RClass ---
+	state_get_std_exception_class :: proc(mrb: ^State) -> ^RClass ---
+
 	state_get_context :: proc(mrb: ^State) -> ^Context ---
 	state_get_root_context :: proc(mrb: ^State) -> ^Context ---
 

@@ -116,10 +116,17 @@ mrb_frame_is_key_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Va
 	assert(success_upper == .None, "Allocation Error")
 	key, is_success := reflect.enum_from_name(input.KeyboardKey, sym_upper)
 
+	if !is_success {
+		mrb.raise(
+			state,
+			mrb.state_get_exception_class(state),
+			fmt.ctprintf("No Key Found: :%s", sym_name),
+		)
+		return mrb.nil_value()
+	}
+
 	i: ^input.FrameInput = cast(^input.FrameInput)mrb.rdata_data(self)
 
-	// TODO: Let's get a Ruby exception raised instead, return false
-	assert(is_success, "Could not parse out Key")
 	value := input.is_pressed(i^, key)
 
 	return mrb.bool_value(value)

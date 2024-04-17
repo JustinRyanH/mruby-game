@@ -18,4 +18,17 @@ foreign lib {
 	exc_mesg_get :: proc(state: ^State, exc: ^RException) -> Value ---
 	f_raise :: proc(state: ^State, exc: Value) -> Value ---
 	make_exception :: proc(state: ^State, exc: Value, mesg: Value) -> Value ---
+
+
+	raise :: proc(state: ^State, class: ^RClass, msg: cstring) ---
 }
+
+
+// MRB_API mrb_value mrb_exc_new(mrb_state *mrb, struct RClass *c, const char *ptr, mrb_int len);
+// MRB_API mrb_noreturn void mrb_exc_raise(mrb_state *mrb, mrb_value exc);
+// 
+// MRB_API mrb_noreturn void mrb_raise(mrb_state *mrb, struct RClass *c, const char *msg);
+// MRB_API mrb_noreturn void mrb_raisef(mrb_state *mrb, struct RClass *c, const char *fmt, ...);
+// MRB_API mrb_noreturn void mrb_name_error(mrb_state *mrb, mrb_sym id, const char *fmt, ...);
+// MRB_API mrb_noreturn void mrb_frozen_error(mrb_state *mrb, void *frozen_obj);
+// MRB_API mrb_noreturn void mrb_argnum_error(mrb_state *mrb, mrb_int argc, int min, int max);
