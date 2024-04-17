@@ -106,24 +106,34 @@ mrb_frame_input_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 	return mrb.int_value(state, i.current_frame.meta.frame_id)
 }
 
-mrb_frame_is_key_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = runtime.default_context()
+@(private = "file")
+sym_to_keyboard_key :: proc(state: ^mrb.State) -> (key: input.KeyboardKey, success: bool) {
 
 	key_sym: mrb.Sym
 	mrb.get_args(state, "n", &key_sym)
 
 	sym_name := mrb.sym_to_string(state, key_sym)
-	sym_upper, success_upper := strings.to_upper(sym_name, context.temp_allocator)
+	sym_upper, upper_err := strings.to_upper(sym_name, context.temp_allocator)
+	if upper_err != .None {
+		mrb.raise_exception(state, "Allocation Error: %v", upper_err)
+		return
+	}
 
-	assert(success_upper == .None, "Allocation Error")
-	key, is_success := reflect.enum_from_name(input.KeyboardKey, sym_upper)
+	key, success = reflect.enum_from_name(input.KeyboardKey, sym_upper)
 
-	if !is_success {
-		mrb.raise(
-			state,
-			mrb.state_get_exception_class(state),
-			fmt.ctprintf("No Key Found: :%s", sym_name),
-		)
+	if !success {
+		mrb.raise_exception(state, "No Key found: :%s", sym_name)
+		return
+	}
+
+	return
+}
+
+mrb_frame_is_key_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = runtime.default_context()
+
+	key, success := sym_to_keyboard_key(state)
+	if !success {
 		return mrb.nil_value()
 	}
 
