@@ -34,5 +34,5 @@ foreign lib {
 foreign compat {
 	data_init :: proc(v: Value, p: rawptr, dt: ^DataType) ---
 	rdata_data :: proc(d: Value) -> rawptr ---
-	data_type :: proc(d: Value) -> DataType ---
+	rdata_type :: proc(d: Value) -> ^DataType ---
 }
