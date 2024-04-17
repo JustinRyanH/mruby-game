@@ -196,6 +196,12 @@ foreign lib {
 	print_backtrace :: proc(state: ^State) ---
 	// Prints the Error
 	print_error :: proc(state: ^State) ---
+
+	// Returns a symbol as a cstring
+	sym_name :: proc(state: ^State, sym: Sym) -> cstring ---
+
+	// Returns a byte array to to turn into a proper `string`
+	sym_name_len :: proc(state: ^State, sym: Sym, len: ^i32) -> [^]u8 ---
 }
 
 @(link_prefix = "mrb_c_")
@@ -283,7 +289,6 @@ foreign compat {
 
 	intern_cstr :: proc(state: ^State, cstr: cstring) -> Sym ---
 	intern :: proc(state: ^State, rstr: [^]u8, size: uint) -> Sym ---
-
 
 }
 

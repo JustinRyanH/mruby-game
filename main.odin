@@ -105,6 +105,18 @@ mrb_frame_input_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 	return mrb.int_value(state, i.current_frame.meta.frame_id)
 }
 
+mrb_frame_is_key_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = runtime.default_context()
+	key: mrb.Sym
+	mrb.get_args(state, "n", &key)
+
+	cstr_key := mrb.sym_name(state, key)
+
+	fmt.println("key", cstr_key)
+	i: ^input.FrameInput = cast(^input.FrameInput)mrb.rdata_data(self)
+	return mrb.nil_value()
+}
+
 g: ^Game
 main :: proc() {
 
@@ -128,6 +140,7 @@ main :: proc() {
 	fi := mrb.define_class(g.ruby, "FrameInput", mrb.state_get_object_class(g.ruby))
 	mrb.define_method(g.ruby, fi, "initialize", mrb_frame_input_init, mrb.args_none())
 	mrb.define_method(g.ruby, fi, "id", mrb_frame_input_id, mrb.args_none())
+	mrb.define_method(g.ruby, fi, "is_key_down", mrb_frame_is_key_down, mrb.args_req(1))
 
 
 	rl.SetTargetFPS(10)
