@@ -85,12 +85,24 @@ game_deinit :: proc(game: ^Game) {
 	mrb.close(game.ruby)
 }
 
+mrb_frame_input_type: mrb.DataType = {"FrameInput", mrb.free}
+
 mrb_frame_input_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	i: ^input.FrameInput = cast(^input.FrameInput)mrb.rdata_data(self)
+	if (i == nil) {
+		mrb.data_init(self, nil, &mrb_frame_input_type)
+		i = cast(^input.FrameInput)mrb.malloc(state, size_of(input.FrameInput))
+		mrb.data_init(self, i, &mrb_frame_input_type)
+	}
+	i.current_frame = g.input.current_frame
+	i.last_frame = g.input.last_frame
+
 	return self
 }
 
 mrb_frame_input_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	return mrb.int_value(state, 300)
+	i: ^input.FrameInput = cast(^input.FrameInput)mrb.rdata_data(self)
+	return mrb.int_value(state, i.current_frame.meta.frame_id)
 }
 
 g: ^Game
