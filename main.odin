@@ -85,7 +85,11 @@ game_deinit :: proc(game: ^Game) {
 	mrb.close(game.ruby)
 }
 
-mrb_frame_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+mrb_frame_input_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return self
+}
+
+mrb_frame_input_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return mrb.int_value(state, 300)
 }
 
@@ -110,7 +114,8 @@ main :: proc() {
 	defer rl.CloseWindow()
 
 	fi := mrb.define_class(g.ruby, "FrameInput", mrb.state_get_object_class(g.ruby))
-	mrb.define_method(g.ruby, fi, "id", mrb_frame_id, mrb.args_none())
+	mrb.define_method(g.ruby, fi, "initialize", mrb_frame_input_init, mrb.args_none())
+	mrb.define_method(g.ruby, fi, "id", mrb_frame_input_id, mrb.args_none())
 
 
 	rl.SetTargetFPS(10)
