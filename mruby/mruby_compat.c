@@ -109,7 +109,7 @@ void mrb_c_data_init(mrb_value v, void *ptr, const mrb_data_type *type) {
   mrb_data_init(v, ptr, type);
 }
 void *mrb_c_rdata_data(struct RData data) { return data.data; }
-const struct mrb_c_data_type *mrb_c_rdata_type(struct RData data) {
+const struct mrb_data_type *mrb_c_rdata_type(struct RData data) {
   return data.type;
 }
 
