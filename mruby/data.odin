@@ -10,6 +10,10 @@ when ODIN_OS == .Darwin {
 }
 
 
+get_data_from_value :: proc "contextless" ($T: typeid, v: Value) -> ^T {
+	return cast(^T)rdata_data(v)
+}
+
 // typedef struct mrb_data_type {
 //   /** data type name */
 //   const char *struct_name;

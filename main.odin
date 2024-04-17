@@ -89,7 +89,8 @@ game_deinit :: proc(game: ^Game) {
 mrb_frame_input_type: mrb.DataType = {"FrameInput", mrb.free}
 
 mrb_frame_input_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	i: ^input.FrameInput = cast(^input.FrameInput)mrb.rdata_data(self)
+	i := mrb.get_data_from_value(input.FrameInput, self)
+
 	if (i == nil) {
 		mrb.data_init(self, nil, &mrb_frame_input_type)
 		i = cast(^input.FrameInput)mrb.malloc(state, size_of(input.FrameInput))
@@ -136,7 +137,7 @@ mrb_frame_is_key_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Va
 		return mrb.nil_value()
 	}
 
-	i: ^input.FrameInput = cast(^input.FrameInput)mrb.rdata_data(self)
+	i := mrb.get_data_from_value(input.FrameInput, self)
 	value := input.is_pressed(i^, key)
 	return mrb.bool_value(value)
 }
