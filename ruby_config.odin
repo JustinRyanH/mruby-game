@@ -10,6 +10,9 @@ import rl "vendor:raylib"
 import "./input"
 import mrb "./mruby"
 
+mrb_frame_input_type: mrb.DataType = {"FrameInput", mrb.free}
+mrb_entity_handle_type: mrb.DataType = {"Entity", mrb.free}
+
 EngineRClass :: struct {
 	entity_class: ^mrb.RClass,
 }
@@ -28,12 +31,26 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	setup_input(game)
 
 	entity_class := mrb.define_class(g.ruby, "Entity", mrb.state_get_object_class(g.ruby))
+	mrb.set_data_type(entity_class, .CData)
 	mrb.define_method(g.ruby, entity_class, "initialize", entity_init, mrb.args_req(1))
 	engine_classes.entity_class = entity_class
 }
 
 @(private = "file")
 entity_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	entity_id: int
+	mrb.get_args(state, "i", &entity_id)
+
+	i := mrb.get_data_from_value(EntityHandle, self)
+
+	if (i == nil) {
+		mrb.data_init(self, nil, &mrb_entity_handle_type)
+		v := mrb.malloc(state, size_of(EntityHandle))
+		i = cast(^EntityHandle)v
+		mrb.data_init(self, i, &mrb_entity_handle_type)
+	}
+	i^ = cast(EntityHandle)entity_id
+
 	return self
 }
 
@@ -70,11 +87,9 @@ setup_input :: proc(game: ^Game) {
 	)
 }
 
-mrb_frame_input_type: mrb.DataType = {"FrameInput", mrb.free}
 
 @(private = "file")
 frame_input_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = runtime.default_context()
 	i := mrb.get_data_from_value(input.FrameInput, self)
 
 	if (i == nil) {
