@@ -148,6 +148,14 @@ reset_tracking_allocator :: proc(a: ^mem.Tracking_Allocator) -> (err: bool) {
 	return
 }
 
+track_bad_free_tracking_allocator :: proc(a: ^mem.Tracking_Allocator) -> (err: bool) {
+	for b in a.bad_free_array {
+		fmt.println("Bad Free at: %v", b.location)
+		err = true
+	}
+	return
+}
+
 g: ^Game
 main :: proc() {
 
@@ -180,8 +188,13 @@ main :: proc() {
 
 
 	for !rl.WindowShouldClose() {
+		defer {
+			is_bad := track_bad_free_tracking_allocator(&tracking_allocator)
+			assert(!is_bad, "Double Free issue")
+		}
 		defer free_all(context.temp_allocator)
 		defer mrb.incremental_gc(g.ruby)
+
 		input.update_input(&g.input)
 		rl.BeginDrawing()
 
