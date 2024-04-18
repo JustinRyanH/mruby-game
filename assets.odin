@@ -59,3 +59,5 @@ asset_system_load_ruby :: proc(as: ^AssetSystem, file: string) {
 asset_system_find_ruby :: proc(as: ^AssetSystem, handle: RubyCodeHandle) -> (RubyCode, bool) {
 	return as.ruby[handle]
 }
+asset_system_check :: proc(as: ^AssetSystem) {
+}

@@ -206,6 +206,10 @@ was_just_released :: proc(frame: FrameInput, key: BooleanInput) -> (res: bool) {
 	return res
 }
 
+// Get the id of the current frame
+frame_query_id :: proc(frame_input: FrameInput) -> int {
+	return frame_input.current_frame.meta.frame_id
+}
 
 // Get the amount of time for this frame
 frame_query_delta :: proc(frame_input: FrameInput) -> f32 {

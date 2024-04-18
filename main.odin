@@ -76,6 +76,8 @@ track_bad_free_tracking_allocator :: proc(a: ^mem.Tracking_Allocator) -> (err: b
 	return
 }
 
+TargetFPS :: 90
+
 g: ^Game
 main :: proc() {
 
@@ -102,7 +104,7 @@ main :: proc() {
 	rl.InitWindow(1280, 800, "Odin-Ruby Game Demo")
 	defer rl.CloseWindow()
 
-	rl.SetTargetFPS(90)
+	rl.SetTargetFPS(TargetFPS)
 
 	for !rl.WindowShouldClose() {
 		defer {
@@ -123,5 +125,10 @@ main :: proc() {
 			mrb.print_error(g.ruby)
 		}
 		assert(mrb.state_get_exc(g.ruby) == nil, "There should be no exceptions")
+
+		// Check for asset change every second or so
+		if input.frame_query_id(g.input) % TargetFPS == 0 {
+			asset_system_check(&g.assets)
+		}
 	}
 }
