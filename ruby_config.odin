@@ -10,6 +10,11 @@ import rl "vendor:raylib"
 import "./input"
 import mrb "./mruby"
 
+EngineRClass :: struct {
+	entity_class: ^mrb.RClass,
+}
+
+engine_classes: EngineRClass
 
 game_load_mruby_raylib :: proc(game: ^Game) {
 	logger := mrb.define_class(g.ruby, "Log", mrb.state_get_object_class(g.ruby))
@@ -18,7 +23,18 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	mrb.define_class_method(g.ruby, logger, "fatal", logger_fatal, mrb.args_req(1))
 	mrb.define_class_method(g.ruby, logger, "warning", logger_warning, mrb.args_req(1))
 
+
+	setup_game_class(game)
 	setup_input(game)
+
+	entity_class := mrb.define_class(g.ruby, "Entity", mrb.state_get_object_class(g.ruby))
+	mrb.define_method(g.ruby, entity_class, "initialize", entity_init, mrb.args_req(1))
+	engine_classes.entity_class = entity_class
+}
+
+@(private = "file")
+entity_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return self
 }
 
 setup_game_class :: proc(game: ^Game) {
@@ -140,8 +156,9 @@ frame_input_was_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Val
 
 @(private = "file")
 game_get_player_entity :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-
-	return mrb.int_value(state, cast(int)g.player)
+	id := mrb.int_value(state, cast(int)g.player)
+	collection: []mrb.Value = {id}
+	return mrb.obj_new(state, engine_classes.entity_class, 1, raw_data(collection[:]))
 }
 
 
