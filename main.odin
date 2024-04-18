@@ -9,6 +9,7 @@ import "core:strings"
 
 import rl "vendor:raylib"
 
+import dp "./data_pool"
 import "./input"
 import mrb "./mruby"
 
@@ -103,6 +104,15 @@ main :: proc() {
 
 	rl.SetTargetFPS(TargetFPS)
 
+	entity: Entity
+	entity.pos = rl.Vector2{100, 300}
+	entity.size = rl.Vector2{45, 45}
+	entity.color = rl.RED
+
+	eh, is_success := dp.add(&g.entities, entity)
+	assert(is_success)
+
+
 	for !rl.WindowShouldClose() {
 		defer {
 			is_bad := track_bad_free_tracking_allocator(&tracking_allocator)
@@ -129,8 +139,6 @@ main :: proc() {
 		entity.size = rl.Vector2{45, 45}
 		entity.color = rl.RED
 
-		pos := entity.pos
-		size := entity.size
 		rl.DrawRectangleV(entity.pos, entity.size, entity.color)
 
 		// Check for asset change every second or so
