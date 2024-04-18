@@ -131,7 +131,7 @@ main :: proc() {
 
 		pos := entity.pos
 		size := entity.size
-		rl.DrawRectangleV(pos, size, rl.RED)
+		rl.DrawRectangleV(entity.pos, entity.size, entity.color)
 
 		// Check for asset change every second or so
 		if input.frame_query_id(g.input) % TargetFPS == 0 {
