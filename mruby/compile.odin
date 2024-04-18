@@ -34,9 +34,10 @@ load_cstring :: proc(state: ^State, s: cstring) -> Value {
 load_string :: proc(state: ^State, s: string) -> Value {
 	ctx := state_get_context(state)
 	ai := gc_arena_save(ctx)
-	defer gc_arena_restore(ctx, ai)
+	v := mrb_load_nstring(state, raw_data(s), len(s))
+	gc_arena_restore(ctx, ai)
 
-	return mrb_load_nstring(state, raw_data(s), len(s))
+	return v
 }
 
 

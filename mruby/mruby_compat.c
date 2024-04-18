@@ -148,8 +148,15 @@ mrb_value mrb_c_undef_value(void) { return mrb_undef_value(); }
 //  mruby/gc.h
 //
 size_t mrb_c_gc_get_live(struct mrb_state *mrb) { return mrb->gc.live; }
+size_t mrb_c_gc_get_live_after_mark(struct mrb_state *mrb) {
+  return mrb->gc.live_after_mark;
+}
 
 mrb_gc_state mrb_c_gc_get_state(struct mrb_state *mrb) { return mrb->gc.state; }
 void mrb_c_gc_mark_value(struct mrb_state *mrb, mrb_value value) {
   mrb_gc_mark_value(mrb, value);
+}
+
+size_t mrb_c_gc_get_threshold(struct mrb_state *mrb) {
+  return mrb->gc.threshold;
 }
