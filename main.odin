@@ -79,6 +79,12 @@ track_bad_free_tracking_allocator :: proc(a: ^mem.Tracking_Allocator) -> (err: b
 
 TargetFPS :: 90
 
+game_draw_entity :: proc(game: ^Game, handle: EntityHandle) {
+	entity, is_success := dp.get(&game.entities, handle)
+	assert(is_success, "We shouldn't be trying to draw an entity that does not exists")
+	rl.DrawRectangleV(entity.pos, entity.size, entity.color)
+}
+
 g: ^Game
 main :: proc() {
 	default_allocator := context.allocator
@@ -107,11 +113,10 @@ main :: proc() {
 	entity: Entity
 	entity.pos = rl.Vector2{100, 300}
 	entity.size = rl.Vector2{45, 45}
-	entity.color = rl.RED
+	entity.color = rl.GREEN
 
 	eh, is_success := dp.add(&g.entities, entity)
-	assert(is_success)
-
+	assert(is_success, "Failed to add entity")
 
 	for !rl.WindowShouldClose() {
 		defer {
@@ -140,6 +145,7 @@ main :: proc() {
 		entity.color = rl.RED
 
 		rl.DrawRectangleV(entity.pos, entity.size, entity.color)
+		game_draw_entity(g, eh)
 
 		// Check for asset change every second or so
 		if input.frame_query_id(g.input) % TargetFPS == 0 {
