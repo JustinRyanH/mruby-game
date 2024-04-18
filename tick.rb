@@ -2,7 +2,7 @@
 
 player = Game.player_entity
 
-puts "Player Handle is at #{player.x}"
+puts "Player Handle is at: #{player.x}, #{player.y}"
 input = FrameInput.new
 
 amount = 1 * input.delta_time

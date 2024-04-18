@@ -35,6 +35,7 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	mrb.set_data_type(entity_class, .CData)
 	mrb.define_method(g.ruby, entity_class, "initialize", entity_init, mrb.args_req(1))
 	mrb.define_method(g.ruby, entity_class, "x", entity_get_x, mrb.args_none())
+	mrb.define_method(g.ruby, entity_class, "y", entity_get_y, mrb.args_none())
 	engine_classes.entity_class = entity_class
 }
 
@@ -60,12 +61,26 @@ entity_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 @(private = "file")
 entity_get_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = runtime.default_context()
+
 	i := mrb.get_data_from_value(EntityHandle, self)
 	entity, success := dp.get(&g.entities, i^)
 	if !success {
 		mrb.raise_exception(state, "Failed to access Entity")
 	}
 	return mrb.float_value(state, cast(f64)entity.pos.x)
+}
+
+
+@(private = "file")
+entity_get_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = runtime.default_context()
+
+	i := mrb.get_data_from_value(EntityHandle, self)
+	entity, success := dp.get(&g.entities, i^)
+	if !success {
+		mrb.raise_exception(state, "Failed to access Entity")
+	}
+	return mrb.float_value(state, cast(f64)entity.pos.y)
 }
 
 setup_game_class :: proc(game: ^Game) {
