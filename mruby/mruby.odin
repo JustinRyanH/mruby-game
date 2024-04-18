@@ -109,7 +109,7 @@ State :: struct {}
 // - If size is zero, ptr must be freed.
 //
 // See @see mrb_default_allocf for the default implementation.
-allocf :: #type proc "c" (state: ^State, ptr: rawptr, size: int, user_data: rawptr) -> rawptr
+allocf :: #type proc "c" (state: ^State, ptr: rawptr, size: uint, user_data: rawptr) -> rawptr
 
 // Function pointer type for a function callable by mruby.
 // 

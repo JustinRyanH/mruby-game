@@ -70,20 +70,26 @@ asset_system_find_ruby :: proc(as: ^AssetSystem, handle: RubyCodeHandle) -> (Rub
 }
 
 Game :: struct {
-	ruby:   ^mrb.State,
-	assets: AssetSystem,
-	input:  input.FrameInput,
-	f:      f64,
+	ruby:      ^mrb.State,
+	mruby_ctx: MrubyCtx,
+	assets:    AssetSystem,
+	input:     input.FrameInput,
+	f:         f64,
 }
 
+
 game_init :: proc(game: ^Game) {
-	game.ruby = mrb.open()
+	game.mruby_ctx.alloc_ref = make(map[uint]uint)
+	game.mruby_ctx.ctx = context
+
+	game.ruby = mrb.open_allocf(mruby_odin_allocf, &game.mruby_ctx)
 	asset_system_init(&game.assets)
 }
 
 game_deinit :: proc(game: ^Game) {
 	asset_system_deinit(&game.assets)
 	mrb.close(game.ruby)
+	delete(game.mruby_ctx.alloc_ref)
 }
 
 debug_print_mrb_obj :: proc(game: ^Game) {
@@ -96,10 +102,45 @@ debug_print_mrb_obj :: proc(game: ^Game) {
 	)
 }
 
+mruby_odin_allocf :: proc "c" (
+	state: ^mrb.State,
+	ptr: rawptr,
+	size: uint,
+	user_data: rawptr,
+) -> rawptr {
+	mruby_ctx := transmute(^MrubyCtx)user_data
+	context = mruby_ctx.ctx
+	ptr_as_num := transmute(uint)ptr
+
+	if size == 0 {
+		mem.free(ptr)
+		if ptr_as_num in mruby_ctx.alloc_ref {
+			delete_key(&mruby_ctx.alloc_ref, ptr_as_num)
+		}
+		return nil
+	}
+	if ptr == nil {
+		n_ptr, err := mem.alloc(cast(int)size)
+		assert(err == .None, "Allocation Error")
+		ptr_as_num := transmute(uint)n_ptr
+		mruby_ctx.alloc_ref[ptr_as_num] = size
+		return n_ptr
+	}
+
+	old_size := mruby_ctx.alloc_ref[ptr_as_num]
+	n_ptr, err := mem.resize(ptr, cast(int)old_size, cast(int)size)
+	assert(err == .None, "Allocation Error")
+
+	return n_ptr
+}
+
+MrubyCtx :: struct {
+	ctx:       runtime.Context,
+	alloc_ref: map[uint]uint,
+}
+
 g: ^Game
 main :: proc() {
-
-
 	g = new(Game)
 	defer free(g)
 
