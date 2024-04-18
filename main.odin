@@ -119,7 +119,6 @@ main :: proc() {
 		code, found := asset_system_find_ruby(&g.assets, ruby_code_handle("foo.rb"))
 		assert(found, "Ruby Code 'foo.rb' not found")
 		v := mrb.load_string(g.ruby, code.code)
-		defer mrb.gc_mark_value(g.ruby, v)
 
 		if mrb.state_get_exc(g.ruby) != nil {
 			mrb.print_error(g.ruby)

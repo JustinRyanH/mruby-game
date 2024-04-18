@@ -31,11 +31,19 @@ ruby_code_load :: proc(rc: ^RubyCode) -> bool {
 	}
 	rc.last_mod_time = cast(u64)write_time
 
+	if len(rc.code) > 0 {
+		delete(rc.code)
+	}
+
 	ruby_code, read_ruby_code_success := os.read_entire_file(rc.file_path)
 	assert(read_ruby_code_success, fmt.tprintf("Failed to open %s", rc.file_path))
+
 	rc.code = string(ruby_code)
-	fmt.println(rc.code)
 	return true
+}
+
+ruby_code_deinit :: proc(rc: ^RubyCode) {
+	delete(rc.code)
 }
 
 AssetSystem :: struct {
@@ -47,6 +55,10 @@ asset_system_init :: proc(as: ^AssetSystem) {
 }
 
 asset_system_deinit :: proc(as: ^AssetSystem) {
+	for i in as.ruby {
+		rc := &as.ruby[i]
+		ruby_code_deinit(rc)
+	}
 	delete(as.ruby)
 }
 
