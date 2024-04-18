@@ -139,8 +139,26 @@ MrubyCtx :: struct {
 	alloc_ref: map[uint]uint,
 }
 
+reset_tracking_allocator :: proc(a: ^mem.Tracking_Allocator) -> (err: bool) {
+	for _, value in a.allocation_map {
+		fmt.printf("%v: Leaked %v bytes\n", value.location, value.size)
+		err = true
+	}
+	mem.tracking_allocator_clear(a)
+	return
+}
+
 g: ^Game
 main :: proc() {
+
+	default_allocator := context.allocator
+	tracking_allocator: mem.Tracking_Allocator
+	mem.tracking_allocator_init(&tracking_allocator, default_allocator)
+	defer mem.tracking_allocator_destroy(&tracking_allocator)
+
+	context.allocator = mem.tracking_allocator(&tracking_allocator)
+	defer reset_tracking_allocator(&tracking_allocator)
+
 	g = new(Game)
 	defer free(g)
 
