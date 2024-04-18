@@ -131,6 +131,8 @@ main :: proc() {
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
 
+		rl.ClearBackground(rl.BLACK)
+
 		code, found := asset_system_find_ruby(&g.assets, ruby_code_handle("tick.rb"))
 		assert(found, "Ruby Code 'tick.rb' not found")
 		v := mrb.load_string(g.ruby, code.code)
