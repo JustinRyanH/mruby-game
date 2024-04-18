@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+player = Game.player_entity
+
 input = FrameInput.new
 
 amount = 1 * input.delta_time

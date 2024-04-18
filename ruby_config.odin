@@ -18,7 +18,20 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	mrb.define_class_method(g.ruby, logger, "fatal", logger_fatal, mrb.args_req(1))
 	mrb.define_class_method(g.ruby, logger, "warning", logger_warning, mrb.args_req(1))
 
+	game_class := mrb.define_class(g.ruby, "Game", mrb.state_get_object_class(g.ruby))
+	mrb.define_class_method(
+		g.ruby,
+		game_class,
+		"player_entity",
+		game_get_player_entity,
+		mrb.args_none(),
+	)
+
 	setup_input(game)
+}
+
+game_get_player_entity :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return mrb.nil_value()
 }
 
 setup_input :: proc(game: ^Game) {
