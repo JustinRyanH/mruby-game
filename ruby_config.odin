@@ -106,7 +106,10 @@ frame_input_is_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Valu
 
 @(private = "file")
 frame_input_dt :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	return mrb.float_value(state, 0.1)
+	i := mrb.get_data_from_value(input.FrameInput, self)
+	dt := input.frame_query_delta(i^)
+
+	return mrb.float_value(state, cast(f64)dt)
 }
 
 

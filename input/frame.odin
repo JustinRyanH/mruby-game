@@ -212,7 +212,7 @@ frame_query_id :: proc(frame_input: FrameInput) -> int {
 }
 
 // Get the amount of time for this frame
-frame_query_delta :: proc(frame_input: FrameInput) -> f32 {
+frame_query_delta :: proc "contextless" (frame_input: FrameInput) -> f32 {
 	return frame_input.current_frame.meta.frame_delta
 }
 
