@@ -80,7 +80,6 @@ TargetFPS :: 90
 
 g: ^Game
 main :: proc() {
-
 	default_allocator := context.allocator
 	tracking_allocator: mem.Tracking_Allocator
 	mem.tracking_allocator_init(&tracking_allocator, default_allocator)
