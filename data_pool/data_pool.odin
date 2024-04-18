@@ -27,7 +27,7 @@ DataPoolIterator :: struct($N: u32, $T: typeid, $H: typeid/Handle) {
 }
 
 
-add :: proc(dp: ^DataPool($N, $T, $H), v: T) -> (H, bool) {
+add :: proc "contextless" (dp: ^DataPool($N, $T, $H), v: T) -> (H, bool) {
 	if (dp.items_len == N && dp.unused_items_len == 0) {
 		return 0, false
 	}
@@ -49,7 +49,7 @@ add :: proc(dp: ^DataPool($N, $T, $H), v: T) -> (H, bool) {
 	return transmute(H)handle, true
 }
 
-get :: proc(dp: ^DataPool($N, $T, $H), h: H) -> (data: T, found: bool) {
+get :: proc "contextless" (dp: ^DataPool($N, $T, $H), h: H) -> (data: T, found: bool) {
 	hs := transmute(HandleStruct)h
 
 	db := dp.items[hs.idx]
@@ -59,7 +59,7 @@ get :: proc(dp: ^DataPool($N, $T, $H), h: H) -> (data: T, found: bool) {
 	return
 }
 
-add_empty :: proc(dp: ^DataPool($N, $T, $H)) -> (^T, H, bool) {
+add_empty :: proc "contextless" (dp: ^DataPool($N, $T, $H)) -> (^T, H, bool) {
 	h, success := add(dp, T{})
 	if !success {
 		return nil, 0, false
@@ -71,7 +71,7 @@ add_empty :: proc(dp: ^DataPool($N, $T, $H)) -> (^T, H, bool) {
 	return ptr, h, true
 }
 
-get_ptr :: proc(dp: ^DataPool($N, $T, $H), h: H) -> ^T {
+get_ptr :: proc "contextless" (dp: ^DataPool($N, $T, $H), h: H) -> ^T {
 	hs := transmute(HandleStruct)h
 
 	db := dp.items[hs.idx]
@@ -82,7 +82,7 @@ get_ptr :: proc(dp: ^DataPool($N, $T, $H), h: H) -> ^T {
 }
 
 
-remove :: proc(dp: ^DataPool($N, $T, $H), h: H) -> bool {
+remove :: proc "contextless" (dp: ^DataPool($N, $T, $H), h: H) -> bool {
 	hs := transmute(HandleStruct)h
 
 	db := dp.items[hs.idx]
@@ -102,11 +102,11 @@ remove :: proc(dp: ^DataPool($N, $T, $H), h: H) -> bool {
 }
 
 
-length :: proc(dp: ^DataPool($N, $T, $H)) -> int {
+length :: proc "contextless" (dp: ^DataPool($N, $T, $H)) -> int {
 	return cast(int)(dp.items_len - dp.unused_items_len)
 }
 
-new_iter :: proc(dp: ^DataPool($N, $T, $H)) -> DataPoolIterator(N, T, H) {
+new_iter :: proc "contextless" (dp: ^DataPool($N, $T, $H)) -> DataPoolIterator(N, T, H) {
 	return DataPoolIterator(N, T, H){dp = dp}
 }
 
@@ -114,7 +114,7 @@ new_iter :: proc(dp: ^DataPool($N, $T, $H)) -> DataPoolIterator(N, T, H) {
 // Soft resets the Data Pool.
 // This is used when there might be handles after clear
 // is performed
-reset :: proc(db: ^DataPool($N, $T, $H)) {
+reset :: proc "contextless" (db: ^DataPool($N, $T, $H)) {
 	for i := len(db.items) - 1; i >= 0; i -= 1 {
 		item_pos := N - 1 - cast(u32)i
 		db.unused_items[i] = db.items[item_pos].id
@@ -128,12 +128,18 @@ reset :: proc(db: ^DataPool($N, $T, $H)) {
 // "Hard" resets the DataPool
 // Use this when there are no dangling handles 
 // that could cause data issues
-hard_reset :: proc(db: ^DataPool($N, $T, $H)) {
+hard_reset :: proc "contextless" (db: ^DataPool($N, $T, $H)) {
 	db.unused_items_len = 0
 	db.items_len = 0
 }
 
-iter_next :: proc(it: ^DataPoolIterator($N, $T, $H)) -> (data: T, h: H, cond: bool) {
+iter_next :: proc "contextless" (
+	it: ^DataPoolIterator($N, $T, $H),
+) -> (
+	data: T,
+	h: H,
+	cond: bool,
+) {
 	cond = it.index < cast(int)it.dp.items_len
 
 	for ; cond; cond = it.index < cast(int)it.dp.items_len {
