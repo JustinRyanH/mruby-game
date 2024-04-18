@@ -23,5 +23,5 @@ end
 
 desc 'Builds the EXE'
 task :build do
-  sh 'odin build . -min-link-libs'
+  sh 'odin build . -min-link-libs -debug'
 end
