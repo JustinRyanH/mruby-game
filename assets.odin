@@ -5,10 +5,6 @@ import "./utils"
 import "core:fmt"
 import "core:os"
 
-AssetError :: enum {
-	NoAssetError,
-}
-
 
 RubyCodeHandle :: distinct u64
 
@@ -22,6 +18,23 @@ RubyCode :: struct {
 	file_path:     string,
 	last_mod_time: u64,
 	code:          string,
+}
+
+// @return true if successful
+ruby_code_load :: proc(rc: ^RubyCode) -> bool {
+	write_time, write_time_err := os.last_write_time_by_name(rc.file_path)
+	if write_time_err != os.ERROR_NONE {
+		panic(fmt.tprintf("Filed to access %s with err %v", rc.file_path, write_time_err))
+	}
+	if cast(u64)write_time <= rc.last_mod_time {
+		fmt.println(write_time, rc.last_mod_time)
+		return false
+	}
+
+	ruby_code, read_ruby_code_success := os.read_entire_file(rc.file_path)
+	assert(read_ruby_code_success, fmt.tprintf("Failed to open %s", rc.file_path))
+	rc.code = string(ruby_code)
+	return true
 }
 
 AssetSystem :: struct {
@@ -43,17 +56,13 @@ asset_system_load_ruby :: proc(as: ^AssetSystem, file: string) {
 		panic("Unimplemented")
 	}
 
-	write_time, write_time_err := os.last_write_time_by_name(file)
-	if write_time_err != os.ERROR_NONE {
-		// TODO: Return error over panic
-		panic(fmt.tprintf("Filed to access %s with err %v", file, write_time_err))
-	}
+	rc: RubyCode
+	rc.id = handle
+	rc.file_path = file
 
-	ruby_code, read_ruby_code_success := os.read_entire_file(file)
-	assert(read_ruby_code_success, fmt.tprintf("Failed to open %s", file))
+	ruby_code_load(&rc)
 
-	code := RubyCode{handle, file, cast(u64)write_time, string(ruby_code)}
-	as.ruby[handle] = code
+	as.ruby[handle] = rc
 }
 
 asset_system_find_ruby :: proc(as: ^AssetSystem, handle: RubyCodeHandle) -> (RubyCode, bool) {
