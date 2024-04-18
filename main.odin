@@ -124,6 +124,10 @@ main :: proc() {
 		}
 		assert(mrb.state_get_exc(g.ruby) == nil, "There should be no exceptions")
 
+		pos := rl.Vector2{100, 300}
+		size := rl.Vector2{45, 45}
+		rl.DrawRectangleV(pos, size, rl.RED)
+
 		// Check for asset change every second or so
 		if input.frame_query_id(g.input) % TargetFPS == 0 {
 			asset_system_check(&g.assets)
