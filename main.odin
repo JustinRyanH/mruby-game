@@ -108,7 +108,7 @@ main :: proc() {
 	defer rl.CloseWindow()
 
 
-	rl.SetTargetFPS(5)
+	rl.SetTargetFPS(90)
 
 	for !rl.WindowShouldClose() {
 		input.update_input(&g.input)
@@ -116,11 +116,14 @@ main :: proc() {
 
 		defer rl.EndDrawing()
 
-		mrb.load_string(g.ruby, code.code)
+		v := mrb.load_string(g.ruby, code.code)
+		defer mrb.gc_mark_value(g.ruby, v)
 		if mrb.state_get_exc(g.ruby) != nil {
 			mrb.print_error(g.ruby)
 		}
 		assert(mrb.state_get_exc(g.ruby) == nil, "There should be no exceptions")
-		mrb.incremental_gc(g.ruby)
+		mrb.full_gc(g.ruby)
+		free_all(context.temp_allocator)
+		fmt.println("Live Objects", mrb.gc_get_live(g.ruby), "State", mrb.gc_get_state(g.ruby))
 	}
 }

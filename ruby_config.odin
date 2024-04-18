@@ -1,5 +1,6 @@
 package main
 
+import "core:fmt"
 import "core:reflect"
 import "core:runtime"
 import "core:strings"
@@ -41,10 +42,18 @@ setup_input :: proc(game: ^Game) {
 	)
 }
 
+test_free :: proc "c" (state: ^mrb.State, data: rawptr) {
+	context = runtime.default_context()
+
+	fmt.println("Free")
+	mrb.free(state, data)
+}
+
 mrb_frame_input_type: mrb.DataType = {"FrameInput", mrb.free}
 
 @(private = "file")
 frame_input_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = runtime.default_context()
 	i := mrb.get_data_from_value(input.FrameInput, self)
 
 	if (i == nil) {

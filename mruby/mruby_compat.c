@@ -143,3 +143,13 @@ mrb_value mrb_c_false_value(void) { return mrb_false_value(); }
 mrb_value mrb_c_true_value(void) { return mrb_true_value(); }
 mrb_value mrb_c_bool_value(mrb_bool boolean) { return mrb_bool_value(boolean); }
 mrb_value mrb_c_undef_value(void) { return mrb_undef_value(); }
+
+//
+//  mruby/gc.h
+//
+size_t mrb_c_gc_get_live(struct mrb_state *mrb) { return mrb->gc.live; }
+
+mrb_gc_state mrb_c_gc_get_state(struct mrb_state *mrb) { return mrb->gc.state; }
+void mrb_c_gc_mark_value(struct mrb_state *mrb, mrb_value value) {
+  mrb_gc_mark_value(mrb, value);
+}
