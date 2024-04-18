@@ -24,6 +24,7 @@ Game :: struct {
 
 	// Game Data
 	entities:  EntityPool,
+	player:    EntityHandle,
 }
 
 

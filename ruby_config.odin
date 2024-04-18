@@ -31,7 +31,8 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 }
 
 game_get_player_entity :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	return mrb.nil_value()
+
+	return mrb.int_value(state, cast(int)g.player)
 }
 
 setup_input :: proc(game: ^Game) {

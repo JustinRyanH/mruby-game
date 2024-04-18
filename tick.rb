@@ -2,6 +2,7 @@
 
 player = Game.player_entity
 
+puts "Player Handle is #{player}"
 input = FrameInput.new
 
 amount = 1 * input.delta_time

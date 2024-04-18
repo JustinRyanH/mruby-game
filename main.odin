@@ -116,6 +116,7 @@ main :: proc() {
 	entity.color = rl.GREEN
 
 	eh, is_success := dp.add(&g.entities, entity)
+	g.player = eh
 	assert(is_success, "Failed to add entity")
 
 	for !rl.WindowShouldClose() {
