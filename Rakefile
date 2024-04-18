@@ -6,6 +6,7 @@ namespace :compat do
     Dir.chdir('./mruby/') do
       sh 'clang -c mruby_compat.c -Ivendor'
       sh 'llvm-ar rc vendor/darwin/libmruby_compat.a mruby_compat.o'
+      FileUtils.rm('mruby_compat.o')
     end
   end
 
