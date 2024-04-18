@@ -3,7 +3,6 @@ package main
 import "core:fmt"
 import "core:math"
 import "core:mem"
-import "core:os"
 import "core:reflect"
 import "core:runtime"
 import "core:strings"
@@ -12,62 +11,6 @@ import rl "vendor:raylib"
 
 import "./input"
 import mrb "./mruby"
-import "./utils"
-
-AssetError :: enum {
-	NoAssetError,
-}
-
-
-RubyCodeHandle :: distinct u64
-
-ruby_code_handle :: proc(str: string) -> RubyCodeHandle {
-	return cast(RubyCodeHandle)utils.generate_u64_from_string(str)
-
-}
-
-RubyCode :: struct {
-	id:            RubyCodeHandle,
-	file_path:     string,
-	last_mod_time: u64,
-	code:          string,
-}
-
-AssetSystem :: struct {
-	ruby: map[RubyCodeHandle]RubyCode,
-}
-
-asset_system_init :: proc(as: ^AssetSystem) {
-	as.ruby = make(map[RubyCodeHandle]RubyCode, 32)
-}
-
-asset_system_deinit :: proc(as: ^AssetSystem) {
-	delete(as.ruby)
-}
-
-asset_system_load_ruby :: proc(as: ^AssetSystem, file: string) {
-	handle := ruby_code_handle(file)
-	if handle in as.ruby {
-		// TODO: Reload if the mod time has changed
-		panic("Unimplemented")
-	}
-
-	write_time, write_time_err := os.last_write_time_by_name(file)
-	if write_time_err != os.ERROR_NONE {
-		// TODO: Return error over panic
-		panic(fmt.tprintf("Filed to access %s with err %v", file, write_time_err))
-	}
-
-	ruby_code, read_ruby_code_success := os.read_entire_file(file)
-	assert(read_ruby_code_success, fmt.tprintf("Failed to open %s", file))
-
-	code := RubyCode{handle, file, cast(u64)write_time, string(ruby_code)}
-	as.ruby[handle] = code
-}
-
-asset_system_find_ruby :: proc(as: ^AssetSystem, handle: RubyCodeHandle) -> (RubyCode, bool) {
-	return as.ruby[handle]
-}
 
 Game :: struct {
 	ruby:      ^mrb.State,
@@ -179,13 +122,10 @@ main :: proc() {
 	code, found := asset_system_find_ruby(&g.assets, ruby_code_handle("foo.rb"))
 	assert(found, "Ruby Code 'foo.rb' not found")
 
-
 	rl.InitWindow(1280, 800, "Odin-Ruby Game Demo")
 	defer rl.CloseWindow()
 
-
 	rl.SetTargetFPS(90)
-
 
 	for !rl.WindowShouldClose() {
 		defer {
@@ -197,8 +137,8 @@ main :: proc() {
 
 		input.update_input(&g.input)
 		rl.BeginDrawing()
-
 		defer rl.EndDrawing()
+
 		v := mrb.load_string(g.ruby, code.code)
 		defer mrb.gc_mark_value(g.ruby, v)
 
