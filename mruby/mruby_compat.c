@@ -160,3 +160,7 @@ void mrb_c_gc_mark_value(struct mrb_state *mrb, mrb_value value) {
 size_t mrb_c_gc_get_threshold(struct mrb_state *mrb) {
   return mrb->gc.threshold;
 }
+
+extern void mrb_c_set_data_type(struct RClass *cls, enum mrb_vtype tt) {
+  MRB_SET_INSTANCE_TT(cls, tt);
+}

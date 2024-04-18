@@ -23,7 +23,7 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 
 setup_input :: proc(game: ^Game) {
 	fi := mrb.define_class(g.ruby, "FrameInput", mrb.state_get_object_class(g.ruby))
-
+	mrb.set_data_type(fi, .CData)
 	mrb.define_method(g.ruby, fi, "initialize", frame_input_init, mrb.args_none())
 	mrb.define_method(g.ruby, fi, "id", frmae_input_id, mrb.args_none())
 	mrb.define_method_id(
@@ -42,13 +42,6 @@ setup_input :: proc(game: ^Game) {
 	)
 }
 
-test_free :: proc "c" (state: ^mrb.State, data: rawptr) {
-	context = runtime.default_context()
-
-	fmt.println("Free")
-	mrb.free(state, data)
-}
-
 mrb_frame_input_type: mrb.DataType = {"FrameInput", mrb.free}
 
 @(private = "file")
@@ -58,7 +51,8 @@ frame_input_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	if (i == nil) {
 		mrb.data_init(self, nil, &mrb_frame_input_type)
-		i = cast(^input.FrameInput)mrb.malloc(state, size_of(input.FrameInput))
+		v := mrb.malloc(state, size_of(input.FrameInput))
+		i = cast(^input.FrameInput)v
 		mrb.data_init(self, i, &mrb_frame_input_type)
 	}
 	i.current_frame = g.input.current_frame

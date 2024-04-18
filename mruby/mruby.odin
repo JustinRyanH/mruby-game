@@ -47,6 +47,7 @@ VType :: enum i32 {
 	IClass,
 	SClass,
 	Proc,
+	Array,
 	Hash,
 	String,
 	Range,
@@ -314,6 +315,7 @@ foreign compat {
 	args_key :: proc(nk: u32, kd: u32) -> Aspec ---
 
 
+	set_data_type :: proc(c: ^RClass, t: VType) ---
 }
 
 @(link_prefix = "mrb_")
