@@ -27,13 +27,14 @@ ruby_code_load :: proc(rc: ^RubyCode) -> bool {
 		panic(fmt.tprintf("Filed to access %s with err %v", rc.file_path, write_time_err))
 	}
 	if cast(u64)write_time <= rc.last_mod_time {
-		fmt.println(write_time, rc.last_mod_time)
 		return false
 	}
+	rc.last_mod_time = cast(u64)write_time
 
 	ruby_code, read_ruby_code_success := os.read_entire_file(rc.file_path)
 	assert(read_ruby_code_success, fmt.tprintf("Failed to open %s", rc.file_path))
 	rc.code = string(ruby_code)
+	fmt.println(rc.code)
 	return true
 }
 
@@ -69,4 +70,8 @@ asset_system_find_ruby :: proc(as: ^AssetSystem, handle: RubyCodeHandle) -> (Rub
 	return as.ruby[handle]
 }
 asset_system_check :: proc(as: ^AssetSystem) {
+	for i in as.ruby {
+		rc := &as.ruby[i]
+		ruby_code_load(rc)
+	}
 }

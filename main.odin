@@ -98,8 +98,6 @@ main :: proc() {
 	game_load_mruby_raylib(g)
 
 	asset_system_load_ruby(&g.assets, "foo.rb")
-	code, found := asset_system_find_ruby(&g.assets, ruby_code_handle("foo.rb"))
-	assert(found, "Ruby Code 'foo.rb' not found")
 
 	rl.InitWindow(1280, 800, "Odin-Ruby Game Demo")
 	defer rl.CloseWindow()
@@ -118,6 +116,8 @@ main :: proc() {
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
 
+		code, found := asset_system_find_ruby(&g.assets, ruby_code_handle("foo.rb"))
+		assert(found, "Ruby Code 'foo.rb' not found")
 		v := mrb.load_string(g.ruby, code.code)
 		defer mrb.gc_mark_value(g.ruby, v)
 
