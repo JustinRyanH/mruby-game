@@ -1,14 +1,29 @@
 package main
 
+import rl "vendor:raylib"
+
+import dp "./data_pool"
 import "./input"
 import mrb "./mruby"
+
+Entity :: struct {
+	pos:   rl.Vector2,
+	size:  rl.Vector2,
+	color: rl.Color,
+}
+
+EntityHandle :: distinct dp.Handle
+
+EntityPool :: dp.DataPool(128, Entity, EntityHandle)
 
 Game :: struct {
 	ruby:      ^mrb.State,
 	mruby_ctx: MrubyCtx,
 	assets:    AssetSystem,
 	input:     input.FrameInput,
-	f:         f64,
+
+	// Game Data
+	entities:  EntityPool,
 }
 
 
