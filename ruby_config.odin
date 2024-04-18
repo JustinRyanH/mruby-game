@@ -7,6 +7,7 @@ import "core:strings"
 
 import rl "vendor:raylib"
 
+import dp "./data_pool"
 import "./input"
 import mrb "./mruby"
 
@@ -33,6 +34,7 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	entity_class := mrb.define_class(g.ruby, "Entity", mrb.state_get_object_class(g.ruby))
 	mrb.set_data_type(entity_class, .CData)
 	mrb.define_method(g.ruby, entity_class, "initialize", entity_init, mrb.args_req(1))
+	mrb.define_method(g.ruby, entity_class, "x", entity_get_x, mrb.args_none())
 	engine_classes.entity_class = entity_class
 }
 
@@ -52,6 +54,18 @@ entity_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	i^ = cast(EntityHandle)entity_id
 
 	return self
+}
+
+
+@(private = "file")
+entity_get_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = runtime.default_context()
+	i := mrb.get_data_from_value(EntityHandle, self)
+	entity, success := dp.get(&g.entities, i^)
+	if !success {
+		mrb.raise_exception(state, "Failed to access Entity")
+	}
+	return mrb.float_value(state, cast(f64)entity.pos.x)
 }
 
 setup_game_class :: proc(game: ^Game) {
