@@ -139,12 +139,6 @@ main :: proc() {
 		}
 		assert(mrb.state_get_exc(g.ruby) == nil, "There should be no exceptions")
 
-		entity: Entity
-		entity.pos = rl.Vector2{100, 300}
-		entity.size = rl.Vector2{45, 45}
-		entity.color = rl.RED
-
-		rl.DrawRectangleV(entity.pos, entity.size, entity.color)
 		game_draw_entity(g, eh)
 
 		// Check for asset change every second or so
