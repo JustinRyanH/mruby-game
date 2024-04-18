@@ -18,6 +18,10 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	mrb.define_class_method(g.ruby, logger, "fatal", logger_fatal, mrb.args_req(1))
 	mrb.define_class_method(g.ruby, logger, "warning", logger_warning, mrb.args_req(1))
 
+	setup_input(game)
+}
+
+setup_game_class :: proc(game: ^Game) {
 	game_class := mrb.define_class(g.ruby, "Game", mrb.state_get_object_class(g.ruby))
 	mrb.define_class_method(
 		g.ruby,
@@ -26,13 +30,6 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 		game_get_player_entity,
 		mrb.args_none(),
 	)
-
-	setup_input(game)
-}
-
-game_get_player_entity :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-
-	return mrb.int_value(state, cast(int)g.player)
 }
 
 setup_input :: proc(game: ^Game) {
@@ -139,6 +136,12 @@ frame_input_was_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Val
 	i := mrb.get_data_from_value(input.FrameInput, self)
 	value := input.was_just_released(i^, key)
 	return mrb.bool_value(value)
+}
+
+@(private = "file")
+game_get_player_entity :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+
+	return mrb.int_value(state, cast(int)g.player)
 }
 
 
