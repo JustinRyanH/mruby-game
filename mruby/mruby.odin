@@ -299,10 +299,10 @@ foreign compat {
 	context_fiber :: proc(mrb: ^Context) -> ^RFiber ---
 
 	// Saves the current arena location
-	gc_arena_save :: proc(mrb: ^Context) -> ArenaIdx ---
+	gc_arena_save :: proc(mrb: ^State) -> ArenaIdx ---
 
 	// Sets the Arena Index
-	gc_arena_restore :: proc(mrb: ^Context, idx: ArenaIdx) ---
+	gc_arena_restore :: proc(mrb: ^State, idx: ArenaIdx) ---
 
 
 	// ARGs

@@ -1,6 +1,7 @@
 package mruby
 
 import c "core:c/libc"
+import "core:fmt"
 
 //  program load functions
 // Please note! Currently due to interactions with the GC calling these functions will
@@ -24,18 +25,16 @@ ParserState :: struct {}
 CompilerContext :: struct {}
 
 load_cstring :: proc(state: ^State, s: cstring) -> Value {
-	ctx := state_get_context(state)
-	ai := gc_arena_save(ctx)
-	defer gc_arena_restore(ctx, ai)
+	ai := gc_arena_save(state)
+	defer gc_arena_restore(state, ai)
 
 	return mrb_load_string(state, s)
 }
 
 load_string :: proc(state: ^State, s: string) -> Value {
-	ctx := state_get_context(state)
-	ai := gc_arena_save(ctx)
+	ai := gc_arena_save(state)
 	v := mrb_load_nstring(state, raw_data(s), len(s))
-	gc_arena_restore(ctx, ai)
+	gc_arena_restore(state, ai)
 
 	return v
 }
