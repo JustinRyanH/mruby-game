@@ -25,6 +25,7 @@ setup_input :: proc(game: ^Game) {
 	fi := mrb.define_class(g.ruby, "FrameInput", mrb.state_get_object_class(g.ruby))
 	mrb.set_data_type(fi, .CData)
 	mrb.define_method(g.ruby, fi, "initialize", frame_input_init, mrb.args_none())
+	mrb.define_method(g.ruby, fi, "delta_time", frame_input_dt, mrb.args_none())
 	mrb.define_method(g.ruby, fi, "id", frmae_input_id, mrb.args_none())
 	mrb.define_method_id(
 		g.ruby,
@@ -101,6 +102,11 @@ frame_input_is_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Valu
 	i := mrb.get_data_from_value(input.FrameInput, self)
 	value := input.is_pressed(i^, key)
 	return mrb.bool_value(value)
+}
+
+@(private = "file")
+frame_input_dt :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return mrb.float_value(state, 0.1)
 }
 
 
