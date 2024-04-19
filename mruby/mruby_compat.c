@@ -164,3 +164,5 @@ size_t mrb_c_gc_get_threshold(struct mrb_state *mrb) {
 extern void mrb_c_set_data_type(struct RClass *cls, enum mrb_vtype tt) {
   MRB_SET_INSTANCE_TT(cls, tt);
 }
+
+extern mrb_sym mrb_c_get_mid(struct mrb_state *mrb) { return mrb_get_mid(mrb); }
