@@ -247,7 +247,7 @@ entity_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 }
 @(private = "file")
 entity_valid :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = runtime.default_context()
+	context = game_ctx
 
 	handle := mrb.get_data_from_value(EntityHandle, self)
 	success := dp.valid(&g.entities, handle^)
@@ -256,7 +256,7 @@ entity_valid :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 entity_get_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = runtime.default_context()
+	context = game_ctx
 
 	i := mrb.get_data_from_value(EntityHandle, self)
 	entity, success := dp.get(&g.entities, i^)
@@ -268,7 +268,7 @@ entity_get_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 entity_set_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = runtime.default_context()
+	context = game_ctx
 	new_x: f64
 	mrb.get_args(state, "f", &new_x)
 
@@ -284,7 +284,7 @@ entity_set_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 entity_get_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = runtime.default_context()
+	context = game_ctx
 
 	i := mrb.get_data_from_value(EntityHandle, self)
 	entity, success := dp.get(&g.entities, i^)
@@ -296,7 +296,8 @@ entity_get_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 entity_set_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = runtime.default_context()
+	context = game_ctx
+
 	new_y: f64
 	mrb.get_args(state, "f", &new_y)
 
@@ -350,7 +351,8 @@ vector_get_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 vector_set_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = runtime.default_context()
+	context = game_ctx
+
 	new_y: f64
 	mrb.get_args(state, "f", &new_y)
 

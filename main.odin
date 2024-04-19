@@ -96,6 +96,8 @@ game_run_code :: proc(game: ^Game, handle: RubyCodeHandle, loc := #caller_locati
 	assert(mrb.state_get_exc(g.ruby) == nil, "There should be no exceptions")
 }
 
+game_ctx: runtime.Context
+
 g: ^Game
 main :: proc() {
 	default_allocator := context.allocator
@@ -105,6 +107,8 @@ main :: proc() {
 
 	context.allocator = mem.tracking_allocator(&tracking_allocator)
 	defer reset_tracking_allocator(&tracking_allocator)
+
+	game_ctx = context
 
 	g = new(Game)
 	defer free(g)
