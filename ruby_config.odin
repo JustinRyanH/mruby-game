@@ -41,80 +41,6 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	engine_classes.entity_class = entity_class
 }
 
-@(private = "file")
-entity_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	entity_id: int
-	mrb.get_args(state, "i", &entity_id)
-
-	i := mrb.get_data_from_value(EntityHandle, self)
-
-	if (i == nil) {
-		mrb.data_init(self, nil, &mrb_entity_handle_type)
-		v := mrb.malloc(state, size_of(EntityHandle))
-		i = cast(^EntityHandle)v
-		mrb.data_init(self, i, &mrb_entity_handle_type)
-	}
-	i^ = cast(EntityHandle)entity_id
-
-	return self
-}
-
-
-@(private = "file")
-entity_get_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = runtime.default_context()
-
-	i := mrb.get_data_from_value(EntityHandle, self)
-	entity, success := dp.get(&g.entities, i^)
-	if !success {
-		mrb.raise_exception(state, "Failed to access Entity")
-	}
-	return mrb.float_value(state, cast(f64)entity.pos.x)
-}
-
-@(private = "file")
-entity_set_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = runtime.default_context()
-	new_x: f64
-	mrb.get_args(state, "f", &new_x)
-
-	i := mrb.get_data_from_value(EntityHandle, self)
-	entity := dp.get_ptr(&g.entities, i^)
-	if entity == nil {
-		mrb.raise_exception(state, "Failed to access Entity")
-	}
-	entity.pos.x = cast(f32)new_x
-	return mrb.nil_value()
-}
-
-
-@(private = "file")
-entity_get_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = runtime.default_context()
-
-	i := mrb.get_data_from_value(EntityHandle, self)
-	entity, success := dp.get(&g.entities, i^)
-	if !success {
-		mrb.raise_exception(state, "Failed to access Entity")
-	}
-	return mrb.float_value(state, cast(f64)entity.pos.y)
-}
-
-@(private = "file")
-entity_set_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = runtime.default_context()
-	new_y: f64
-	mrb.get_args(state, "f", &new_y)
-
-	i := mrb.get_data_from_value(EntityHandle, self)
-	entity := dp.get_ptr(&g.entities, i^)
-	if entity == nil {
-		mrb.raise_exception(state, "Failed to access Entity")
-	}
-	entity.pos.y = cast(f32)new_y
-	return mrb.nil_value()
-}
-
 setup_game_class :: proc(game: ^Game) {
 	game_class := mrb.define_class(g.ruby, "Game", mrb.state_get_object_class(g.ruby))
 	mrb.define_class_method(
@@ -149,6 +75,9 @@ setup_input :: proc(game: ^Game) {
 }
 
 
+//////////////////////////////
+//// FrameInput
+//////////////////////////////
 @(private = "file")
 frame_input_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	i := mrb.get_data_from_value(input.FrameInput, self)
@@ -230,6 +159,9 @@ frame_input_was_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Val
 	return mrb.bool_value(value)
 }
 
+//////////////////////////////
+//// Game
+//////////////////////////////
 @(private = "file")
 game_get_player_entity :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	id := mrb.int_value(state, cast(int)g.player)
@@ -238,6 +170,9 @@ game_get_player_entity :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.V
 }
 
 
+//////////////////////////////
+//// Logger
+//////////////////////////////
 @(private = "file")
 logger_info :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = runtime.default_context()
@@ -271,5 +206,82 @@ logger_fatal :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	cstr: cstring
 	mrb.get_args(state, "z", &cstr)
 	rl.TraceLog(.FATAL, cstr)
+	return mrb.nil_value()
+}
+
+//////////////////////////////
+//// Entity
+//////////////////////////////
+@(private = "file")
+entity_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	entity_id: int
+	mrb.get_args(state, "i", &entity_id)
+
+	i := mrb.get_data_from_value(EntityHandle, self)
+
+	if (i == nil) {
+		mrb.data_init(self, nil, &mrb_entity_handle_type)
+		v := mrb.malloc(state, size_of(EntityHandle))
+		i = cast(^EntityHandle)v
+		mrb.data_init(self, i, &mrb_entity_handle_type)
+	}
+	i^ = cast(EntityHandle)entity_id
+
+	return self
+}
+
+
+@(private = "file")
+entity_get_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = runtime.default_context()
+
+	i := mrb.get_data_from_value(EntityHandle, self)
+	entity, success := dp.get(&g.entities, i^)
+	if !success {
+		mrb.raise_exception(state, "Failed to access Entity")
+	}
+	return mrb.float_value(state, cast(f64)entity.pos.x)
+}
+
+@(private = "file")
+entity_set_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = runtime.default_context()
+	new_x: f64
+	mrb.get_args(state, "f", &new_x)
+
+	i := mrb.get_data_from_value(EntityHandle, self)
+	entity := dp.get_ptr(&g.entities, i^)
+	if entity == nil {
+		mrb.raise_exception(state, "Failed to access Entity")
+	}
+	entity.pos.x = cast(f32)new_x
+	return mrb.nil_value()
+}
+
+
+@(private = "file")
+entity_get_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = runtime.default_context()
+
+	i := mrb.get_data_from_value(EntityHandle, self)
+	entity, success := dp.get(&g.entities, i^)
+	if !success {
+		mrb.raise_exception(state, "Failed to access Entity")
+	}
+	return mrb.float_value(state, cast(f64)entity.pos.y)
+}
+
+@(private = "file")
+entity_set_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = runtime.default_context()
+	new_y: f64
+	mrb.get_args(state, "f", &new_y)
+
+	i := mrb.get_data_from_value(EntityHandle, self)
+	entity := dp.get_ptr(&g.entities, i^)
+	if entity == nil {
+		mrb.raise_exception(state, "Failed to access Entity")
+	}
+	entity.pos.y = cast(f32)new_y
 	return mrb.nil_value()
 }
