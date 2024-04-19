@@ -52,6 +52,19 @@ setup_color_class :: proc(st: ^mrb.State) {
 	mrb.define_method(st, color_class, "g", color_get_g, mrb.args_none())
 	mrb.define_method(st, color_class, "alpha", color_get_a, mrb.args_none())
 	mrb.define_method(st, color_class, "a", color_get_a, mrb.args_none())
+
+	for pallet in ColorPallet {
+		as_str, success := reflect.enum_name_from_value(pallet)
+		assert(success, "Somehow the name reflection failed")
+		snake_pallet := strings.to_snake_case(as_str, context.temp_allocator)
+		mrb.define_class_method_id(
+			st,
+			color_class,
+			mrb.sym_from_string(st, snake_pallet),
+			color_from_pallet,
+			mrb.args_none(),
+		)
+	}
 	engine_classes.color_class = color_class
 }
 
@@ -407,4 +420,21 @@ color_get_g :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 color_get_a :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	v := mrb.get_data_from_value(rl.Color, self)
 	return mrb.int_value(state, cast(int)v.a)
+}
+
+@(private = "file")
+color_from_pallet :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = game_ctx
+	method_name := mrb.get_mid(state)
+	str := mrb.sym_to_string(state, method_name)
+
+	pallet, success := color_pallet_from_snake(str)
+	assert(success, fmt.tprintf("Pallet method is not correct: %s", str))
+
+	color := color_pallet_to_color(pallet)
+	colors: [4]mrb.Value
+
+	for val, idx in color {colors[idx] = mrb.int_value(state, cast(int)val)}
+
+	return mrb.obj_new(state, engine_classes.color_class, len(colors), raw_data(colors[:]))
 }

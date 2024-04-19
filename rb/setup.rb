@@ -11,3 +11,5 @@ Color.class_eval do
     { name: 'Color', red:, blue:, green:, alpha: }
   end
 end
+
+puts Color.ray_white.inspect

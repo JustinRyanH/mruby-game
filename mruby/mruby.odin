@@ -120,6 +120,13 @@ allocf :: #type proc "c" (state: ^State, ptr: rawptr, size: uint, user_data: raw
 // @return [mrb_value] The function's return value
 MrbFunc :: #type proc "c" (state: ^State, value: Value) -> Value
 
+
+// Converts a string into a symbol
+sym_from_string :: proc "contextless" (state: ^State, str: string) -> Sym {
+	data := raw_data(str)
+	return intern(state, data, len(str))
+}
+
 @(link_prefix = "mrb_")
 @(default_calling_convention = "c")
 foreign lib {

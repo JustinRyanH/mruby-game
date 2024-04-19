@@ -137,13 +137,6 @@ main :: proc() {
 	g.player = eh
 	assert(is_success, "Failed to add entity")
 
-	for v in ColorPallet {
-		s, success := reflect.enum_name_from_value(v)
-		if success {
-			sk := strings.to_snake_case(s, context.temp_allocator)
-			fmt.println("snake_case", sk)
-		}
-	}
 
 	game_run_code(g, setup_handle)
 

@@ -96,7 +96,7 @@ color_pallet_to_color :: proc "contextless" (c: ColorPallet) -> (color: rl.Color
 	return
 }
 
-color_pallet_from_str :: proc(str: string) -> (ColorPallet, bool) {
+color_pallet_from_snake :: proc(str: string) -> (ColorPallet, bool) {
 	v := strings.to_pascal_case(str, context.temp_allocator)
 	return reflect.enum_from_name(ColorPallet, v)
 }
