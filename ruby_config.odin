@@ -33,6 +33,14 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	mrb.define_class_method(st, logger, "fatal", logger_fatal, mrb.args_req(1))
 	mrb.define_class_method(st, logger, "warning", logger_warning, mrb.args_req(1))
 
+	setup_game_class(st)
+	setup_input(st)
+	setup_entity_class(st)
+	setup_vector_class(st)
+	setup_color_class(st)
+}
+
+setup_color_class :: proc(st: ^mrb.State) {
 	color_class := mrb.define_class(st, "Color", mrb.state_get_object_class(st))
 	mrb.set_data_type(color_class, .CData)
 	mrb.define_method(st, color_class, "initialize", color_init, mrb.args_req(4))
@@ -45,11 +53,6 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	mrb.define_method(st, color_class, "alpha", color_get_a, mrb.args_none())
 	mrb.define_method(st, color_class, "a", color_get_a, mrb.args_none())
 	engine_classes.color_class = color_class
-
-	setup_game_class(st)
-	setup_input(st)
-	setup_entity_class(st)
-	setup_vector_class(st)
 }
 
 setup_vector_class :: proc(st: ^mrb.State) {
