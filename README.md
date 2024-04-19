@@ -30,3 +30,7 @@ build system.
   conf.gem core: 'mruby-class-ext'
   conf.gem core: 'mruby-compiler'
 ```
+
+## How to build
+
+If you have ruby install just `bundle install` and run `rake darwin:compat` (osx) or `rake windows:compat` then run `rake build`
