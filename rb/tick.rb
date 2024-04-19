@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
+v = Vector.new(1.0, 2.1)
+puts v.inspect
+
 player = Game.player_entity
-puts "Player Valid? #{player.valid?}"
 
 amount = 100 * FrameInput.delta_time
 

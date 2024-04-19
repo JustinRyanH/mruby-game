@@ -85,6 +85,17 @@ game_draw_entity :: proc(game: ^Game, handle: EntityHandle) {
 	rl.DrawRectangleV(entity.pos, entity.size, entity.color)
 }
 
+game_run_code :: proc(game: ^Game, handle: RubyCodeHandle, loc := #caller_location) {
+	code, found := asset_system_find_ruby(&g.assets, handle)
+	assert(found, "Ruby Code not found")
+	v := mrb.load_string(g.ruby, code.code)
+
+	if mrb.state_get_exc(g.ruby) != nil {
+		mrb.print_error(g.ruby)
+	}
+	assert(mrb.state_get_exc(g.ruby) == nil, "There should be no exceptions")
+}
+
 g: ^Game
 main :: proc() {
 	default_allocator := context.allocator
@@ -122,6 +133,8 @@ main :: proc() {
 	g.player = eh
 	assert(is_success, "Failed to add entity")
 
+	game_run_code(g, setup_handle)
+
 	for !rl.WindowShouldClose() {
 		defer {
 			is_bad := track_bad_free_tracking_allocator(&tracking_allocator)
@@ -136,14 +149,7 @@ main :: proc() {
 
 		rl.ClearBackground(rl.BLACK)
 
-		code, found := asset_system_find_ruby(&g.assets, tick_handle)
-		assert(found, "Ruby Code 'rb/tick.rb' not found")
-		v := mrb.load_string(g.ruby, code.code)
-
-		if mrb.state_get_exc(g.ruby) != nil {
-			mrb.print_error(g.ruby)
-		}
-		assert(mrb.state_get_exc(g.ruby) == nil, "There should be no exceptions")
+		game_run_code(g, tick_handle)
 
 		game_draw_entity(g, eh)
 

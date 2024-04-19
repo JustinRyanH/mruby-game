@@ -13,9 +13,11 @@ import mrb "./mruby"
 
 mrb_frame_input_type: mrb.DataType = {"FrameInput", mrb.free}
 mrb_entity_handle_type: mrb.DataType = {"Entity", mrb.free}
+mrb_vector_handle_type: mrb.DataType = {"Vector", mrb.free}
 
 EngineRClass :: struct {
 	entity_class: ^mrb.RClass,
+	vector_class: ^mrb.RClass,
 }
 
 engine_classes: EngineRClass
@@ -28,6 +30,14 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	mrb.define_class_method(st, logger, "fatal", logger_fatal, mrb.args_req(1))
 	mrb.define_class_method(st, logger, "warning", logger_warning, mrb.args_req(1))
 
+	vector_class := mrb.define_class(st, "Vector", mrb.state_get_object_class(st))
+	mrb.set_data_type(vector_class, .CData)
+	mrb.define_method(st, vector_class, "initialize", vector_init, mrb.args_req(2))
+	mrb.define_method(st, vector_class, "x", vector_get_x, mrb.args_none())
+	mrb.define_method(st, vector_class, "x=", vector_set_x, mrb.args_req(1))
+	mrb.define_method(st, vector_class, "y", vector_get_y, mrb.args_none())
+	mrb.define_method(st, vector_class, "y=", vector_set_y, mrb.args_req(1))
+	engine_classes.vector_class = vector_class
 
 	setup_game_class(st)
 	setup_input(st)
@@ -277,5 +287,56 @@ entity_set_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		mrb.raise_exception(state, "Failed to access Entity")
 	}
 	entity.pos.y = cast(f32)new_y
+	return mrb.nil_value()
+}
+
+@(private = "file")
+vector_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	inc_x: f64
+	inc_y: f64
+	mrb.get_args(state, "ff", &inc_x, &inc_y)
+
+	v := mrb.get_data_from_value(rl.Vector2, self)
+	if (v == nil) {
+		mrb.data_init(self, nil, &mrb_entity_handle_type)
+		v = cast(^rl.Vector2)mrb.malloc(state, size_of(rl.Vector2))
+		mrb.data_init(self, v, &mrb_entity_handle_type)
+	}
+	v.x = cast(f32)inc_x
+	v.y = cast(f32)inc_y
+	return self
+}
+
+@(private = "file")
+vector_get_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	v := mrb.get_data_from_value(rl.Vector2, self)
+	return mrb.float_value(state, cast(f64)v.x)
+}
+
+@(private = "file")
+vector_set_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	new_x: f64
+	mrb.get_args(state, "f", &new_x)
+
+	v := mrb.get_data_from_value(rl.Vector2, self)
+	v.x = cast(f32)new_x
+	return mrb.nil_value()
+}
+
+
+@(private = "file")
+vector_get_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	v := mrb.get_data_from_value(rl.Vector2, self)
+	return mrb.float_value(state, cast(f64)v.y)
+}
+
+@(private = "file")
+vector_set_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = runtime.default_context()
+	new_y: f64
+	mrb.get_args(state, "f", &new_y)
+
+	v := mrb.get_data_from_value(rl.Vector2, self)
+	v.y = cast(f32)new_y
 	return mrb.nil_value()
 }
