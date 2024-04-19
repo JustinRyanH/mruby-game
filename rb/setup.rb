@@ -2,8 +2,12 @@
 
 Vector.class_eval do
   def inspect
-    { name: 'Vector', x: x, y: y }
+    { name: 'Vector', x:, y: }
   end
 end
 
-black = Color.new(0, 0, 0, 255)
+Color.class_eval do
+  def inspect
+    { name: 'Color', red:, blue:, green:, alpha: }
+  end
+end

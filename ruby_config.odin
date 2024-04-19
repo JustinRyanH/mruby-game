@@ -36,6 +36,14 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	color_class := mrb.define_class(st, "Color", mrb.state_get_object_class(st))
 	mrb.set_data_type(color_class, .CData)
 	mrb.define_method(st, color_class, "initialize", color_init, mrb.args_req(4))
+	mrb.define_method(st, color_class, "red", color_get_r, mrb.args_none())
+	mrb.define_method(st, color_class, "r", color_get_r, mrb.args_none())
+	mrb.define_method(st, color_class, "blue", color_get_b, mrb.args_none())
+	mrb.define_method(st, color_class, "b", color_get_b, mrb.args_none())
+	mrb.define_method(st, color_class, "green", color_get_g, mrb.args_none())
+	mrb.define_method(st, color_class, "g", color_get_g, mrb.args_none())
+	mrb.define_method(st, color_class, "alpha", color_get_a, mrb.args_none())
+	mrb.define_method(st, color_class, "a", color_get_a, mrb.args_none())
 	engine_classes.color_class = color_class
 
 	setup_game_class(st)
@@ -370,4 +378,28 @@ color_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	v.g = cast(u8)math.clamp(g, 0, 255)
 	v.a = cast(u8)math.clamp(a, 0, 255)
 	return self
+}
+
+@(private = "file")
+color_get_r :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	v := mrb.get_data_from_value(rl.Color, self)
+	return mrb.int_value(state, cast(int)v.r)
+}
+
+@(private = "file")
+color_get_b :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	v := mrb.get_data_from_value(rl.Color, self)
+	return mrb.int_value(state, cast(int)v.b)
+}
+
+@(private = "file")
+color_get_g :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	v := mrb.get_data_from_value(rl.Color, self)
+	return mrb.int_value(state, cast(int)v.g)
+}
+
+@(private = "file")
+color_get_a :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	v := mrb.get_data_from_value(rl.Color, self)
+	return mrb.int_value(state, cast(int)v.a)
 }
