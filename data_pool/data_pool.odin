@@ -59,6 +59,16 @@ get :: proc "contextless" (dp: ^DataPool($N, $T, $H), h: H) -> (data: T, found: 
 	return
 }
 
+valid :: proc "contextless" (dp: ^DataPool($N, $T, $H), h: H) -> bool {
+	hs := transmute(HandleStruct)h
+
+	db := dp.items[hs.idx]
+	if (db.id == hs) {
+		return true
+	}
+	return false
+}
+
 add_empty :: proc "contextless" (dp: ^DataPool($N, $T, $H)) -> (^T, H, bool) {
 	h, success := add(dp, T{})
 	if !success {

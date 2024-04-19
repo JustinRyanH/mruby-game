@@ -38,6 +38,7 @@ setup_entity_class :: proc(st: ^mrb.State) {
 	entity_class := mrb.define_class(st, "Entity", mrb.state_get_object_class(st))
 	mrb.set_data_type(entity_class, .CData)
 	mrb.define_method(st, entity_class, "initialize", entity_init, mrb.args_req(1))
+	mrb.define_method(st, entity_class, "valid?", entity_valid, mrb.args_none())
 	mrb.define_method(st, entity_class, "x", entity_get_x, mrb.args_none())
 	mrb.define_method(st, entity_class, "x=", entity_set_x, mrb.args_req(1))
 	mrb.define_method(st, entity_class, "y", entity_get_y, mrb.args_none())
@@ -215,7 +216,14 @@ entity_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	return self
 }
+@(private = "file")
+entity_valid :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = runtime.default_context()
 
+	handle := mrb.get_data_from_value(EntityHandle, self)
+	success := dp.valid(&g.entities, handle^)
+	return mrb.bool_value(success)
+}
 
 @(private = "file")
 entity_get_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {

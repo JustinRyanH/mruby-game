@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 player = Game.player_entity
+puts "Player Valid? #{player.valid?}"
 
 amount = 100 * FrameInput.delta_time
 
