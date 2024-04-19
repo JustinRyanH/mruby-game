@@ -306,6 +306,17 @@ foreign compat {
 	gc_arena_restore :: proc(mrb: ^State, idx: ArenaIdx) ---
 
 
+	// Get the current method sumbol
+	//
+	// Example:
+	//     # Ruby style
+	//     class Foo
+	//       def bar
+	//          puts __method__ # ":bar"
+	//       end
+	//     end
+	get_mid :: proc(state: ^State) -> Sym ---
+
 	// ARGs
 	args_req :: proc(n: u32) -> Aspec ---
 	args_opt :: proc(n: u32) -> Aspec ---
