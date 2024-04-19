@@ -1,6 +1,7 @@
 package main
 
 import "core:fmt"
+import "core:math"
 import "core:reflect"
 import "core:runtime"
 import "core:strings"
@@ -14,10 +15,12 @@ import mrb "./mruby"
 mrb_frame_input_type: mrb.DataType = {"FrameInput", mrb.free}
 mrb_entity_handle_type: mrb.DataType = {"Entity", mrb.free}
 mrb_vector_handle_type: mrb.DataType = {"Vector", mrb.free}
+mrb_color_handle_type: mrb.DataType = {"Color", mrb.free}
 
 EngineRClass :: struct {
 	entity_class: ^mrb.RClass,
 	vector_class: ^mrb.RClass,
+	color_class:  ^mrb.RClass,
 }
 
 engine_classes: EngineRClass
@@ -29,6 +32,11 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	mrb.define_class_method(st, logger, "error", logger_error, mrb.args_req(1))
 	mrb.define_class_method(st, logger, "fatal", logger_fatal, mrb.args_req(1))
 	mrb.define_class_method(st, logger, "warning", logger_warning, mrb.args_req(1))
+
+	color_class := mrb.define_class(st, "Color", mrb.state_get_object_class(st))
+	mrb.set_data_type(color_class, .CData)
+	mrb.define_method(st, color_class, "initialize", color_init, mrb.args_req(4))
+	engine_classes.color_class = color_class
 
 	setup_game_class(st)
 	setup_input(st)
@@ -309,7 +317,6 @@ vector_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	v.y = cast(f32)inc_y
 	return self
 }
-
 @(private = "file")
 vector_get_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	v := mrb.get_data_from_value(rl.Vector2, self)
@@ -342,4 +349,25 @@ vector_set_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	v := mrb.get_data_from_value(rl.Vector2, self)
 	v.y = cast(f32)new_y
 	return mrb.nil_value()
+}
+
+//////////////////////////////
+//// Color
+//////////////////////////////
+@(private = "file")
+color_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	r, b, g, a: int
+	mrb.get_args(state, "iiii", &r, &b, &g, &a)
+
+	v: ^rl.Color = mrb.get_data_from_value(rl.Color, self)
+	if (v == nil) {
+		mrb.data_init(self, nil, &mrb_color_handle_type)
+		v = cast(^rl.Color)mrb.malloc(state, size_of(rl.Color))
+		mrb.data_init(self, v, &mrb_color_handle_type)
+	}
+	v.r = cast(u8)math.clamp(r, 0, 255)
+	v.b = cast(u8)math.clamp(b, 0, 255)
+	v.g = cast(u8)math.clamp(g, 0, 255)
+	v.a = cast(u8)math.clamp(a, 0, 255)
+	return self
 }
