@@ -30,14 +30,17 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 
 	setup_game_class(game)
 	setup_input(game)
+	setup_entity_class(game.ruby)
+}
 
-	entity_class := mrb.define_class(g.ruby, "Entity", mrb.state_get_object_class(g.ruby))
+setup_entity_class :: proc(st: ^mrb.State) {
+	entity_class := mrb.define_class(st, "Entity", mrb.state_get_object_class(st))
 	mrb.set_data_type(entity_class, .CData)
-	mrb.define_method(g.ruby, entity_class, "initialize", entity_init, mrb.args_req(1))
-	mrb.define_method(g.ruby, entity_class, "x", entity_get_x, mrb.args_none())
-	mrb.define_method(g.ruby, entity_class, "x=", entity_set_x, mrb.args_req(1))
-	mrb.define_method(g.ruby, entity_class, "y", entity_get_y, mrb.args_none())
-	mrb.define_method(g.ruby, entity_class, "y=", entity_set_y, mrb.args_req(1))
+	mrb.define_method(st, entity_class, "initialize", entity_init, mrb.args_req(1))
+	mrb.define_method(st, entity_class, "x", entity_get_x, mrb.args_none())
+	mrb.define_method(st, entity_class, "x=", entity_set_x, mrb.args_req(1))
+	mrb.define_method(st, entity_class, "y", entity_get_y, mrb.args_none())
+	mrb.define_method(st, entity_class, "y=", entity_set_y, mrb.args_req(1))
 	engine_classes.entity_class = entity_class
 }
 
