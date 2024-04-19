@@ -103,7 +103,10 @@ main :: proc() {
 
 	game_load_mruby_raylib(g)
 
-	asset_system_load_ruby(&g.assets, "tick.rb")
+	tick_handle, tick_loaded := asset_system_load_ruby(&g.assets, "rb/tick.rb")
+	assert(tick_loaded, "`tick.rb` is required")
+	setup_handle, setup_loaded := asset_system_load_ruby(&g.assets, "rb/setup.rb")
+	assert(tick_loaded, "`setup.rb` is required")
 
 	rl.InitWindow(1280, 800, "Odin-Ruby Game Demo")
 	defer rl.CloseWindow()
@@ -133,8 +136,8 @@ main :: proc() {
 
 		rl.ClearBackground(rl.BLACK)
 
-		code, found := asset_system_find_ruby(&g.assets, ruby_code_handle("tick.rb"))
-		assert(found, "Ruby Code 'tick.rb' not found")
+		code, found := asset_system_find_ruby(&g.assets, tick_handle)
+		assert(found, "Ruby Code 'rb/tick.rb' not found")
 		v := mrb.load_string(g.ruby, code.code)
 
 		if mrb.state_get_exc(g.ruby) != nil {

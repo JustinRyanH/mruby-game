@@ -62,11 +62,12 @@ asset_system_deinit :: proc(as: ^AssetSystem) {
 	delete(as.ruby)
 }
 
-asset_system_load_ruby :: proc(as: ^AssetSystem, file: string) {
+asset_system_load_ruby :: proc(as: ^AssetSystem, file: string) -> (RubyCodeHandle, bool) {
 	handle := ruby_code_handle(file)
 	if handle in as.ruby {
-		// TODO: Reload if the mod time has changed
-		panic("Unimplemented")
+		rc: RubyCode
+		ruby_code_load(&rc)
+		return handle, true
 	}
 
 	rc: RubyCode
@@ -76,6 +77,7 @@ asset_system_load_ruby :: proc(as: ^AssetSystem, file: string) {
 	ruby_code_load(&rc)
 
 	as.ruby[handle] = rc
+	return handle, true
 }
 
 asset_system_find_ruby :: proc(as: ^AssetSystem, handle: RubyCodeHandle) -> (RubyCode, bool) {
