@@ -58,24 +58,10 @@ setup_game_class :: proc(st: ^mrb.State) {
 
 setup_input :: proc(st: ^mrb.State) {
 	fi := mrb.define_class(st, "FrameInput", mrb.state_get_object_class(st))
-	mrb.set_data_type(fi, .CData)
-	mrb.define_method(st, fi, "initialize", frame_input_init, mrb.args_none())
-	mrb.define_method(st, fi, "delta_time", frame_input_dt, mrb.args_none())
-	mrb.define_method(st, fi, "id", frmae_input_id, mrb.args_none())
-	mrb.define_method_id(
-		st,
-		fi,
-		mrb.intern_cstr(st, "key_down?"),
-		frame_input_is_down,
-		mrb.args_req(1),
-	)
-	mrb.define_method_id(
-		st,
-		fi,
-		mrb.intern_cstr(st, "key_was_down?"),
-		frame_input_was_down,
-		mrb.args_req(1),
-	)
+	mrb.define_class_method(st, fi, "delta_time", frame_input_dt, mrb.args_none())
+	mrb.define_class_method(st, fi, "id", frame_input_id, mrb.args_none())
+	mrb.define_class_method(st, fi, "key_down?", frame_input_is_down, mrb.args_req(1))
+	mrb.define_class_method(st, fi, "key_was_down?", frame_input_was_down, mrb.args_req(1))
 }
 
 
@@ -99,8 +85,8 @@ frame_input_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 }
 
 @(private = "file")
-frmae_input_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	i: ^input.FrameInput = cast(^input.FrameInput)mrb.rdata_data(self)
+frame_input_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	i := g.input
 	return mrb.int_value(state, i.current_frame.meta.frame_id)
 }
 
@@ -135,16 +121,13 @@ frame_input_is_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Valu
 		return mrb.nil_value()
 	}
 
-	i := mrb.get_data_from_value(input.FrameInput, self)
-	value := input.is_pressed(i^, key)
+	value := input.is_pressed(g.input, key)
 	return mrb.bool_value(value)
 }
 
 @(private = "file")
 frame_input_dt :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	i := mrb.get_data_from_value(input.FrameInput, self)
-	dt := input.frame_query_delta(i^)
-
+	dt := input.frame_query_delta(g.input)
 	return mrb.float_value(state, cast(f64)dt)
 }
 
@@ -158,8 +141,7 @@ frame_input_was_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Val
 		return mrb.nil_value()
 	}
 
-	i := mrb.get_data_from_value(input.FrameInput, self)
-	value := input.was_just_released(i^, key)
+	value := input.was_just_released(g.input, key)
 	return mrb.bool_value(value)
 }
 
