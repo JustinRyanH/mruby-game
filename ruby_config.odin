@@ -21,16 +21,17 @@ EngineRClass :: struct {
 engine_classes: EngineRClass
 
 game_load_mruby_raylib :: proc(game: ^Game) {
-	logger := mrb.define_class(g.ruby, "Log", mrb.state_get_object_class(g.ruby))
-	mrb.define_class_method(g.ruby, logger, "info", logger_info, mrb.args_req(1))
-	mrb.define_class_method(g.ruby, logger, "error", logger_error, mrb.args_req(1))
-	mrb.define_class_method(g.ruby, logger, "fatal", logger_fatal, mrb.args_req(1))
-	mrb.define_class_method(g.ruby, logger, "warning", logger_warning, mrb.args_req(1))
+	st := game.ruby
+	logger := mrb.define_class(st, "Log", mrb.state_get_object_class(st))
+	mrb.define_class_method(st, logger, "info", logger_info, mrb.args_req(1))
+	mrb.define_class_method(st, logger, "error", logger_error, mrb.args_req(1))
+	mrb.define_class_method(st, logger, "fatal", logger_fatal, mrb.args_req(1))
+	mrb.define_class_method(st, logger, "warning", logger_warning, mrb.args_req(1))
 
 
-	setup_game_class(game)
-	setup_input(game)
-	setup_entity_class(game.ruby)
+	setup_game_class(st)
+	setup_input(st)
+	setup_entity_class(st)
 }
 
 setup_entity_class :: proc(st: ^mrb.State) {
@@ -44,10 +45,10 @@ setup_entity_class :: proc(st: ^mrb.State) {
 	engine_classes.entity_class = entity_class
 }
 
-setup_game_class :: proc(game: ^Game) {
-	game_class := mrb.define_class(g.ruby, "Game", mrb.state_get_object_class(g.ruby))
+setup_game_class :: proc(st: ^mrb.State) {
+	game_class := mrb.define_class(st, "Game", mrb.state_get_object_class(st))
 	mrb.define_class_method(
-		g.ruby,
+		st,
 		game_class,
 		"player_entity",
 		game_get_player_entity,
@@ -55,23 +56,23 @@ setup_game_class :: proc(game: ^Game) {
 	)
 }
 
-setup_input :: proc(game: ^Game) {
-	fi := mrb.define_class(g.ruby, "FrameInput", mrb.state_get_object_class(g.ruby))
+setup_input :: proc(st: ^mrb.State) {
+	fi := mrb.define_class(st, "FrameInput", mrb.state_get_object_class(st))
 	mrb.set_data_type(fi, .CData)
-	mrb.define_method(g.ruby, fi, "initialize", frame_input_init, mrb.args_none())
-	mrb.define_method(g.ruby, fi, "delta_time", frame_input_dt, mrb.args_none())
-	mrb.define_method(g.ruby, fi, "id", frmae_input_id, mrb.args_none())
+	mrb.define_method(st, fi, "initialize", frame_input_init, mrb.args_none())
+	mrb.define_method(st, fi, "delta_time", frame_input_dt, mrb.args_none())
+	mrb.define_method(st, fi, "id", frmae_input_id, mrb.args_none())
 	mrb.define_method_id(
-		g.ruby,
+		st,
 		fi,
-		mrb.intern_cstr(g.ruby, "key_down?"),
+		mrb.intern_cstr(st, "key_down?"),
 		frame_input_is_down,
 		mrb.args_req(1),
 	)
 	mrb.define_method_id(
-		g.ruby,
+		st,
 		fi,
-		mrb.intern_cstr(g.ruby, "key_was_down?"),
+		mrb.intern_cstr(st, "key_was_down?"),
 		frame_input_was_down,
 		mrb.args_req(1),
 	)
