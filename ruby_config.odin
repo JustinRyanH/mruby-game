@@ -342,6 +342,10 @@ vector_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	v.y = cast(f32)inc_y
 	return self
 }
+
+//////////////////////////////
+//// Vector
+//////////////////////////////
 @(private = "file")
 vector_get_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	v := mrb.get_data_from_value(rl.Vector2, self)
