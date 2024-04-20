@@ -175,7 +175,7 @@ frame_input_is_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Valu
 @(private = "file")
 frame_input_dt :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	dt := input.frame_query_delta(g.input)
-	return mrb.float_value(state, cast(f64)dt)
+	return mrb.float_value(state, cast(mrb.Float)dt)
 }
 
 
@@ -280,13 +280,13 @@ entity_get_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	if !success {
 		mrb.raise_exception(state, "Failed to access Entity")
 	}
-	return mrb.float_value(state, cast(f64)entity.pos.x)
+	return mrb.float_value(state, cast(mrb.Float)entity.pos.x)
 }
 
 @(private = "file")
 entity_set_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = game_ctx
-	new_x: f64
+	new_x: mrb.Float
 	mrb.get_args(state, "f", &new_x)
 
 	i := mrb.get_data_from_value(EntityHandle, self)
@@ -308,14 +308,14 @@ entity_get_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	if !success {
 		mrb.raise_exception(state, "Failed to access Entity")
 	}
-	return mrb.float_value(state, cast(f64)entity.pos.y)
+	return mrb.float_value(state, cast(mrb.Float)entity.pos.y)
 }
 
 @(private = "file")
 entity_set_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = game_ctx
 
-	new_y: f64
+	new_y: mrb.Float
 	mrb.get_args(state, "f", &new_y)
 
 	i := mrb.get_data_from_value(EntityHandle, self)
@@ -344,8 +344,8 @@ entity_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 vector_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	inc_x: f64
-	inc_y: f64
+	inc_x: mrb.Float
+	inc_y: mrb.Float
 	mrb.get_args(state, "ff", &inc_x, &inc_y)
 
 	v := mrb.get_data_from_value(rl.Vector2, self)
@@ -365,12 +365,12 @@ vector_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 @(private = "file")
 vector_get_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	v := mrb.get_data_from_value(rl.Vector2, self)
-	return mrb.float_value(state, cast(f64)v.x)
+	return mrb.float_value(state, cast(mrb.Float)v.x)
 }
 
 @(private = "file")
 vector_set_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	new_x: f64
+	new_x: mrb.Float
 	mrb.get_args(state, "f", &new_x)
 
 	v := mrb.get_data_from_value(rl.Vector2, self)
@@ -382,14 +382,14 @@ vector_set_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 @(private = "file")
 vector_get_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	v := mrb.get_data_from_value(rl.Vector2, self)
-	return mrb.float_value(state, cast(f64)v.y)
+	return mrb.float_value(state, cast(mrb.Float)v.y)
 }
 
 @(private = "file")
 vector_set_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = game_ctx
 
-	new_y: f64
+	new_y: mrb.Float
 	mrb.get_args(state, "f", &new_y)
 
 	v := mrb.get_data_from_value(rl.Vector2, self)

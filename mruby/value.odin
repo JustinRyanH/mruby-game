@@ -24,10 +24,10 @@ when ODIN_OS == .Darwin {
 @(link_prefix = "mrb_c_")
 @(default_calling_convention = "c")
 foreign compat {
-	float_value :: proc(state: ^State, f: f64) -> Value ---
+	float_value :: proc(state: ^State, f: Float) -> Value ---
 	cptr_value :: proc(state: ^State, p: rawptr) -> Value ---
-	int_value :: proc(state: ^State, i: int) -> Value ---
-	fix_num_value :: proc(i: int) -> Value ---
+	int_value :: proc(state: ^State, i: Int) -> Value ---
+	fix_num_value :: proc(i: Int) -> Value ---
 	symbol_value :: proc(i: Sym) -> Value ---
 	false_value :: proc() -> Value ---
 	true_value :: proc() -> Value ---

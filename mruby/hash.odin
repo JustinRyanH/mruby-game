@@ -95,7 +95,7 @@ foreign lib {
 	// Equivalent to:
 	//
 	//      hash.size
-	hash_size :: proc(state: ^State, hash: Value) -> i32 ---
+	hash_size :: proc(state: ^State, hash: Value) -> Int ---
 
 
 	//

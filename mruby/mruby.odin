@@ -11,6 +11,10 @@ when ODIN_OS == .Darwin {
 	foreign import compat "vendor/windows/mruby_compat.lib"
 }
 
+Int :: int
+UInt :: uint
+Float :: f64
+
 RBasic :: struct {}
 RFloat :: struct {}
 RInteger :: struct {}
@@ -149,7 +153,7 @@ Kwargs :: struct {
 }
 
 Gc :: struct {}
-ArenaIdx :: distinct i32
+ArenaIdx :: distinct int
 
 Value :: distinct uint
 
@@ -236,7 +240,7 @@ foreign lib {
 	show_version :: proc(state: ^State) ---
 
 	// TODO: Document
-	obj_id :: proc(obj: Value) -> i32 ---
+	obj_id :: proc(obj: Value) -> Int ---
 
 	// TODO: Document
 	obj_to_sym :: proc(state: ^State, name: Value) -> Sym ---
@@ -254,7 +258,7 @@ foreign lib {
 	equal :: proc(state: ^State, obj1, obj2: Value) -> bool ---
 
 	// TODO: Document
-	cmp :: proc(state: ^State, obj1, obj2: Value) -> i32 ---
+	cmp :: proc(state: ^State, obj1, obj2: Value) -> Int ---
 
 	// Prints the Backtrace
 	print_backtrace :: proc(state: ^State) ---
@@ -267,7 +271,7 @@ foreign lib {
 
 	// Returns a byte array to to turn into a proper `string`
 	// TODO: Figure out if this allocs?
-	sym_name_len :: proc(state: ^State, sym: Sym, len: ^i32) -> [^]u8 ---
+	sym_name_len :: proc(state: ^State, sym: Sym, len: ^Int) -> [^]u8 ---
 
 	// Performs full GC
 	garbage_collect :: proc(mrb: ^State) ---
@@ -281,7 +285,7 @@ foreign lib {
 }
 
 sym_to_string :: proc(state: ^State, sym: Sym) -> string {
-	len: i32
+	len: Int
 
 	data := sym_name_len(state, sym, &len)
 
@@ -443,7 +447,7 @@ foreign lib {
 	// @see mrb_args_format
 	// @see mrb_kwargs
 	//
-	get_args :: proc(state: ^State, format: cstring, #c_vararg args: ..any) -> i32 ---
+	get_args :: proc(state: ^State, format: cstring, #c_vararg args: ..any) -> Int ---
 
 	//
 	// Defines a new class.
