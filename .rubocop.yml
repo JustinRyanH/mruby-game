@@ -2,3 +2,6 @@ AllCops:
   TargetRubyVersion: 3.3.0
 Style/Documentation:
   Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
