@@ -25,7 +25,13 @@ class Game
   def setup
     puts 'Game Setup'
     width, height = FrameInput.screen_size
-    puts "Width: #{width}, Height: #{height}"
+
+    @player = Entity.create(
+      pos: Vector.new(width * 0.2, height * 0.5),
+      size: Vector.new(90, 90),
+      color: Color.red
+    )
+
     @ready = true
   end
 
