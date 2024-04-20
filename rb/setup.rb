@@ -24,6 +24,8 @@ class Game
 
   def setup
     puts 'Game Setup'
+    width, height = FrameInput.screen_size
+    puts "Width: #{width}, Height: #{height}"
     @ready = true
   end
 

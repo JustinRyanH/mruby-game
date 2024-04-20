@@ -217,7 +217,7 @@ frame_query_delta :: proc "contextless" (frame_input: FrameInput) -> f32 {
 }
 
 // Returns width and height of the current frame
-frame_query_dimensions :: proc(frame_input: FrameInput) -> (width, height: f32) {
+frame_query_dimensions :: proc "contextless" (frame_input: FrameInput) -> (width, height: f32) {
 	return frame_input.current_frame.meta.screen_width,
 		frame_input.current_frame.meta.screen_height
 }

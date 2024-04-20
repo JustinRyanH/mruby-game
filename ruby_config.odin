@@ -21,6 +21,7 @@ EngineRClass :: struct {
 	entity_class: ^mrb.RClass,
 	vector_class: ^mrb.RClass,
 	color_class:  ^mrb.RClass,
+	frame_class:  ^mrb.RClass,
 }
 
 engine_classes: EngineRClass
@@ -92,11 +93,26 @@ setup_entity_class :: proc(st: ^mrb.State) {
 }
 
 setup_input :: proc(st: ^mrb.State) {
-	fi := mrb.define_class(st, "FrameInput", mrb.state_get_object_class(st))
-	mrb.define_class_method(st, fi, "delta_time", frame_input_dt, mrb.args_none())
-	mrb.define_class_method(st, fi, "id", frame_input_id, mrb.args_none())
-	mrb.define_class_method(st, fi, "key_down?", frame_input_is_down, mrb.args_req(1))
-	mrb.define_class_method(st, fi, "key_was_down?", frame_input_was_down, mrb.args_req(1))
+	frame_class := mrb.define_class(st, "FrameInput", mrb.state_get_object_class(st))
+	mrb.define_class_method(st, frame_class, "delta_time", frame_input_dt, mrb.args_none())
+	mrb.define_class_method(st, frame_class, "id", frame_input_id, mrb.args_none())
+	mrb.define_class_method(st, frame_class, "key_down?", frame_input_is_down, mrb.args_req(1))
+	mrb.define_class_method(
+		st,
+		frame_class,
+		"screen_size",
+		frame_input_screen_size,
+		mrb.args_none(),
+	)
+	mrb.define_class_method(
+		st,
+		frame_class,
+		"key_was_down?",
+		frame_input_was_down,
+		mrb.args_req(1),
+	)
+
+	engine_classes.frame_class = frame_class
 }
 
 
@@ -145,6 +161,16 @@ sym_to_keyboard_key :: proc(state: ^mrb.State) -> (key: input.KeyboardKey, succe
 	}
 
 	return
+}
+@(private = "file")
+frame_input_screen_size :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	width, height := input.frame_query_dimensions(g.input)
+	mrb_width, mrb_height := cast(f64)width, cast(f64)height
+	return mrb.assoc_new(
+		state,
+		mrb.float_value(state, mrb_width),
+		mrb.float_value(state, mrb_height),
+	)
 }
 
 @(private = "file")
