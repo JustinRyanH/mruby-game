@@ -66,3 +66,11 @@ class Game
     FrameInput.delta_time
   end
 end
+
+test = Vector.new(50, 1)
+
+puts test.inspect
+
+test *= 0.5
+
+puts test.inspect

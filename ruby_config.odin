@@ -77,6 +77,7 @@ setup_vector_class :: proc(st: ^mrb.State) {
 	mrb.define_method(st, vector_class, "x=", vector_set_x, mrb.args_req(1))
 	mrb.define_method(st, vector_class, "y", vector_get_y, mrb.args_none())
 	mrb.define_method(st, vector_class, "y=", vector_set_y, mrb.args_req(1))
+	mrb.define_method(st, vector_class, "*", vector_scale, mrb.args_req(1))
 	engine_classes.vector_class = vector_class
 }
 
@@ -456,6 +457,23 @@ vector_set_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	v := mrb.get_data_from_value(rl.Vector2, self)
 	v.y = cast(f32)new_y
 	return mrb.nil_value()
+}
+
+@(private = "file")
+vector_scale :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = game_ctx
+
+	scale: mrb.Float
+	mrb.get_args(state, "f", &scale)
+
+	v := mrb.get_data_from_value(rl.Vector2, self)
+	new_v := [2]mrb.Value {
+		mrb.float_value(state, cast(f64)v.x * scale),
+		mrb.float_value(state, cast(f64)v.y * scale),
+	}
+
+
+	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(new_v[:]))
 }
 
 //////////////////////////////
