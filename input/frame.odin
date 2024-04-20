@@ -196,12 +196,22 @@ is_pressed :: proc(frame: FrameInput, key: BooleanInput) -> (res: bool) {
 	return res
 }
 
-was_just_released :: proc(frame: FrameInput, key: BooleanInput) -> (res: bool) {
+was_just_released :: proc "contextless" (frame: FrameInput, key: BooleanInput) -> (res: bool) {
 	switch i in key {
 	case KeyboardKey:
 		res = !(i in frame.current_frame.keyboard) && i in frame.last_frame.keyboard
 	case MouseButton:
 		res = !(i in frame.current_frame.mouse.buttons) && i in frame.last_frame.mouse.buttons
+	}
+	return res
+}
+
+was_just_pressed :: proc "contextless" (frame: FrameInput, key: BooleanInput) -> (res: bool) {
+	switch i in key {
+	case KeyboardKey:
+		res = !(i in frame.last_frame.keyboard) && i in frame.current_frame.keyboard
+	case MouseButton:
+		res = !(i in frame.last_frame.mouse.buttons) && i in frame.current_frame.mouse.buttons
 	}
 	return res
 }

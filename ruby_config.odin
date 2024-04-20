@@ -100,9 +100,9 @@ setup_input :: proc(st: ^mrb.State) {
 	mrb.define_class_method(
 		st,
 		frame_class,
-		"screen_size",
-		frame_input_screen_size,
-		mrb.args_none(),
+		"key_just_pressed?",
+		frame_input_just_pressed,
+		mrb.args_req(1),
 	)
 	mrb.define_class_method(
 		st,
@@ -110,6 +110,13 @@ setup_input :: proc(st: ^mrb.State) {
 		"key_was_down?",
 		frame_input_was_down,
 		mrb.args_req(1),
+	)
+	mrb.define_class_method(
+		st,
+		frame_class,
+		"screen_size",
+		frame_input_screen_size,
+		mrb.args_none(),
 	)
 
 	engine_classes.frame_class = frame_class
@@ -192,10 +199,24 @@ frame_input_dt :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return mrb.float_value(state, cast(mrb.Float)dt)
 }
 
+@(private = "file")
+frame_input_just_pressed :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = game_ctx
+
+	key, success := sym_to_keyboard_key(state)
+	if !success {
+		return mrb.nil_value()
+	}
+
+	value := input.was_just_pressed(g.input, key)
+	return mrb.bool_value(value)
+
+}
+
 
 @(private = "file")
 frame_input_was_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = runtime.default_context()
+	context = game_ctx
 
 	key, success := sym_to_keyboard_key(state)
 	if !success {

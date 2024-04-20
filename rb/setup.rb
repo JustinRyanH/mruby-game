@@ -45,6 +45,9 @@ class Game
 
   def tick
     setup unless ready?
+
+    puts 'Test' if FrameInput.key_just_pressed?(:space)
+
     player.y += GRAVITY_Y * dt
   end
 
