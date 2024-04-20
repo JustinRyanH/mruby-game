@@ -12,7 +12,11 @@ Color.class_eval do
   end
 end
 
+GRAVITY_Y = 200
+
 class Game
+  attr_reader :player
+
   @current = nil
   def self.current
     @current ||= Game.new
@@ -28,7 +32,7 @@ class Game
 
     @player = Entity.create(
       pos: Vector.new(width * 0.2, height * 0.5),
-      size: Vector.new(90, 90),
+      size: Vector.new(45, 45),
       color: Color.red
     )
 
@@ -41,5 +45,12 @@ class Game
 
   def tick
     setup unless ready?
+    player.y += GRAVITY_Y * dt
+  end
+
+  private
+
+  def dt
+    FrameInput.delta_time
   end
 end

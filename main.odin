@@ -147,7 +147,8 @@ main :: proc() {
 
 		entity_iter := dp.new_iter(&g.entities)
 		for entity in dp.iter_next(&entity_iter) {
-			rl.DrawRectangleV(entity.pos, entity.size, entity.color)
+			rect: rl.Rectangle = {entity.pos.x, entity.pos.y, entity.size.x, entity.size.y}
+			rl.DrawRectanglePro(rect, entity.size * 0.5, 0.0, entity.color)
 		}
 
 		// Check for asset change every second or so

@@ -361,7 +361,6 @@ entity_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		color = mrb.get_data_from_value(rl.Color, values[2])^
 	}
 
-	fmt.println("pos: ", pos, "size: ", size, "color: ", color)
 	entity_ptr, handle, success := dp.add_empty(&g.entities)
 	assert(success, "Failed to Create Entity")
 
