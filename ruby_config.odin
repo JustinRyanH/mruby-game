@@ -92,6 +92,7 @@ setup_entity_class :: proc(st: ^mrb.State) {
 	mrb.define_method(st, entity_class, "y", entity_get_y, mrb.args_none())
 	mrb.define_method(st, entity_class, "y=", entity_set_y, mrb.args_req(1))
 	mrb.define_method(st, entity_class, "pos", entity_pos_get, mrb.args_none())
+	mrb.define_method(st, entity_class, "pos=", entity_pos_set, mrb.args_req(1))
 	mrb.define_class_method(st, entity_class, "create", entity_create, mrb.args_key(1, 0))
 	engine_classes.entity_class = entity_class
 }
@@ -375,6 +376,29 @@ entity_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 }
 
 @(private = "file")
+entity_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = game_ctx
+
+	new_pos: mrb.Value
+	mrb.get_args(state, "o", &new_pos)
+	assert(
+		mrb.obj_is_kind_of(state, new_pos, engine_classes.vector_class),
+		"Can only assign Vector to position",
+	)
+
+	pos := mrb.get_data_from_value(rl.Vector2, new_pos)
+
+	i := mrb.get_data_from_value(EntityHandle, self)
+	entity := dp.get_ptr(&g.entities, i^)
+	if entity == nil {
+		mrb.raise_exception(state, "Failed to access Entity")
+	}
+	entity.pos = pos^
+
+	return mrb.nil_value()
+}
+
+@(private = "file")
 entity_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = game_ctx
 
@@ -495,6 +519,7 @@ vector_scale :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(new_v[:]))
 }
+
 
 @(private = "file")
 vector_add :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {

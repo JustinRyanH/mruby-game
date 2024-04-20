@@ -31,12 +31,12 @@ class Game
     width, height = FrameInput.screen_size
 
     @player = Entity.create(
-      pos: Vector.new(width * 0.2, height * 0.5),
+      pos: Vector.zero,
       size: Vector.new(45, 45),
       color: Color.red
     )
 
-    puts @player.pos
+    @player.pos = Vector.new(width * 0.2, height * 0.5)
 
     @player_velocity = Vector.zero
 
