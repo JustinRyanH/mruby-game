@@ -12,8 +12,6 @@ Color.class_eval do
   end
 end
 
-pos = Vector.new(45, 125)
-size = Vector.new(100, 45)
-color = Color.red
-
-Entity.create(pos:, size:, color:)
+Entity.create(pos: Vector.new(45, 125), size: Vector.new(35, 75))
+Entity.create(pos: Vector.new(300, 125), size: Vector.new(50, 66))
+Entity.create(pos: Vector.new(700, 100), size: Vector.new(50, 66))

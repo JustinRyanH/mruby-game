@@ -79,12 +79,6 @@ track_bad_free_tracking_allocator :: proc(a: ^mem.Tracking_Allocator) -> (err: b
 
 TargetFPS :: 90
 
-game_draw_entity :: proc(game: ^Game, handle: EntityHandle) {
-	entity, is_success := dp.get(&game.entities, handle)
-	assert(is_success, "We shouldn't be trying to draw an entity that does not exists")
-	rl.DrawRectangleV(entity.pos, entity.size, entity.color)
-}
-
 game_run_code :: proc(game: ^Game, handle: RubyCodeHandle, loc := #caller_location) {
 	code, found := asset_system_find_ruby(&g.assets, handle)
 	assert(found, "Ruby Code not found")
@@ -156,7 +150,10 @@ main :: proc() {
 
 		game_run_code(g, tick_handle)
 
-		game_draw_entity(g, eh)
+		entity_iter := dp.new_iter(&g.entities)
+		for entity in dp.iter_next(&entity_iter) {
+			rl.DrawRectangleV(entity.pos, entity.size, entity.color)
+		}
 
 		// Check for asset change every second or so
 		if input.frame_query_id(g.input) % TargetFPS == 0 {
