@@ -326,20 +326,50 @@ entity_set_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	entity.pos.y = cast(f32)new_y
 	return mrb.nil_value()
 }
+
 @(private = "file")
 entity_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	kwargs: mrb.Kwargs
-	kwargs.num = 1
+	context = game_ctx
 
-	names: []mrb.Sym = {mrb.sym_from_string(state, "pos")}
-	values := [1]mrb.Value{}
-	kwargs.table = raw_data(names)
+	NumOfArgs :: 3
+	kwargs: mrb.Kwargs
+	kwargs.num = NumOfArgs
+
+	names: [NumOfArgs]mrb.Sym =  {
+		mrb.sym_from_string(state, "pos"),
+		mrb.sym_from_string(state, "size"),
+		mrb.sym_from_string(state, "color"),
+	}
+	values := [NumOfArgs]mrb.Value{}
+	kwargs.table = raw_data(names[:])
 	kwargs.values = raw_data(values[:])
 
 	mrb.get_args(state, ":", &kwargs)
+	assert(!mrb.undef_p(values[0]), "Entity Required for `pos:`")
+	assert(!mrb.undef_p(values[1]), "Entity Required for `size:`")
+	pos: rl.Vector2 = mrb.get_data_from_value(rl.Vector2, values[0])^
+	size: rl.Vector2 = mrb.get_data_from_value(rl.Vector2, values[1])^
 
-	return mrb.nil_value()
+	color: rl.Color
+	if (mrb.undef_p(values[2])) {
+		color = rl.WHITE
+	} else {
+		color = mrb.get_data_from_value(rl.Color, values[2])^
+	}
+
+	fmt.println("pos: ", pos, "size: ", size, "color: ", color)
+	entity_ptr, handle, success := dp.add_empty(&g.entities)
+	assert(success, "Failed to Create Entity")
+
+	entity_ptr.pos = pos
+	entity_ptr.size = size
+	entity_ptr.color = color
+
+	id := mrb.int_value(state, cast(int)handle)
+	collection: []mrb.Value = {id}
+	return mrb.obj_new(state, engine_classes.entity_class, 1, raw_data(collection[:]))
 }
+
 //////////////////////////////
 //// Vector
 //////////////////////////////

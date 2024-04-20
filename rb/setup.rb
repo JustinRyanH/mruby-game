@@ -12,11 +12,8 @@ Color.class_eval do
   end
 end
 
-puts Color.ray_white.inspect
-
 pos = Vector.new(45, 125)
 size = Vector.new(100, 45)
-color = Color.white
+color = Color.red
 
-puts "Pos(#{pos}), Size(#{size}, Color(#{color}))"
-Entity.create
+Entity.create(pos:, size:, color:)
