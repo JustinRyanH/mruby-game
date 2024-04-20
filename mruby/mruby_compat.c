@@ -144,6 +144,34 @@ mrb_value mrb_c_true_value(void) { return mrb_true_value(); }
 mrb_value mrb_c_bool_value(mrb_bool boolean) { return mrb_bool_value(boolean); }
 mrb_value mrb_c_undef_value(void) { return mrb_undef_value(); }
 
+mrb_bool mrb_c_immediate_p(mrb_value v) { return mrb_immediate_p(v); }
+mrb_bool mrb_c_integer_p(mrb_value v) { return mrb_integer_p(v); }
+mrb_bool mrb_c_fixnum_p(mrb_value v) { return mrb_fixnum_p(v); }
+mrb_bool mrb_c_symbol_p(mrb_value v) { return mrb_symbol_p(v); }
+mrb_bool mrb_c_undef_p(mrb_value v) { return mrb_undef_p(v); }
+mrb_bool mrb_c_nil_p(mrb_value v) { return mrb_nil_p(v); }
+mrb_bool mrb_c_false_p(mrb_value v) { return mrb_false_p(v); }
+mrb_bool mrb_c_true_p(mrb_value v) { return mrb_true_p(v); }
+mrb_bool mrb_c_float_p(mrb_value v) { return mrb_float_p(v); }
+mrb_bool mrb_c_array_p(mrb_value v) { return mrb_array_p(v); }
+mrb_bool mrb_c_string_p(mrb_value v) { return mrb_string_p(v); }
+mrb_bool mrb_c_hash_p(mrb_value v) { return mrb_hash_p(v); }
+mrb_bool mrb_c_cptr_p(mrb_value v) { return mrb_cptr_p(v); }
+mrb_bool mrb_c_exception_p(mrb_value v) { return mrb_exception_p(v); }
+mrb_bool mrb_c_free_p(mrb_value v) { return mrb_free_p(v); }
+mrb_bool mrb_c_object_p(mrb_value v) { return mrb_object_p(v); }
+mrb_bool mrb_c_class_p(mrb_value v) { return mrb_class_p(v); }
+mrb_bool mrb_c_module_p(mrb_value v) { return mrb_module_p(v); }
+mrb_bool mrb_c_iclass_p(mrb_value v) { return mrb_iclass_p(v); }
+mrb_bool mrb_c_sclass_p(mrb_value v) { return mrb_sclass_p(v); }
+mrb_bool mrb_c_proc_p(mrb_value v) { return mrb_proc_p(v); }
+mrb_bool mrb_c_range_p(mrb_value v) { return mrb_range_p(v); }
+mrb_bool mrb_c_env_p(mrb_value v) { return mrb_env_p(v); }
+mrb_bool mrb_c_data_p(mrb_value v) { return mrb_data_p(v); }
+mrb_bool mrb_c_fiber_p(mrb_value v) { return mrb_fiber_p(v); }
+mrb_bool mrb_c_istruct_p(mrb_value v) { return mrb_istruct_p(v); }
+mrb_bool mrb_c_break_p(mrb_value v) { return mrb_break_p(v); }
+
 //
 //  mruby/gc.h
 //
