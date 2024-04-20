@@ -91,6 +91,7 @@ setup_entity_class :: proc(st: ^mrb.State) {
 	mrb.define_method(st, entity_class, "x=", entity_set_x, mrb.args_req(1))
 	mrb.define_method(st, entity_class, "y", entity_get_y, mrb.args_none())
 	mrb.define_method(st, entity_class, "y=", entity_set_y, mrb.args_req(1))
+	mrb.define_method(st, entity_class, "pos", entity_pos_get, mrb.args_none())
 	mrb.define_class_method(st, entity_class, "create", entity_create, mrb.args_key(1, 0))
 	engine_classes.entity_class = entity_class
 }
@@ -353,6 +354,24 @@ entity_set_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 	entity.pos.y = cast(f32)new_y
 	return mrb.nil_value()
+}
+
+@(private = "file")
+entity_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = game_ctx
+
+	i := mrb.get_data_from_value(EntityHandle, self)
+	entity := dp.get_ptr(&g.entities, i^)
+	if entity == nil {
+		mrb.raise_exception(state, "Failed to access Entity")
+	}
+
+	values := []mrb.Value {
+		mrb.float_value(state, cast(f64)entity.pos.x),
+		mrb.float_value(state, cast(f64)entity.pos.x),
+	}
+
+	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(values))
 }
 
 @(private = "file")

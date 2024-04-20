@@ -36,6 +36,8 @@ class Game
       color: Color.red
     )
 
+    puts @player.pos
+
     @player_velocity = Vector.zero
 
     @ready = true
@@ -66,11 +68,3 @@ class Game
     FrameInput.delta_time
   end
 end
-
-test = Vector.new(50, 1)
-
-puts test.inspect
-
-test += Vector.new(1, 100)
-
-puts test.inspect
