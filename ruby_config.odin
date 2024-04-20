@@ -86,6 +86,7 @@ setup_entity_class :: proc(st: ^mrb.State) {
 	entity_class := mrb.define_class(st, "Entity", mrb.state_get_object_class(st))
 	mrb.set_data_type(entity_class, .CData)
 	mrb.define_method(st, entity_class, "initialize", entity_init, mrb.args_req(1))
+	mrb.define_method(st, entity_class, "id", entity_get_id, mrb.args_none())
 	mrb.define_method(st, entity_class, "valid?", entity_valid, mrb.args_none())
 	mrb.define_method(st, entity_class, "x", entity_get_x, mrb.args_none())
 	mrb.define_method(st, entity_class, "x=", entity_set_x, mrb.args_req(1))
@@ -292,6 +293,19 @@ entity_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	return self
 }
+
+@(private = "file")
+entity_get_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = game_ctx
+
+	handle := mrb.get_data_from_value(EntityHandle, self)
+	success := dp.valid(&g.entities, handle^)
+	if success {
+		return mrb.int_value(state, cast(mrb.Int)handle^)
+	}
+	return mrb.nil_value()
+}
+
 @(private = "file")
 entity_valid :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = game_ctx
@@ -361,15 +375,16 @@ entity_set_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 entity_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = game_ctx
 
-	i := mrb.get_data_from_value(EntityHandle, self)
-	entity := dp.get_ptr(&g.entities, i^)
-	if entity == nil {
+	handle := mrb.get_data_from_value(EntityHandle, self)
+
+	entity, found := dp.get(&g.entities, handle^)
+	if !found {
 		mrb.raise_exception(state, "Failed to access Entity")
 	}
 
 	values := []mrb.Value {
 		mrb.float_value(state, cast(f64)entity.pos.x),
-		mrb.float_value(state, cast(f64)entity.pos.x),
+		mrb.float_value(state, cast(f64)entity.pos.y),
 	}
 
 	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(values))
@@ -539,7 +554,6 @@ vector_add :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		mrb.float_value(state, cast(f64)c.x),
 		mrb.float_value(state, cast(f64)c.y),
 	}
-
 
 	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(values))
 }

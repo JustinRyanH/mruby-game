@@ -12,6 +12,12 @@ Color.class_eval do
   end
 end
 
+Entity.class_eval do
+  def inspect
+    { name: 'Entity', id:, pos: pos.inspect }
+  end
+end
+
 GRAVITY_Y = 7
 
 class Game
@@ -27,17 +33,14 @@ class Game
   end
 
   def setup
-    puts 'Game Setup'
+    Log.info('Setting Up Game')
     width, height = FrameInput.screen_size
 
     @player = Entity.create(
-      pos: Vector.zero,
+      pos: Vector.new(width * 0.2, height * 0.5),
       size: Vector.new(45, 45),
       color: Color.red
     )
-
-    @player.pos = Vector.new(width * 0.2, height * 0.5)
-
     @player_velocity = Vector.zero
 
     @ready = true
@@ -49,13 +52,11 @@ class Game
 
   def tick
     setup unless ready?
-    @player_velocity.y = [@player_velocity.y + GRAVITY_Y * dt, 20].min
+    @player_velocity.y = @player_velocity.y + GRAVITY_Y * dt
 
     flap_player if FrameInput.key_just_pressed?(:space)
-    @player_velocity.y = @player_velocity.y.clamp(-100, 100)
-
-    player.y += @player_velocity.y
-    player.x += @player_velocity.x
+    @player_velocity.y = @player_velocity.y.clamp(-5, 5)
+    player.pos = player.pos + @player_velocity
   end
 
   private
