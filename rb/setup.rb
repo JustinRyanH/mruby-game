@@ -47,9 +47,9 @@ class Game
 
   def tick
     setup unless ready?
-    @player_velocity.y = [@player_velocity.y + GRAVITY_Y * dt, 50].min
+    @player_velocity.y = [@player_velocity.y + GRAVITY_Y * dt, 20].min
 
-    @player_velocity.y -= 4 if FrameInput.key_just_pressed?(:space)
+    flap_player if FrameInput.key_just_pressed?(:space)
     @player_velocity.y = @player_velocity.y.clamp(-100, 100)
 
     player.y += @player_velocity.y
@@ -57,6 +57,10 @@ class Game
   end
 
   private
+
+  def flap_player
+    @player_velocity.y -= 4.5
+  end
 
   def dt
     FrameInput.delta_time
