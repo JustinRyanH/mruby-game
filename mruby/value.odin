@@ -36,4 +36,32 @@ foreign compat {
 	nil_value :: proc() -> Value ---
 	obj_value :: proc(p: rawptr) -> Value ---
 	undef_value :: proc() -> Value ---
+
+	immediate_p :: proc(v: Value) -> bool ---
+	integer_p :: proc(v: Value) -> bool ---
+	fixnum_p :: proc(v: Value) -> bool ---
+	symbol_p :: proc(v: Value) -> bool ---
+	undef_p :: proc(v: Value) -> bool ---
+	nil_p :: proc(v: Value) -> bool ---
+	false_p :: proc(v: Value) -> bool ---
+	true_p :: proc(v: Value) -> bool ---
+	float_p :: proc(v: Value) -> bool ---
+	array_p :: proc(v: Value) -> bool ---
+	string_p :: proc(v: Value) -> bool ---
+	hash_p :: proc(v: Value) -> bool ---
+	cptr_p :: proc(v: Value) -> bool ---
+	exception_p :: proc(v: Value) -> bool ---
+	free_p :: proc(v: Value) -> bool ---
+	object_p :: proc(v: Value) -> bool ---
+	class_p :: proc(v: Value) -> bool ---
+	module_p :: proc(v: Value) -> bool ---
+	iclass_p :: proc(v: Value) -> bool ---
+	sclass_p :: proc(v: Value) -> bool ---
+	proc_p :: proc(v: Value) -> bool ---
+	range_p :: proc(v: Value) -> bool ---
+	env_p :: proc(v: Value) -> bool ---
+	data_p :: proc(v: Value) -> bool ---
+	fiber_p :: proc(v: Value) -> bool ---
+	istruct_p :: proc(v: Value) -> bool ---
+	break_p :: proc(v: Value) -> bool ---
 }
