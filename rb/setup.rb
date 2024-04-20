@@ -12,7 +12,7 @@ Color.class_eval do
   end
 end
 
-GRAVITY_Y = 200
+GRAVITY_Y = 7
 
 class Game
   attr_reader :player
@@ -47,12 +47,13 @@ class Game
 
   def tick
     setup unless ready?
-    @player_velocity.y = GRAVITY_Y
+    @player_velocity.y = [@player_velocity.y + GRAVITY_Y * dt, 50].min
 
-    puts 'Test' if FrameInput.key_just_pressed?(:space)
+    @player_velocity.y -= 4 if FrameInput.key_just_pressed?(:space)
+    @player_velocity.y = @player_velocity.y.clamp(-100, 100)
 
-    player.y += @player_velocity.y * dt
-    player.x += @player_velocity.x * dt
+    player.y += @player_velocity.y
+    player.x += @player_velocity.x
   end
 
   private
