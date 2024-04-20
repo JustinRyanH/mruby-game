@@ -12,6 +12,26 @@ Color.class_eval do
   end
 end
 
-Entity.create(pos: Vector.new(45, 125), size: Vector.new(35, 75))
-Entity.create(pos: Vector.new(300, 125), size: Vector.new(50, 66))
-Entity.create(pos: Vector.new(700, 100), size: Vector.new(50, 66))
+class Game
+  @current = nil
+  def self.current
+    @current ||= Game.new
+  end
+
+  def initialize
+    @ready = false
+  end
+
+  def setup
+    puts 'Game Setup'
+    @ready = true
+  end
+
+  def ready?
+    @ready
+  end
+
+  def tick
+    setup unless ready?
+  end
+end

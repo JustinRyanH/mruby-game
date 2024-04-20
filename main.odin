@@ -127,11 +127,6 @@ main :: proc() {
 	entity.size = rl.Vector2{45, 45}
 	entity.color = rl.GREEN
 
-	eh, is_success := dp.add(&g.entities, entity)
-	g.player = eh
-	assert(is_success, "Failed to add entity")
-
-
 	game_run_code(g, setup_handle)
 
 	for !rl.WindowShouldClose() {
