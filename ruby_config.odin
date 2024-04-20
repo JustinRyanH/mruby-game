@@ -88,10 +88,6 @@ setup_entity_class :: proc(st: ^mrb.State) {
 	mrb.define_method(st, entity_class, "initialize", entity_init, mrb.args_req(1))
 	mrb.define_method(st, entity_class, "id", entity_get_id, mrb.args_none())
 	mrb.define_method(st, entity_class, "valid?", entity_valid, mrb.args_none())
-	mrb.define_method(st, entity_class, "x", entity_get_x, mrb.args_none())
-	mrb.define_method(st, entity_class, "x=", entity_set_x, mrb.args_req(1))
-	mrb.define_method(st, entity_class, "y", entity_get_y, mrb.args_none())
-	mrb.define_method(st, entity_class, "y=", entity_set_y, mrb.args_req(1))
 	mrb.define_method(st, entity_class, "pos", entity_pos_get, mrb.args_none())
 	mrb.define_method(st, entity_class, "pos=", entity_pos_set, mrb.args_req(1))
 	mrb.define_class_method(st, entity_class, "create", entity_create, mrb.args_key(1, 0))
@@ -313,62 +309,6 @@ entity_valid :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	handle := mrb.get_data_from_value(EntityHandle, self)
 	success := dp.valid(&g.entities, handle^)
 	return mrb.bool_value(success)
-}
-
-@(private = "file")
-entity_get_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = game_ctx
-
-	i := mrb.get_data_from_value(EntityHandle, self)
-	entity, success := dp.get(&g.entities, i^)
-	if !success {
-		mrb.raise_exception(state, "Failed to access Entity")
-	}
-	return mrb.float_value(state, cast(mrb.Float)entity.pos.x)
-}
-
-@(private = "file")
-entity_set_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = game_ctx
-	new_x: mrb.Float
-	mrb.get_args(state, "f", &new_x)
-
-	i := mrb.get_data_from_value(EntityHandle, self)
-	entity := dp.get_ptr(&g.entities, i^)
-	if entity == nil {
-		mrb.raise_exception(state, "Failed to access Entity")
-	}
-	entity.pos.x = cast(f32)new_x
-	return mrb.nil_value()
-}
-
-
-@(private = "file")
-entity_get_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = game_ctx
-
-	i := mrb.get_data_from_value(EntityHandle, self)
-	entity, success := dp.get(&g.entities, i^)
-	if !success {
-		mrb.raise_exception(state, "Failed to access Entity")
-	}
-	return mrb.float_value(state, cast(mrb.Float)entity.pos.y)
-}
-
-@(private = "file")
-entity_set_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = game_ctx
-
-	new_y: mrb.Float
-	mrb.get_args(state, "f", &new_y)
-
-	i := mrb.get_data_from_value(EntityHandle, self)
-	entity := dp.get_ptr(&g.entities, i^)
-	if entity == nil {
-		mrb.raise_exception(state, "Failed to access Entity")
-	}
-	entity.pos.y = cast(f32)new_y
-	return mrb.nil_value()
 }
 
 @(private = "file")
