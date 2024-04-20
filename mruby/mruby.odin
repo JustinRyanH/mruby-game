@@ -94,6 +94,60 @@ args :: proc(required: u32, optional: u32) -> Aspec {
 CallInfo :: struct {}
 Context :: struct {}
 
+//
+// Get keyword arguments by `mrb_get_args()` with `:` specifier.
+//
+// `mrb_kwargs::num` indicates that the total number of keyword values.
+//
+// `mrb_kwargs::required` indicates that the specified number of keywords starting from the beginning of the `mrb_sym` array are required.
+//
+// `mrb_kwargs::table` accepts a `mrb_sym` array of C.
+//
+// `mrb_kwargs::values` is an object array of C, and the keyword argument corresponding to the `mrb_sym` array is assigned.
+// Note that `undef` is assigned if there is no keyword argument corresponding over `mrb_kwargs::required` to `mrb_kwargs::num`.
+//
+// `mrb_kwargs::rest` is the remaining keyword argument that can be accepted as `**rest` in Ruby.
+// If `NULL` is specified, `ArgumentError` is raised when there is an undefined keyword.
+//
+// Examples:
+//
+//      // def method(a: 1, b: 2)
+//
+//      mrb_int kw_num = 2;
+//      mrb_int kw_required = 0;
+//      mrb_sym kw_names[] = { mrb_intern_lit(mrb, "a"), mrb_intern_lit(mrb, "b") };
+//      mrb_value kw_values[kw_num];
+//      mrb_kwargs kwargs = { kw_num, kw_required, kw_names, kw_values, NULL };
+//
+//      mrb_get_args(mrb, ":", &kwargs);
+//      if (mrb_undef_p(kw_values[0])) { kw_values[0] = mrb_fixnum_value(1); }
+//      if (mrb_undef_p(kw_values[1])) { kw_values[1] = mrb_fixnum_value(2); }
+//
+//
+//      // def method(str, x:, y: 2, z: "default string", **opts)
+//
+//      mrb_value str, kw_rest;
+//      uint32_t kw_num = 3;
+//      uint32_t kw_required = 1;
+//      // Note that `#include <mruby/presym.h>` is required beforehand because `MRB_SYM()` is used.
+//      // If the usage of `MRB_SYM()` is not desired, replace it with `mrb_intern_lit()`.
+//      mrb_sym kw_names[] = { MRB_SYM(x), MRB_SYM(y), MRB_SYM(z) };
+//      mrb_value kw_values[kw_num];
+//      mrb_kwargs kwargs = { kw_num, kw_required, kw_names, kw_values, &kw_rest };
+//
+//      mrb_get_args(mrb, "S:", &str, &kwargs);
+//      // or: mrb_get_args(mrb, ":S", &kwargs, &str);
+//      if (mrb_undef_p(kw_values[1])) { kw_values[1] = mrb_fixnum_value(2); }
+//      if (mrb_undef_p(kw_values[2])) { kw_values[2] = mrb_str_new_cstr(mrb, "default string"); }
+//
+Kwargs :: struct {
+	num:     i32,
+	require: i32,
+	table:   [^]Sym,
+	values:  [^]Value,
+	rest:    [^]Value,
+}
+
 Gc :: struct {}
 ArenaIdx :: distinct i32
 
