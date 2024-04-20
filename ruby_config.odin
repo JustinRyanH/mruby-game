@@ -88,6 +88,7 @@ setup_entity_class :: proc(st: ^mrb.State) {
 	mrb.define_method(st, entity_class, "x=", entity_set_x, mrb.args_req(1))
 	mrb.define_method(st, entity_class, "y", entity_get_y, mrb.args_none())
 	mrb.define_method(st, entity_class, "y=", entity_set_y, mrb.args_req(1))
+	mrb.define_class_method(st, entity_class, "create", entity_create, mrb.args_key(1, 0))
 	engine_classes.entity_class = entity_class
 }
 
@@ -325,6 +326,21 @@ entity_set_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	entity.pos.y = cast(f32)new_y
 	return mrb.nil_value()
 }
+@(private = "file")
+entity_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	kwargs: mrb.Kwargs
+	kwargs.num = 1
+
+	names: []mrb.Sym = {mrb.sym_from_string(state, "pos")}
+	values := [1]mrb.Value{}
+	kwargs.table = raw_data(names)
+	kwargs.values = raw_data(values[:])
+
+	mrb.get_args(state, ":", &kwargs)
+
+	return mrb.nil_value()
+}
+
 
 @(private = "file")
 vector_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {

@@ -13,3 +13,10 @@ Color.class_eval do
 end
 
 puts Color.ray_white.inspect
+
+pos = Vector.new(45, 125)
+size = Vector.new(100, 45)
+color = Color.white
+
+puts "Pos(#{pos}), Size(#{size}, Color(#{color}))"
+Entity.create

@@ -141,8 +141,8 @@ Context :: struct {}
 //      if (mrb_undef_p(kw_values[2])) { kw_values[2] = mrb_str_new_cstr(mrb, "default string"); }
 //
 Kwargs :: struct {
-	num:     i32,
-	require: i32,
+	num:     int,
+	require: int,
 	table:   [^]Sym,
 	values:  [^]Value,
 	rest:    [^]Value,
