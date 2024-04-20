@@ -431,7 +431,7 @@ color_from_pallet :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 	pallet, success := color_pallet_from_snake(str)
 	assert(success, fmt.tprintf("Pallet method is not correct: %s", str))
 
-	color := color_pallet_to_color(pallet)
+	color := pallet_to_color[pallet]
 	colors: [4]mrb.Value
 
 	for val, idx in color {colors[idx] = mrb.int_value(state, cast(int)val)}

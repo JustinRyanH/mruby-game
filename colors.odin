@@ -37,64 +37,35 @@ ColorPallet :: enum {
 	RayWhite,
 }
 
-
-color_pallet_to_color :: proc "contextless" (c: ColorPallet) -> (color: rl.Color) {
-	switch c {
-	case .LightGray:
-		color = rl.LIGHTGRAY
-	case .Gray:
-		color = rl.GRAY
-	case .DarkGray:
-		color = rl.DARKGRAY
-	case .Yellow:
-		color = rl.YELLOW
-	case .Gold:
-		color = rl.GOLD
-	case .Orange:
-		color = rl.ORANGE
-	case .Pink:
-		color = rl.PINK
-	case .Red:
-		color = rl.RED
-	case .Maroon:
-		color = rl.MAROON
-	case .Green:
-		color = rl.GREEN
-	case .Lime:
-		color = rl.LIME
-	case .DarkGreen:
-		color = rl.DARKGREEN
-	case .SkyBlue:
-		color = rl.SKYBLUE
-	case .Blue:
-		color = rl.BLUE
-	case .DarkBlue:
-		color = rl.DARKBLUE
-	case .Purple:
-		color = rl.PURPLE
-	case .Violet:
-		color = rl.VIOLET
-	case .DarkPurple:
-		color = rl.DARKPURPLE
-	case .Beige:
-		color = rl.BEIGE
-	case .Brown:
-		color = rl.BROWN
-	case .DarkBrown:
-		color = rl.DARKBROWN
-	case .White:
-		color = rl.WHITE
-	case .Black:
-		color = rl.BLACK
-	case .Blank:
-		color = rl.BLANK
-	case .Magenta:
-		color = rl.MAGENTA
-	case .RayWhite:
-		color = rl.RAYWHITE
-	}
-	return
+pallet_to_color := [ColorPallet]rl.Color {
+	.LightGray  = rl.LIGHTGRAY,
+	.Gray       = rl.GRAY,
+	.DarkGray   = rl.DARKGRAY,
+	.Yellow     = rl.YELLOW,
+	.Gold       = rl.GOLD,
+	.Orange     = rl.ORANGE,
+	.Pink       = rl.PINK,
+	.Red        = rl.RED,
+	.Maroon     = rl.MAROON,
+	.Green      = rl.GREEN,
+	.Lime       = rl.LIME,
+	.DarkGreen  = rl.DARKGREEN,
+	.SkyBlue    = rl.SKYBLUE,
+	.Blue       = rl.BLUE,
+	.DarkBlue   = rl.DARKBLUE,
+	.Purple     = rl.PURPLE,
+	.Violet     = rl.VIOLET,
+	.DarkPurple = rl.DARKPURPLE,
+	.Beige      = rl.BEIGE,
+	.Brown      = rl.BROWN,
+	.DarkBrown  = rl.DARKBROWN,
+	.White      = rl.WHITE,
+	.Black      = rl.WHITE,
+	.Blank      = rl.BLANK,
+	.Magenta    = rl.MAGENTA,
+	.RayWhite   = rl.RAYWHITE,
 }
+
 
 color_pallet_from_snake :: proc(str: string) -> (ColorPallet, bool) {
 	v := strings.to_pascal_case(str, context.temp_allocator)
