@@ -71,6 +71,7 @@ setup_color_class :: proc(st: ^mrb.State) {
 setup_vector_class :: proc(st: ^mrb.State) {
 	vector_class := mrb.define_class(st, "Vector", mrb.state_get_object_class(st))
 	mrb.set_data_type(vector_class, .CData)
+	mrb.define_class_method(st, vector_class, "zero", vector_zero, mrb.args_none())
 	mrb.define_method(st, vector_class, "initialize", vector_init, mrb.args_req(2))
 	mrb.define_method(st, vector_class, "x", vector_get_x, mrb.args_none())
 	mrb.define_method(st, vector_class, "x=", vector_set_x, mrb.args_req(1))
@@ -397,6 +398,13 @@ entity_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 //////////////////////////////
 //// Vector
 //////////////////////////////
+@(private = "file")
+vector_zero :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	x := mrb.float_value(state, 0)
+	y := mrb.float_value(state, 0)
+	values := []mrb.Value{x, y}
+	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(values[:]))
+}
 
 @(private = "file")
 vector_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {

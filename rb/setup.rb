@@ -36,6 +36,8 @@ class Game
       color: Color.red
     )
 
+    @player_velocity = Vector.zero
+
     @ready = true
   end
 
@@ -45,10 +47,12 @@ class Game
 
   def tick
     setup unless ready?
+    @player_velocity.y = GRAVITY_Y
 
     puts 'Test' if FrameInput.key_just_pressed?(:space)
 
-    player.y += GRAVITY_Y * dt
+    player.y += @player_velocity.y * dt
+    player.x += @player_velocity.x * dt
   end
 
   private
