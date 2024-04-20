@@ -340,7 +340,9 @@ entity_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	return mrb.nil_value()
 }
-
+//////////////////////////////
+//// Vector
+//////////////////////////////
 
 @(private = "file")
 vector_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
@@ -359,9 +361,6 @@ vector_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return self
 }
 
-//////////////////////////////
-//// Vector
-//////////////////////////////
 @(private = "file")
 vector_get_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	v := mrb.get_data_from_value(rl.Vector2, self)
