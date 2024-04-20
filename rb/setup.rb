@@ -71,6 +71,6 @@ test = Vector.new(50, 1)
 
 puts test.inspect
 
-test *= 0.5
+test += Vector.new(1, 100)
 
 puts test.inspect

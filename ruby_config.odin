@@ -78,6 +78,7 @@ setup_vector_class :: proc(st: ^mrb.State) {
 	mrb.define_method(st, vector_class, "y", vector_get_y, mrb.args_none())
 	mrb.define_method(st, vector_class, "y=", vector_set_y, mrb.args_req(1))
 	mrb.define_method(st, vector_class, "*", vector_scale, mrb.args_req(1))
+	mrb.define_method(st, vector_class, "+", vector_add, mrb.args_req(1))
 	engine_classes.vector_class = vector_class
 }
 
@@ -474,6 +475,29 @@ vector_scale :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 
 	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(new_v[:]))
+}
+
+@(private = "file")
+vector_add :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = game_ctx
+
+	other: mrb.Value
+	mrb.get_args(state, "o", &other)
+	assert(
+		mrb.obj_is_kind_of(state, other, engine_classes.vector_class),
+		"can only add two Vectors together",
+	)
+	a := mrb.get_data_from_value(rl.Vector2, self)
+	b := mrb.get_data_from_value(rl.Vector2, other)
+
+	c := a^ + b^
+	values := []mrb.Value {
+		mrb.float_value(state, cast(f64)c.x),
+		mrb.float_value(state, cast(f64)c.y),
+	}
+
+
+	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(values))
 }
 
 //////////////////////////////

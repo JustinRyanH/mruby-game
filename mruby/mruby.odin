@@ -560,6 +560,8 @@ foreign lib {
 	respond_to :: proc(state: ^State, obj: Value, id: Sym) -> bool ---
 
 
+	obj_is_kind_of :: proc(state: ^State, obj: Value, class: ^RClass) -> bool ---
+
 	// a function to raise NotImplementedError with current method name
 	notimplement :: proc(state: ^State) ---
 	// a function to be replacement of unimplemented method
