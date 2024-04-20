@@ -384,6 +384,7 @@ foreign compat {
 	args_rest :: proc() -> Aspec ---
 	args_block :: proc() -> Aspec ---
 	args_none :: proc() -> Aspec ---
+	// keyword arguments (n of keys, kdict)
 	args_key :: proc(nk: u32, kd: u32) -> Aspec ---
 
 
