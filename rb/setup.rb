@@ -115,3 +115,5 @@ class Game
     FrameInput.delta_time
   end
 end
+
+puts FrameInput.random_float(3...5)

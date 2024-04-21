@@ -197,6 +197,27 @@ frame_input_screen_size :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.
 
 @(private = "file")
 frame_input_random_float :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	rng_v: mrb.Value
+	mrb.get_args(state, "o", &rng_v)
+	rng := mrb.range_ptr(state, rng_v)
+	low_v := mrb.range_beg(rng)
+	high_v := mrb.range_end(rng)
+	is_exlusive := mrb.range_excl(rng)
+	// TODO: Come up with a way to do inclusive float range
+	if !is_exlusive {
+		mrb.raise_exception(
+			state,
+			"random_float must take an exclusive range. use `%d...%d` instead",
+			low_v,
+			high_v,
+		)
+	}
+	fmt.println("Is low Int?", mrb.as_int(state, low_v))
+	fmt.println("Is high Int?", mrb.as_int(state, high_v))
+
+
 	return mrb.float_value(state, 0)
 }
 
