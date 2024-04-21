@@ -201,14 +201,8 @@ extern mrb_sym mrb_c_get_mid(struct mrb_state *mrb) { return mrb_get_mid(mrb); }
 // mruby/range.h
 //
 
-extern mrb_value mrb_c_range_beg(struct RRange* r) {
-  return r->beg;
-}
+extern mrb_value mrb_c_range_beg(struct RRange *r) { return r->beg; }
 
-extern mrb_value mrb_c_range_end(struct RRange* r) {
-  return r->end;
-}
+extern mrb_value mrb_c_range_end(struct RRange *r) { return r->end; }
 
-extern mrb_bool mrb_c_range_excl(struct RRange* r) {
-  return r->excl;
-}
+extern mrb_bool mrb_c_range_excl(struct RRange *r) { return r->excl; }
