@@ -120,6 +120,7 @@ class Game
     setup unless ready?
 
     process_events
+    cleanup
 
     @player_velocity.y = @player_velocity.y + (GRAVITY_Y * dt)
 
@@ -143,8 +144,6 @@ class Game
   end
 
   def move_obstacles
-    # TOOD: We really should just clean this up
-    @obstacles.select!(&:valid?)
     @obstacles.each do |obstacle|
       obstacle.pos += Vector.new(-WORLD_SPEED, 0) * dt
       events << DestroyObstacle.new(self, obstacle) if obstacle.offscreen_left?
@@ -162,6 +161,10 @@ class Game
     events << SpawnObstacle.new(self)
 
     @spawn_timer.reset(3)
+  end
+
+  def cleanup
+    @obstacles.select!(&:valid?)
   end
 
   def dt
