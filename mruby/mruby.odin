@@ -394,6 +394,9 @@ foreign compat {
 
 
 	set_data_type :: proc(c: ^RClass, t: VType) ---
+
+	as_int :: proc(state: ^State, value: Value) -> Int ---
+	as_float :: proc(state: ^State, value: Value) -> Float ---
 }
 
 @(link_prefix = "mrb_")
@@ -620,6 +623,23 @@ foreign lib {
 
 	intern_cstr :: proc(state: ^State, cstr: cstring) -> Sym ---
 	intern :: proc(state: ^State, rstr: [^]u8, size: uint) -> Sym ---
+
+
+	// Raises an Ruby exception if the value does not match type
+	check_type :: proc(state: ^State, v: Value, t: VType) ---
+
+	// Raises an Ruby exception if the value is not froxen
+	check_frozen :: proc(state: ^State, v: rawptr) ---
+
+	//
+	// Same as Ruby
+	//
+	// alias new, old
+	define_alias :: proc(state: ^State, c: ^RClass, old, new: cstring) ---
+	define_alias_id :: proc(state: ^State, c: ^RClass, old, new: Sym) ---
+
+	class_name :: proc(state: ^State, class: ^RClass) -> cstring ---
+	define_global_const :: proc(state: ^State, name: cstring, value: Value) ---
 
 	// TODO: Implement
 	// MRB_API mrb_bool mrb_obj_is_instance_of(mrb_state *mrb, mrb_value obj, struct RClass* c);

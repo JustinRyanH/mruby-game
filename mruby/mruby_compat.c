@@ -112,6 +112,14 @@ extern mrb_aspec mrb_c_args_key(uint32_t nk, uint32_t kd) {
 }
 extern mrb_aspec mrb_c_args_none() { return MRB_ARGS_NONE(); }
 
+extern mrb_int mrb_c_as_int(struct mrb_state *mrb, struct mrb_value value) {
+  return mrb_as_int(mrb, value);
+}
+
+extern mrb_float mrb_c_as_float(struct mrb_state *mrb, struct mrb_value value) {
+  return mrb_as_float(mrb, value);
+}
+
 //
 //  mruby/data.h
 //
