@@ -78,8 +78,9 @@ class SpawnObstacle
   def perform
     width, height = FrameInput.screen_size
 
+    gap_width = FrameInput.random_int(40...60)
     gap_size = FrameInput.random_int(120...450)
-    size = Vector.new(40, gap_size)
+    size = Vector.new(gap_width, gap_size)
     x = width + size.x + 20
 
     gap_center_y = FrameInput.random_int(((gap_size * 0.5) + 25)...(height - (gap_size * 0.5) - 25))
@@ -210,7 +211,7 @@ class Game
 
     events << SpawnObstacle.new(self)
 
-    @spawn_timer.reset(3)
+    @spawn_timer.reset(FrameInput.random_int(2..4))
   end
 
   def cleanup
