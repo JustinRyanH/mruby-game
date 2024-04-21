@@ -14,7 +14,12 @@ end
 
 Entity.class_eval do
   def inspect
-    { name: 'Entity', id:, pos: pos.inspect }
+    { name: 'Entity', id:, pos: pos.inspect, size: size.inspect }
+  end
+
+  def offscreen_left?
+    right = pos.x + (size.x * 0.5)
+    right < 0
   end
 end
 
@@ -37,9 +42,23 @@ class SpawnObstacle
     gap_center_y = FrameInput.random_float(200...500)
     pos = Vector.new(x, gap_center_y)
 
-    Log.info("SpawnObstacle @ #{pos}")
+    Log.info("SpawnObstacle @ #{pos.inspect}")
     entity = Entity.create(pos:, size: Vector.new(40, 100))
     game.add_obstacle(entity)
+  end
+end
+
+class DestroyObstacle
+  attr_reader :game, :entity
+
+  def initialize(game, entity)
+    @game = game
+    @entity = entity
+  end
+
+  def perform
+    Log.info("DestroyObstacle #{entity.id}")
+    entity.destroy
   end
 end
 
@@ -123,9 +142,12 @@ class Game
   end
 
   def move_obstacles
+    # TOOD: We really should just clean this up
+    @obstacles.select!(&:valid?)
     @obstacles.each do |obstacle|
       move_by = Vector.new(-WORLD_SPEED, 0) * dt
       obstacle.pos += move_by
+      events << DestroyObstacle.new(self, obstacle) if obstacle.offscreen_left?
     end
   end
 

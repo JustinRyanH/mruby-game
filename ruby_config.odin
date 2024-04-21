@@ -92,10 +92,14 @@ setup_entity_class :: proc(st: ^mrb.State) {
 	entity_class := mrb.define_class(st, "Entity", mrb.state_get_object_class(st))
 	mrb.set_data_type(entity_class, .CData)
 	mrb.define_method(st, entity_class, "initialize", entity_init, mrb.args_req(1))
+	// Removes the Entity, returns true if is was destroyed,
+	// return false if failed (likely because it was already destroyed)
+	mrb.define_method(st, entity_class, "destroy", entity_destroy, mrb.args_none())
 	mrb.define_method(st, entity_class, "id", entity_get_id, mrb.args_none())
 	mrb.define_method(st, entity_class, "valid?", entity_valid, mrb.args_none())
 	mrb.define_method(st, entity_class, "pos", entity_pos_get, mrb.args_none())
 	mrb.define_method(st, entity_class, "pos=", entity_pos_set, mrb.args_req(1))
+	mrb.define_method(st, entity_class, "size", entity_size_get, mrb.args_none())
 	mrb.define_class_method(st, entity_class, "create", entity_create, mrb.args_key(1, 0))
 	engine_classes.entity_class = entity_class
 }
@@ -365,6 +369,20 @@ entity_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 }
 
 @(private = "file")
+entity_destroy :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	i := mrb.get_data_from_value(EntityHandle, self)^
+	assert(i != 0, "Entity Id should not be 0")
+
+	if !dp.valid(&g.entities, i) {
+		mrb.bool_value(false)
+	}
+	success := dp.remove(&g.entities, i)
+	return mrb.bool_value(success)
+}
+
+@(private = "file")
 entity_get_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
@@ -425,6 +443,26 @@ entity_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	entity.pos = pos^
 
 	return mrb.nil_value()
+}
+
+
+@(private = "file")
+entity_size_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	handle := mrb.get_data_from_value(EntityHandle, self)
+
+	entity, found := dp.get(&g.entities, handle^)
+	if !found {
+		mrb.raise_exception(state, "Failed to access Entity")
+	}
+
+	values := []mrb.Value {
+		mrb.float_value(state, cast(f64)entity.size.x),
+		mrb.float_value(state, cast(f64)entity.size.y),
+	}
+
+	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(values))
 }
 
 @(private = "file")
