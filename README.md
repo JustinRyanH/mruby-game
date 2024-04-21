@@ -46,5 +46,10 @@ install xcode `xcode-select --install`
 
 ### Build
 
-If you have ruby install just `bundle install` and run `rake darwin:compat` (osx)
-or `rake windows:compat` then run `rake build`
+If you have ruby install run `bundle install`
+
+Then you can run `rake build` and then `./mruby-game.exe` for windows or `./mruby-game` for osx
+
+#### Optional
+If you need to change `mruby/mruby_compat.c` you need to run 
+and run `rake darwin:compat` (osx) or `rake windows:compat`
