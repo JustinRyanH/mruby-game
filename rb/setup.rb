@@ -92,10 +92,6 @@ class Game
     tick_wall_timer
   end
 
-  def a
-    puts 'a'
-  end
-
   def process_events
     events.each(&:perform)
     events.clear
