@@ -19,11 +19,27 @@ Entity.class_eval do
 end
 
 GRAVITY_Y = 7
+WORLD_SPEED = 100
 
 class SpawnObstacle
+  attr_reader :game
+
+  # @param [Game] game
+  def initialize(game)
+    @game = game
+  end
+
   def perform
-    gap_center_y = FrameInput.random_float(200..500)
-    puts "Spawn Wall: Gap Center is at #{gap_center_y}"
+    width, _height = FrameInput.screen_size
+
+    x = width / 2
+
+    gap_center_y = FrameInput.random_float(200...500)
+    pos = Vector.new(x, gap_center_y)
+
+    Log.info("SpawnObstacle @ #{pos}")
+    entity = Entity.create(pos:, size: Vector.new(40, 100))
+    game.add_obstacle(entity)
   end
 end
 
@@ -58,6 +74,7 @@ class Game
   def initialize
     @ready = false
     @events = []
+    @obstacles = []
   end
 
   def setup
@@ -84,18 +101,32 @@ class Game
 
     process_events
 
-    @player_velocity.y = @player_velocity.y + GRAVITY_Y * dt
+    @player_velocity.y = @player_velocity.y + (GRAVITY_Y * dt)
 
     flap_player if FrameInput.key_just_pressed?(:space)
     @player_velocity.y = @player_velocity.y.clamp(-5, 5)
-    player.pos = player.pos + @player_velocity
+    player.pos += @player_velocity
 
     tick_wall_timer
+    move_obstacles
   end
+
+  def add_obstacle(entity)
+    @obstacles << entity
+  end
+
+  private
 
   def process_events
     events.each(&:perform)
     events.clear
+  end
+
+  def move_obstacles
+    @obstacles.each do |obstacle|
+      move_by = Vector.new(-WORLD_SPEED, 0) * dt
+      obstacle.pos += move_by
+    end
   end
 
   def flap_player
@@ -106,7 +137,7 @@ class Game
     @spawn_timer.tick
     return unless @spawn_timer.finished?
 
-    events << SpawnObstacle.new
+    events << SpawnObstacle.new(self)
 
     @spawn_timer.reset(3)
   end
@@ -117,10 +148,3 @@ class Game
 end
 
 puts FrameInput.random_float(3...5)
-puts "Exclusive: #{FrameInput.random_int(5..5)}"
-puts "Exclusive: #{FrameInput.random_int(5..5)}"
-puts "Exclusive: #{FrameInput.random_int(5..5)}"
-puts "Exclusive: #{FrameInput.random_int(5..5)}"
-puts "Exclusive: #{FrameInput.random_int(5..5)}"
-puts "Exclusive: #{FrameInput.random_int(5..5)}"
-puts "Exclusive: #{FrameInput.random_int(5..5)}"
