@@ -117,11 +117,10 @@ class Game
 end
 
 puts FrameInput.random_float(3...5)
-puts "Inclusive: #{FrameInput.random_int(3..5)}"
-puts "Inclusive: #{FrameInput.random_int(3..5)}"
-puts "Inclusive: #{FrameInput.random_int(3..5)}"
-puts "Inclusive: #{FrameInput.random_int(3..5)}"
-puts "Inclusive: #{FrameInput.random_int(3..5)}"
-puts "Inclusive: #{FrameInput.random_int(3..5)}"
-puts "Inclusive: #{FrameInput.random_int(3..5)}"
-puts "Inclusive: #{FrameInput.random_int(3..5)}"
+puts "Exclusive: #{FrameInput.random_int(5..5)}"
+puts "Exclusive: #{FrameInput.random_int(5..5)}"
+puts "Exclusive: #{FrameInput.random_int(5..5)}"
+puts "Exclusive: #{FrameInput.random_int(5..5)}"
+puts "Exclusive: #{FrameInput.random_int(5..5)}"
+puts "Exclusive: #{FrameInput.random_int(5..5)}"
+puts "Exclusive: #{FrameInput.random_int(5..5)}"
