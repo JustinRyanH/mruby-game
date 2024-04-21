@@ -84,10 +84,18 @@ class SpawnObstacle
 
     gap_center_y = FrameInput.random_int(((gap_size * 0.5) + 25)...(height - (gap_size * 0.5) - 25))
     pos = Vector.new(x, gap_center_y)
+    gap = Rectangle.new(pos:, size:)
 
-    entity = Entity.create(pos:, size:)
-    Log.info("SpawnObstacle #{entity.id} @ #{pos.inspect} gap: #{gap_size}")
-    game.add_obstacle(entity)
+    bottom_rect = Rectangle.from_bounds(left: gap.left, right: gap.right, top: gap.bottom, bottom: height)
+    top_rect = Rectangle.from_bounds(left: gap.left, right: gap.right, top: 0, bottom: gap.top)
+
+    bottom = Entity.create(pos: bottom_rect.pos, size: bottom_rect.size)
+    top = Entity.create(pos: top_rect.pos, size: top_rect.size)
+
+    Log.info "SpawnObstacle #{bottom.id}"
+    Log.info "SpawnObstacle #{top.id}"
+    game.add_obstacle(bottom)
+    game.add_obstacle(top)
   end
 end
 
