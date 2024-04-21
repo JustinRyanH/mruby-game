@@ -33,31 +33,31 @@ mruby_odin_allocf :: proc "c" (
 	context = mruby_ctx.ctx
 	ptr_as_num := transmute(uint)ptr
 
-	if size == 0 {
-		mem.free(ptr)
-		if ptr_as_num in mruby_ctx.alloc_ref {
-			delete_key(&mruby_ctx.alloc_ref, ptr_as_num)
-		}
+	if size == 0 && ptr == nil {
 		return nil
 	}
 	if ptr == nil {
 		n_ptr, err := mem.alloc(cast(int)size)
 		assert(err == .None, "Allocation Error")
 		ptr_as_num := transmute(uint)n_ptr
-		mruby_ctx.alloc_ref[ptr_as_num] = size
 		return n_ptr
 	}
+	if size == 0 {
+		mem.free(ptr)
+		return nil
+	}
 
-	old_size := mruby_ctx.alloc_ref[ptr_as_num]
-	n_ptr, err := mem.resize(ptr, cast(int)old_size, cast(int)size)
+	info := mem.query_info(ptr, context.allocator)
+	old_size, ok := info.size.(int)
+	assert(ok, "Cannot resize if we didn't track the old size")
+	n_ptr, err := mem.resize(ptr, old_size, cast(int)size)
 	assert(err == .None, "Allocation Error")
 
 	return n_ptr
 }
 
 MrubyCtx :: struct {
-	ctx:       runtime.Context,
-	alloc_ref: map[uint]uint,
+	ctx: runtime.Context,
 }
 
 reset_tracking_allocator :: proc(a: ^mem.Tracking_Allocator) -> (err: bool) {
@@ -110,7 +110,7 @@ main :: proc() {
 	game_init(g)
 	defer game_deinit(g)
 
-	game_load_mruby_raylib(g)
+	// game_load_mruby_raylib(g)
 
 	tick_handle, tick_loaded := asset_system_load_ruby(&g.assets, "rb/tick.rb")
 	assert(tick_loaded, "`tick.rb` is required")
@@ -127,7 +127,7 @@ main :: proc() {
 	entity.size = rl.Vector2{45, 45}
 	entity.color = rl.GREEN
 
-	game_run_code(g, setup_handle)
+	// game_run_code(g, setup_handle)
 
 	for !rl.WindowShouldClose() {
 		defer {
@@ -135,7 +135,7 @@ main :: proc() {
 			assert(!is_bad, "Double Free issue")
 		}
 		defer free_all(context.temp_allocator)
-		defer mrb.incremental_gc(g.ruby)
+		// defer mrb.incremental_gc(g.ruby)
 
 		input.update_input(&g.input)
 		rl.BeginDrawing()

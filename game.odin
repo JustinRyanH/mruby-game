@@ -28,7 +28,6 @@ Game :: struct {
 
 
 game_init :: proc(game: ^Game) {
-	game.mruby_ctx.alloc_ref = make(map[uint]uint)
 	game.mruby_ctx.ctx = context
 
 	game.ruby = mrb.open_allocf(mruby_odin_allocf, &game.mruby_ctx)
@@ -38,5 +37,4 @@ game_init :: proc(game: ^Game) {
 game_deinit :: proc(game: ^Game) {
 	asset_system_deinit(&game.assets)
 	mrb.close(game.ruby)
-	delete(game.mruby_ctx.alloc_ref)
 }
