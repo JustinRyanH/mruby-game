@@ -29,8 +29,8 @@ mruby_odin_allocf :: proc "c" (
 	size: uint,
 	user_data: rawptr,
 ) -> rawptr {
-	mruby_ctx := transmute(^MrubyCtx)user_data
-	context = mruby_ctx.ctx
+	ctx := transmute(^runtime.Context)user_data
+	context = ctx^
 	ptr_as_num := transmute(uint)ptr
 
 	if size == 0 && ptr == nil {

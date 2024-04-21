@@ -1,5 +1,7 @@
 package main
 
+import "core:runtime"
+
 import rl "vendor:raylib"
 
 import dp "./data_pool"
@@ -17,20 +19,18 @@ EntityHandle :: distinct dp.Handle
 EntityPool :: dp.DataPool(128, Entity, EntityHandle)
 
 Game :: struct {
-	ruby:      ^mrb.State,
-	mruby_ctx: MrubyCtx,
-	assets:    AssetSystem,
-	input:     input.FrameInput,
+	ruby:     ^mrb.State,
+	ctx:      runtime.Context,
+	assets:   AssetSystem,
+	input:    input.FrameInput,
 
 	// Game Data
-	entities:  EntityPool,
+	entities: EntityPool,
 }
 
-
 game_init :: proc(game: ^Game) {
-	game.mruby_ctx.ctx = context
-
-	game.ruby = mrb.open_allocf(mruby_odin_allocf, &game.mruby_ctx)
+	game.ctx = context
+	game.ruby = mrb.open_allocf(mruby_odin_allocf, &game.ctx)
 	asset_system_init(&game.assets)
 }
 

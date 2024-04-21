@@ -13,8 +13,8 @@ import "./input"
 import mrb "./mruby"
 
 load_context :: proc "contextless" (state: ^mrb.State) -> runtime.Context {
-	rctx := transmute(^MrubyCtx)mrb.state_alloc_ud(state)
-	return rctx.ctx
+	ctx := transmute(^runtime.Context)mrb.state_alloc_ud(state)
+	return ctx^
 }
 
 mrb_frame_input_type: mrb.DataType = {"FrameInput", mrb.free}
