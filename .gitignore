@@ -2,3 +2,4 @@ mruby-game
 mruby-game.exe
 *.pdb
 *.dSYM
+.vscode/
