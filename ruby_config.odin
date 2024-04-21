@@ -205,6 +205,7 @@ frame_input_random_float :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb
 	rng_v: mrb.Value
 	mrb.get_args(state, "o", &rng_v)
 	rng := mrb.range_ptr(state, rng_v)
+
 	low, high, is_exlusive := mrb.parse_range_int(state, rng)
 	// TODO: Come up with a way to do inclusive float range
 	if !is_exlusive {
@@ -242,6 +243,8 @@ frame_input_random_int :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.V
 		return mrb.int_value(state, v + low)
 	}
 
+	// We don't do the guard here because I still want to have the RND move 
+	// event if we don't get a real value
 	upper := cast(i64)(high - low)
 	v := cast(int)rand.int63_max(upper + 1)
 	return mrb.int_value(state, v + low)
