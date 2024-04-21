@@ -133,6 +133,8 @@ setup_input :: proc(st: ^mrb.State) {
 		frame_input_random_float,
 		mrb.args_req(1),
 	)
+	mrb.define_class_method(st, frame_class, "random_int", frame_input_random_int, mrb.args_req(1))
+
 
 	engine_classes.frame_class = frame_class
 }
@@ -215,11 +217,53 @@ frame_input_random_float :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb
 			high_v,
 		)
 	}
-	fmt.println("Is low Int?", mrb.as_int(state, low_v))
-	fmt.println("Is high Int?", mrb.as_int(state, high_v))
-	v := rand.float64_range(cast(f64)low_v, cast(f64)high_v, &g.rand)
+	low := mrb.as_int(state, low_v)
+	high := mrb.as_int(state, high_v)
+	v := rand.float64_range(cast(f64)low, cast(f64)high, &g.rand)
 
 	return mrb.float_value(state, v)
+}
+
+
+@(private = "file")
+frame_input_random_int :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	rng_v: mrb.Value
+	mrb.get_args(state, "o", &rng_v)
+	rng := mrb.range_ptr(state, rng_v)
+	low_v := mrb.range_beg(rng)
+	high_v := mrb.range_end(rng)
+
+	low := mrb.as_int(state, low_v)
+	high := mrb.as_int(state, high_v)
+
+	if low > high {
+		low, high = high, low
+	}
+
+	is_exlusive := mrb.range_excl(rng)
+
+	if is_exlusive {
+		if low == high {
+			mrb.raise_exception(
+				state,
+				"Cannot do a exclusive range where both values were the same",
+			)
+		}
+		upper := cast(i64)(high - low)
+		v := cast(int)rand.int63_max(upper)
+		return mrb.int_value(state, v + low)
+	}
+
+	if low == high {
+		return mrb.int_value(state, high)
+	}
+
+	upper := cast(i64)(high - low)
+	v := cast(int)rand.int63_max(upper + 1)
+	return mrb.int_value(state, v + low)
+
 }
 
 
