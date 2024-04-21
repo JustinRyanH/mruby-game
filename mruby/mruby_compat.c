@@ -62,6 +62,8 @@ extern struct RClass *mrb_c_state_get_nil_class(mrb_state *mrb) {
 extern struct RClass *mrb_c_state_get_symbol_class(mrb_state *mrb) {
   return mrb->symbol_class;
 }
+
+extern void *mrb_c_state_alloc_ud(mrb_state *mrb) { return mrb->allocf_ud; }
 extern struct RClass *mrb_c_state_get_kernel_module(mrb_state *mrb) {
   return mrb->kernel_module;
 }

@@ -295,6 +295,7 @@ sym_to_string :: proc(state: ^State, sym: Sym) -> string {
 @(link_prefix = "mrb_c_")
 @(default_calling_convention = "c")
 foreign compat {
+	state_alloc_ud :: proc(mrb: ^State) -> rawptr ---
 	// Gets the Exception from State
 	// Returns nil if no error, otherwise error is on the RObject
 	state_get_exc :: proc(mrb: ^State) -> ^RObject ---
