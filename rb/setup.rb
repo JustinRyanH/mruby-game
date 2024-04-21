@@ -19,7 +19,7 @@ Entity.class_eval do
 
   def offscreen_left?
     right = pos.x + (size.x * 0.5)
-    right < 0
+    right.negative?
   end
 end
 
@@ -145,8 +145,7 @@ class Game
     # TOOD: We really should just clean this up
     @obstacles.select!(&:valid?)
     @obstacles.each do |obstacle|
-      move_by = Vector.new(-WORLD_SPEED, 0) * dt
-      obstacle.pos += move_by
+      obstacle.pos += Vector.new(-WORLD_SPEED, 0) * dt
       events << DestroyObstacle.new(self, obstacle) if obstacle.offscreen_left?
     end
   end
