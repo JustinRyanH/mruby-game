@@ -125,6 +125,13 @@ setup_input :: proc(st: ^mrb.State) {
 		frame_input_screen_size,
 		mrb.args_none(),
 	)
+	mrb.define_class_method(
+		st,
+		frame_class,
+		"random_float",
+		frame_input_random_float,
+		mrb.args_req(1),
+	)
 
 	engine_classes.frame_class = frame_class
 }
@@ -176,6 +183,7 @@ sym_to_keyboard_key :: proc(state: ^mrb.State) -> (key: input.KeyboardKey, succe
 
 	return
 }
+
 @(private = "file")
 frame_input_screen_size :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	width, height := input.frame_query_dimensions(g.input)
@@ -186,6 +194,12 @@ frame_input_screen_size :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.
 		mrb.float_value(state, mrb_height),
 	)
 }
+
+@(private = "file")
+frame_input_random_float :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return mrb.float_value(state, 0)
+}
+
 
 @(private = "file")
 frame_input_is_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {

@@ -22,7 +22,8 @@ GRAVITY_Y = 7
 
 class SpawnObstacle
   def perform
-    puts 'Spawn Wall'
+    gap_center_y = FrameInput.random_float(200..500)
+    puts "Spawn Wall: Gap Center is at #{gap_center_y}"
   end
 end
 
