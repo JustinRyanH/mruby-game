@@ -12,8 +12,51 @@ class Log
 end
 
 class FrameInput
+  # How long since the last frame
+  #
   # @return [Float]
   def self.delta_time; end
+
+  # What # the frame we are on
+  #
+  # @return [Integer]
+  def self.id; end
+
+  # Whether the key is down on this frame
+  #
+  # @return [Boolean]
+  def self.key_down?(key); end
+
+  # Whether the key is down this frame, 
+  # but not the last
+  #
+  # @return [Boolean]
+  def self.key_just_pressed?(key); end
+
+  # Whether the key is up this frame, 
+  # but not the last
+  #
+  # @return [Boolean]
+  def self.key_was_down?(key); end
+
+  # Get the width and height of the curent frame
+  #
+  # @return [Array(Number, Number)]
+  def self.screen_size; end
+
+  # Gets a random float betwen the given range,
+  # it will raise if you pass in an inclusive range
+  #
+  # @param [Range] low..high
+  # @return [Float]
+  def self.random_float(rng); end
+
+  # Gets a random Integer betwen the given range,
+  #
+  # @param [Range] low..high
+  # @return [Float]
+  def self.random_int(rng); end
+
 end
 
 class Vector
@@ -23,7 +66,6 @@ class Vector
   # @param [Float]
   # @return [Float]
   attr_accessor :y
-
 
   # Create a Zero Vector
   #
