@@ -1,5 +1,7 @@
 package main
 
+import "core:fmt"
+import "core:math/rand"
 import "core:runtime"
 
 import rl "vendor:raylib"
@@ -23,6 +25,7 @@ Game :: struct {
 	ctx:      runtime.Context,
 	assets:   AssetSystem,
 	input:    input.FrameInput,
+	rand:     rand.Rand,
 
 	// Game Data
 	entities: EntityPool,
@@ -30,6 +33,7 @@ Game :: struct {
 
 game_init :: proc(game: ^Game) {
 	game.ctx = context
+	fmt.println(game.rand)
 	game.ruby = mrb.open_allocf(mruby_odin_allocf, &game.ctx)
 	asset_system_init(&game.assets)
 }

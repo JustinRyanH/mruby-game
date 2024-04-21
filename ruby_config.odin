@@ -2,6 +2,7 @@ package main
 
 import "core:fmt"
 import "core:math"
+import "core:math/rand"
 import "core:reflect"
 import "core:runtime"
 import "core:strings"
@@ -216,9 +217,9 @@ frame_input_random_float :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb
 	}
 	fmt.println("Is low Int?", mrb.as_int(state, low_v))
 	fmt.println("Is high Int?", mrb.as_int(state, high_v))
+	v := rand.float64_range(cast(f64)low_v, cast(f64)high_v, &g.rand)
 
-
-	return mrb.float_value(state, 0)
+	return mrb.float_value(state, v)
 }
 
 
