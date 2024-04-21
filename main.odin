@@ -135,7 +135,7 @@ main :: proc() {
 			assert(!is_bad, "Double Free issue")
 		}
 		defer free_all(context.temp_allocator)
-		// defer mrb.incremental_gc(g.ruby)
+		defer mrb.incremental_gc(g.ruby)
 
 		input.update_input(&g.input)
 		rl.BeginDrawing()
