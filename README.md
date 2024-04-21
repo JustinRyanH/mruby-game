@@ -33,4 +33,18 @@ build system.
 
 ## How to build
 
-If you have ruby install just `bundle install` and run `rake darwin:compat` (osx) or `rake windows:compat` then run `rake build`
+`odin` [installed](https://odin-lang.org/docs/install/)
+### Requirements Windows
+
+Visual Studio installed (VS2019-2022
+`ruby` installed on system
+
+### Requirements Mac
+install xcode `xcode-select --install`
+`llvm` installed on system
+`ruby` installed on system
+
+### Build
+
+If you have ruby install just `bundle install` and run `rake darwin:compat` (osx)
+or `rake windows:compat` then run `rake build`
