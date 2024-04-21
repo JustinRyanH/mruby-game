@@ -37,12 +37,13 @@ class SpawnObstacle
   def perform
     width, _height = FrameInput.screen_size
 
-    x = width / 2
+    size = Vector.new(40, 100)
+    x = width + size.x + 20
 
     gap_center_y = FrameInput.random_float(200...500)
     pos = Vector.new(x, gap_center_y)
 
-    entity = Entity.create(pos:, size: Vector.new(40, 100))
+    entity = Entity.create(pos:, size:)
     Log.info("SpawnObstacle #{entity.id} @ #{pos.inspect}")
     game.add_obstacle(entity)
   end
@@ -167,5 +168,3 @@ class Game
     FrameInput.delta_time
   end
 end
-
-puts FrameInput.random_float(3...5)
