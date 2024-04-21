@@ -10,3 +10,6 @@ Style/Documentation:
 
 Metrics/AbcSize:
   Enabled: false
+
+Naming/MethodParameterName:
+  Enabled: false
