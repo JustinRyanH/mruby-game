@@ -41,7 +41,7 @@ class Timer
 end
 
 class Game
-  attr_reader :player
+  attr_reader :player, :player_velocity
 
   @current = nil
   def self.current
@@ -82,7 +82,9 @@ class Game
     tick_wall_timer
   end
 
-  private
+  def a
+    puts 'a'
+  end
 
   def flap_player
     @player_velocity.y -= 4.5

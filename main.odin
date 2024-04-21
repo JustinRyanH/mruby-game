@@ -110,7 +110,7 @@ main :: proc() {
 	game_init(g)
 	defer game_deinit(g)
 
-	// game_load_mruby_raylib(g)
+	game_load_mruby_raylib(g)
 
 	tick_handle, tick_loaded := asset_system_load_ruby(&g.assets, "rb/tick.rb")
 	assert(tick_loaded, "`tick.rb` is required")
@@ -127,7 +127,7 @@ main :: proc() {
 	entity.size = rl.Vector2{45, 45}
 	entity.color = rl.GREEN
 
-	// game_run_code(g, setup_handle)
+	game_run_code(g, setup_handle)
 
 	for !rl.WindowShouldClose() {
 		defer {

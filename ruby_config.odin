@@ -147,7 +147,7 @@ frame_input_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 @(private = "file")
 frame_input_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	i := g.input
-	return mrb.int_value(state, i.current_frame.meta.frame_id)
+	return mrb.int_value(state, cast(mrb.Int)i.current_frame.meta.frame_id)
 }
 
 @(private = "file")
@@ -390,7 +390,7 @@ entity_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	entity_ptr.size = size
 	entity_ptr.color = color
 
-	id := mrb.int_value(state, cast(int)handle)
+	id := mrb.int_value(state, cast(mrb.Int)handle)
 	collection: []mrb.Value = {id}
 	return mrb.obj_new(state, engine_classes.entity_class, 1, raw_data(collection[:]))
 }
@@ -522,25 +522,25 @@ color_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 @(private = "file")
 color_get_r :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	v := mrb.get_data_from_value(rl.Color, self)
-	return mrb.int_value(state, cast(int)v.r)
+	return mrb.int_value(state, cast(mrb.Int)v.r)
 }
 
 @(private = "file")
 color_get_b :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	v := mrb.get_data_from_value(rl.Color, self)
-	return mrb.int_value(state, cast(int)v.b)
+	return mrb.int_value(state, cast(mrb.Int)v.b)
 }
 
 @(private = "file")
 color_get_g :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	v := mrb.get_data_from_value(rl.Color, self)
-	return mrb.int_value(state, cast(int)v.g)
+	return mrb.int_value(state, cast(mrb.Int)v.g)
 }
 
 @(private = "file")
 color_get_a :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	v := mrb.get_data_from_value(rl.Color, self)
-	return mrb.int_value(state, cast(int)v.a)
+	return mrb.int_value(state, cast(mrb.Int)v.a)
 }
 
 @(private = "file")
@@ -555,7 +555,7 @@ color_from_pallet :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 	color := pallet_to_color[pallet]
 	colors: [4]mrb.Value
 
-	for val, idx in color {colors[idx] = mrb.int_value(state, cast(int)val)}
+	for val, idx in color {colors[idx] = mrb.int_value(state, cast(mrb.Int)val)}
 
 	return mrb.obj_new(state, engine_classes.color_class, len(colors), raw_data(colors[:]))
 }
