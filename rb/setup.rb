@@ -35,12 +35,13 @@ class SpawnObstacle
   end
 
   def perform
-    width, _height = FrameInput.screen_size
+    width, height = FrameInput.screen_size
 
-    size = Vector.new(40, 100)
+    gap_size = FrameInput.random_int(120...450)
+    size = Vector.new(40, gap_size)
     x = width + size.x + 20
 
-    gap_center_y = FrameInput.random_float(200...500)
+    gap_center_y = FrameInput.random_float(((gap_size * 0.5) + 25)...(height - (gap_size * 0.5) - 25))
     pos = Vector.new(x, gap_center_y)
 
     entity = Entity.create(pos:, size:)
