@@ -12,6 +12,11 @@ import dp "./data_pool"
 import "./input"
 import mrb "./mruby"
 
+load_context :: proc "contextless" (state: ^mrb.State) -> runtime.Context {
+	rctx := transmute(^MrubyCtx)mrb.state_alloc_ud(state)
+	return rctx.ctx
+}
+
 mrb_frame_input_type: mrb.DataType = {"FrameInput", mrb.free}
 mrb_entity_handle_type: mrb.DataType = {"Entity", mrb.free}
 mrb_vector_handle_type: mrb.DataType = {"Vector", mrb.free}
@@ -184,7 +189,7 @@ frame_input_screen_size :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.
 
 @(private = "file")
 frame_input_is_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = runtime.default_context()
+	context = load_context(state)
 
 	key, success := sym_to_keyboard_key(state)
 	if !success {
@@ -203,7 +208,7 @@ frame_input_dt :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 frame_input_just_pressed :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = game_ctx
+	context = load_context(state)
 
 	key, success := sym_to_keyboard_key(state)
 	if !success {
@@ -218,7 +223,7 @@ frame_input_just_pressed :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb
 
 @(private = "file")
 frame_input_was_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = game_ctx
+	context = load_context(state)
 
 	key, success := sym_to_keyboard_key(state)
 	if !success {
@@ -235,7 +240,8 @@ frame_input_was_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Val
 //////////////////////////////
 @(private = "file")
 logger_info :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = runtime.default_context()
+	context = load_context(state)
+
 	cstr: cstring
 	mrb.get_args(state, "z", &cstr)
 	rl.TraceLog(.INFO, cstr)
@@ -244,7 +250,8 @@ logger_info :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 logger_error :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = runtime.default_context()
+	context = load_context(state)
+
 	cstr: cstring
 	mrb.get_args(state, "z", &cstr)
 	rl.TraceLog(.ERROR, cstr)
@@ -253,7 +260,8 @@ logger_error :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 logger_warning :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = runtime.default_context()
+	context = load_context(state)
+
 	cstr: cstring
 	mrb.get_args(state, "z", &cstr)
 	rl.TraceLog(.WARNING, cstr)
@@ -262,7 +270,8 @@ logger_warning :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 logger_fatal :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = runtime.default_context()
+	context = load_context(state)
+
 	cstr: cstring
 	mrb.get_args(state, "z", &cstr)
 	rl.TraceLog(.FATAL, cstr)
@@ -292,7 +301,7 @@ entity_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 entity_get_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = game_ctx
+	context = load_context(state)
 
 	handle := mrb.get_data_from_value(EntityHandle, self)
 	success := dp.valid(&g.entities, handle^)
@@ -304,7 +313,7 @@ entity_get_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 entity_valid :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = game_ctx
+	context = load_context(state)
 
 	handle := mrb.get_data_from_value(EntityHandle, self)
 	success := dp.valid(&g.entities, handle^)
@@ -313,7 +322,7 @@ entity_valid :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 entity_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = game_ctx
+	context = load_context(state)
 
 	handle := mrb.get_data_from_value(EntityHandle, self)
 
@@ -332,7 +341,7 @@ entity_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 entity_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = game_ctx
+	context = load_context(state)
 
 	new_pos: mrb.Value
 	mrb.get_args(state, "o", &new_pos)
@@ -355,7 +364,7 @@ entity_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 entity_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = game_ctx
+	context = load_context(state)
 
 	NumOfArgs :: 3
 	kwargs: mrb.Kwargs
@@ -448,7 +457,7 @@ vector_get_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 vector_set_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = game_ctx
+	context = load_context(state)
 
 	new_y: mrb.Float
 	mrb.get_args(state, "f", &new_y)
@@ -460,7 +469,7 @@ vector_set_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 vector_scale :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = game_ctx
+	context = load_context(state)
 
 	scale: mrb.Float
 	mrb.get_args(state, "f", &scale)
@@ -478,7 +487,7 @@ vector_scale :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 vector_add :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = game_ctx
+	context = load_context(state)
 
 	other: mrb.Value
 	mrb.get_args(state, "o", &other)
@@ -545,7 +554,8 @@ color_get_a :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 color_from_pallet :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = game_ctx
+	context = load_context(state)
+
 	method_name := mrb.get_mid(state)
 	str := mrb.sym_to_string(state, method_name)
 
