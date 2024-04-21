@@ -2,7 +2,7 @@ package data_pool
 
 import "core:testing"
 
-Handle :: distinct u64
+Handle :: distinct i64
 HandleStruct :: struct {
 	idx: u32,
 	gen: u32,

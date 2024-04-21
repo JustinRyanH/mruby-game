@@ -42,8 +42,8 @@ class SpawnObstacle
     gap_center_y = FrameInput.random_float(200...500)
     pos = Vector.new(x, gap_center_y)
 
-    Log.info("SpawnObstacle @ #{pos.inspect}")
     entity = Entity.create(pos:, size: Vector.new(40, 100))
+    Log.info("SpawnObstacle #{entity.id} @ #{pos.inspect}")
     game.add_obstacle(entity)
   end
 end
