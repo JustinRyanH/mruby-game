@@ -33,7 +33,7 @@ Game :: struct {
 
 game_init :: proc(game: ^Game) {
 	game.ctx = context
-	fmt.println(game.rand)
+	game.rand = rand.create(1)
 	game.ruby = mrb.open_allocf(mruby_odin_allocf, &game.ctx)
 	asset_system_init(&game.assets)
 }

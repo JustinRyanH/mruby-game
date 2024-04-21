@@ -243,14 +243,14 @@ frame_input_random_int :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.V
 		}
 
 		upper := cast(i64)(high - low)
-		v := cast(int)rand.int63_max(upper)
+		v := cast(int)rand.int63_max(upper, &g.rand)
 		return mrb.int_value(state, v + low)
 	}
 
 	// We don't do the guard here because I still want to have the RND move 
 	// event if we don't get a real value
 	upper := cast(i64)(high - low)
-	v := cast(int)rand.int63_max(upper + 1)
+	v := cast(int)rand.int63_max(upper + 1, &g.rand)
 	return mrb.int_value(state, v + low)
 
 }
