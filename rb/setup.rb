@@ -20,6 +20,26 @@ end
 
 GRAVITY_Y = 7
 
+class Timer
+  attr_reader :time
+
+  def initialize(time)
+    @time = time
+  end
+
+  def tick
+    @time -= FrameInput.delta_time
+  end
+
+  def reset(time)
+    @time = time
+  end
+
+  def finished?
+    @time <= 0
+  end
+end
+
 class Game
   attr_reader :player
 
@@ -42,6 +62,7 @@ class Game
       color: Color.red
     )
     @player_velocity = Vector.zero
+    @spawn_timer = Timer.new(3)
 
     @ready = true
   end
@@ -57,12 +78,22 @@ class Game
     flap_player if FrameInput.key_just_pressed?(:space)
     @player_velocity.y = @player_velocity.y.clamp(-5, 5)
     player.pos = player.pos + @player_velocity
+
+    tick_wall_timer
   end
 
   private
 
   def flap_player
     @player_velocity.y -= 4.5
+  end
+
+  def tick_wall_timer
+    @spawn_timer.tick
+    return unless @spawn_timer.finished?
+
+    puts 'Spawn Wall'
+    @spawn_timer.reset(3)
   end
 
   def dt
