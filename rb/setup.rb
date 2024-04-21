@@ -23,6 +23,47 @@ Entity.class_eval do
   end
 end
 
+class Rectangle
+  attr_reader :pos, :size
+
+  def self.from_bounds(top:, right:, bottom:, left:)
+    height = (bottom - top).abs
+    width = (right - left).abs
+
+    center_y = top + (height * 0.5)
+    center_x = left + (width * 0.5)
+
+    pos = Vector.new(center_x, center_y)
+    size = Vector.new(width, height)
+    new(pos:, size:)
+  end
+
+  def initialize(pos:, size:)
+    @pos = pos
+    @size = size
+  end
+
+  def bottom
+    pos.y + (size.y * 0.5)
+  end
+
+  def top
+    pos.y - (size.y * 0.5)
+  end
+
+  def left
+    pos.x - (size.x * 0.5)
+  end
+
+  def right
+    pos.x + (size.x * 0.5)
+  end
+
+  def inspect
+    { name: 'Rectangle', top:, right:, bottom:, left: }
+  end
+end
+
 GRAVITY_Y = 7
 WORLD_SPEED = 100
 
@@ -41,7 +82,7 @@ class SpawnObstacle
     size = Vector.new(40, gap_size)
     x = width + size.x + 20
 
-    gap_center_y = FrameInput.random_float(((gap_size * 0.5) + 25)...(height - (gap_size * 0.5) - 25))
+    gap_center_y = FrameInput.random_int(((gap_size * 0.5) + 25)...(height - (gap_size * 0.5) - 25))
     pos = Vector.new(x, gap_center_y)
 
     entity = Entity.create(pos:, size:)
@@ -108,7 +149,7 @@ class Game
       color: Color.red
     )
     @player_velocity = Vector.zero
-    @spawn_timer = Timer.new(3)
+    @spawn_timer = Timer.new(0)
 
     @ready = true
   end
