@@ -20,6 +20,12 @@ end
 
 GRAVITY_Y = 7
 
+class SpawnObstacle
+  def perform
+    puts 'Spawn Wall'
+  end
+end
+
 class Timer
   attr_reader :time
 
@@ -41,7 +47,7 @@ class Timer
 end
 
 class Game
-  attr_reader :player, :player_velocity
+  attr_reader :player, :player_velocity, :events
 
   @current = nil
   def self.current
@@ -50,6 +56,7 @@ class Game
 
   def initialize
     @ready = false
+    @events = []
   end
 
   def setup
@@ -73,6 +80,9 @@ class Game
 
   def tick
     setup unless ready?
+
+    process_events
+
     @player_velocity.y = @player_velocity.y + GRAVITY_Y * dt
 
     flap_player if FrameInput.key_just_pressed?(:space)
@@ -86,6 +96,11 @@ class Game
     puts 'a'
   end
 
+  def process_events
+    events.each(&:perform)
+    events.clear
+  end
+
   def flap_player
     @player_velocity.y -= 4.5
   end
@@ -94,7 +109,8 @@ class Game
     @spawn_timer.tick
     return unless @spawn_timer.finished?
 
-    puts 'Spawn Wall'
+    events << SpawnObstacle.new
+
     @spawn_timer.reset(3)
   end
 
