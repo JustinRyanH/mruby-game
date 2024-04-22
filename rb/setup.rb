@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+def dt
+  FrameInput.delta_time
+end
+
 Vector.class_eval do
   def inspect
     { name: 'Vector', x:, y: }
@@ -146,6 +150,7 @@ class MainScene
 
   def tick
     tick_wall_timer
+    move_player
   end
 
   def enter
@@ -165,6 +170,18 @@ class MainScene
 
   private
 
+  def move_player
+    game.player_velocity.y = game.player_velocity.y + (GRAVITY_Y * dt)
+
+    flap_player if FrameInput.key_just_pressed?(:space)
+    game.player_velocity.y = game.player_velocity.y.clamp(-5, 5)
+    game.player.pos += game.player_velocity
+  end
+
+  def flap_player
+    game.player_velocity.y -= 4.5
+  end
+
   def tick_wall_timer
     @spawn_timer.tick
     return unless @spawn_timer.finished?
@@ -177,7 +194,7 @@ end
 
 class Game
   attr_accessor :player, :player_velocity, :spawn_timer
-  attr_reader :events, :scene
+  attr_reader :events, :scene, :obstacles
 
   @current = nil
   def self.current
@@ -210,7 +227,7 @@ class Game
     scene.tick
     return if player.collisions.any?
 
-    move_player
+    # move_player
     move_obstacles
   end
 
@@ -240,23 +257,7 @@ class Game
     end
   end
 
-  def move_player
-    @player_velocity.y = @player_velocity.y + (GRAVITY_Y * dt)
-
-    flap_player if FrameInput.key_just_pressed?(:space)
-    @player_velocity.y = @player_velocity.y.clamp(-5, 5)
-    player.pos += @player_velocity
-  end
-
-  def flap_player
-    @player_velocity.y -= 4.5
-  end
-
   def cleanup
     @obstacles.select!(&:valid?)
-  end
-
-  def dt
-    FrameInput.delta_time
   end
 end
