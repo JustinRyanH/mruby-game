@@ -155,13 +155,19 @@ class DeathState
   def tick
     @death_timer.tick
 
-    puts @death_timer.percentage
+    game.player.pos = @player_start.lerp(@player_end, @death_timer.percentage)
     return unless @death_timer.finished?
 
     raise 'Unimplmeneed Death State'
   end
 
-  def enter; end
+  def enter
+    _, height = FrameInput.screen_size
+
+    @player_start = game.player.pos
+    @player_end = game.player.pos
+    @player_end.y = height + 100
+  end
 
   def exit; end
 end
