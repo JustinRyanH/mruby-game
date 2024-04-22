@@ -134,7 +134,7 @@ class Timer
   end
 end
 
-class Main
+class MainScene
   def initialize(game)
     @game = game
   end
@@ -155,7 +155,7 @@ class Game
   end
 
   def initialize
-    @scene = Main.new(self)
+    @scene = MainScene.new(self)
     @ready = false
     @events = []
     @obstacles = []
