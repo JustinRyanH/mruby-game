@@ -177,12 +177,7 @@ class Game
     process_events
     cleanup
 
-    @player_velocity.y = @player_velocity.y + (GRAVITY_Y * dt)
-
-    flap_player if FrameInput.key_just_pressed?(:space)
-    @player_velocity.y = @player_velocity.y.clamp(-5, 5)
-    player.pos += @player_velocity
-
+    move_player
     tick_wall_timer
     move_obstacles
   end
@@ -211,6 +206,14 @@ class Game
       obstacle.pos += Vector.new(-WORLD_SPEED, 0) * dt
       events << DestroyObstacle.new(self, obstacle) if obstacle.offscreen_left?
     end
+  end
+
+  def move_player
+    @player_velocity.y = @player_velocity.y + (GRAVITY_Y * dt)
+
+    flap_player if FrameInput.key_just_pressed?(:space)
+    @player_velocity.y = @player_velocity.y.clamp(-5, 5)
+    player.pos += @player_velocity
   end
 
   def flap_player
