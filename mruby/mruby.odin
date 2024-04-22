@@ -78,6 +78,7 @@ FiberState :: enum i32 {
 
 Sym :: distinct u32
 Code :: distinct u8
+Method :: distinct uint
 
 
 Aspec :: distinct u32
@@ -641,7 +642,8 @@ foreign lib {
 	class_name :: proc(state: ^State, class: ^RClass) -> cstring ---
 	define_global_const :: proc(state: ^State, name: cstring, value: Value) ---
 
-	// TODO: Implement
-	// MRB_API mrb_bool mrb_obj_is_instance_of(mrb_state *mrb, mrb_value obj, struct RClass* c);
-	// MRB_API mrb_bool mrb_func_basic_p(mrb_state *mrb, mrb_value obj, mrb_sym mid, mrb_func_t func);
+	funcall_argv :: proc(state: ^State, obj: Value, sym: Sym, count: int, args: [^]Value) -> Value ---
+
+	class_get :: proc(state: ^State, name: cstring) -> ^RClass ---
+	class_get_id :: proc(state: ^State, name: Sym) -> ^RClass ---
 }
