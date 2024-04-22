@@ -149,7 +149,15 @@ main :: proc() {
 	assert(game_class != nil, "Game class must be defined")
 	v := mrb.obj_value(game_class)
 	empty := []mrb.Value{}
-	mrb.funcall_argv(g.ruby, v, mrb.sym_from_string(g.ruby, "test"), 0, raw_data(empty))
+	current := mrb.funcall_argv(
+		g.ruby,
+		v,
+		mrb.sym_from_string(g.ruby, "current"),
+		0,
+		raw_data(empty),
+	)
+	fmt.println("Is nil?", mrb.nil_p(current))
+	assert(mrb.object_p(current), "Expected this to be instance of Class")
 
 	for !rl.WindowShouldClose() {
 		defer {
