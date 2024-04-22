@@ -18,6 +18,20 @@ load_context :: proc "contextless" (state: ^mrb.State) -> runtime.Context {
 	return ctx^
 }
 
+get_curent_game :: proc "contextless" (state: ^mrb.State) -> mrb.Value {
+	context = load_context(state)
+
+	game_class := mrb.class_get(g.ruby, "Game")
+	assert(game_class != nil, "Game class must be defined")
+	v := mrb.obj_value(game_class)
+	empty := []mrb.Value{}
+
+	id := mrb.sym_from_string(g.ruby, "current")
+	current := mrb.funcall_argv(g.ruby, v, id, 0, raw_data(empty))
+	assert(mrb.object_p(current), "Expected this to be instance of Class")
+	return current
+}
+
 mrb_frame_input_type: mrb.DataType = {"FrameInput", mrb.free}
 mrb_entity_handle_type: mrb.DataType = {"Entity", mrb.free}
 mrb_vector_handle_type: mrb.DataType = {"Vector", mrb.free}

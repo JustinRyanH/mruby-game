@@ -163,18 +163,8 @@ main :: proc() {
 		game_check_collisions(g)
 		game_run_code(g, tick_handle)
 
-		game_class := mrb.class_get(g.ruby, "Game")
-		assert(game_class != nil, "Game class must be defined")
-		v := mrb.obj_value(game_class)
+		current := get_curent_game(g.ruby)
 		empty := []mrb.Value{}
-		current := mrb.funcall_argv(
-			g.ruby,
-			v,
-			mrb.sym_from_string(g.ruby, "current"),
-			0,
-			raw_data(empty),
-		)
-		assert(mrb.object_p(current), "Expected this to be instance of Class")
 		count := mrb.funcall_argv(
 			g.ruby,
 			current,
