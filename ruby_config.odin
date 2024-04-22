@@ -43,6 +43,7 @@ EngineRClass :: struct {
 	vector_class: ^mrb.RClass,
 	color_class:  ^mrb.RClass,
 	frame_class:  ^mrb.RClass,
+	ui_module:    ^mrb.RClass,
 }
 
 engine_classes: EngineRClass
@@ -50,6 +51,8 @@ engine_classes: EngineRClass
 game_load_mruby_raylib :: proc(game: ^Game) {
 	st := game.ruby
 
+
+	setup_imui(st)
 	setup_input(st)
 	setup_log_class(st)
 	setup_entity_class(st)
@@ -736,4 +739,55 @@ color_from_pallet :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 	for val, idx in color {colors[idx] = mrb.int_value(state, cast(mrb.Int)val)}
 
 	return mrb.obj_new(state, engine_classes.color_class, len(colors), raw_data(colors[:]))
+}
+
+//////////////////////////////
+//// ImUI
+//////////////////////////////
+
+setup_imui :: proc(st: ^mrb.State) {
+	ui_module := mrb.define_module(st, "ImUI")
+	engine_classes.ui_module = ui_module
+	mrb.define_class_method(st, ui_module, "draw_text", imui_draw_text, mrb.args_key(3, 0))
+}
+
+@(private = "file")
+imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	NumOfArgs :: 4
+	kwargs: mrb.Kwargs
+	kwargs.num = NumOfArgs
+
+	names: [NumOfArgs]mrb.Sym =  {
+		mrb.sym_from_string(state, "text"),
+		mrb.sym_from_string(state, "pos"),
+		mrb.sym_from_string(state, "size"),
+		mrb.sym_from_string(state, "color"),
+	}
+	values := [NumOfArgs]mrb.Value{}
+	kwargs.table = raw_data(names[:])
+	kwargs.values = raw_data(values[:])
+
+	mrb.get_args(state, ":", &kwargs)
+	assert(!mrb.undef_p(values[0]), "Entity Required for `text:`")
+	assert(!mrb.undef_p(values[1]), "Entity Required for `pos:`")
+	text: cstring = mrb.string_cstr(state, values[0])
+	pos: rl.Vector2 = mrb.get_data_from_value(rl.Vector2, values[1])^
+	size: f32 = 24
+	color: rl.Color = rl.WHITE
+	if !mrb.undef_p(values[2]) {
+		size = cast(f32)mrb.as_float(state, values[2])
+	}
+	if !mrb.undef_p(values[3]) {
+		assert(
+			mrb.obj_is_kind_of(state, values[3], engine_classes.color_class),
+			"ImUI.draw_text(color: ) should be a Color",
+		)
+		color = mrb.get_data_from_value(rl.Color, values[3])^
+	}
+
+	rl.DrawTextPro(rl.GetFontDefault(), text, pos, {}, 0, size, 2, color)
+
+	return mrb.nil_value()
 }
