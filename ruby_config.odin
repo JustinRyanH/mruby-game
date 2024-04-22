@@ -22,18 +22,25 @@ mrb_frame_input_type: mrb.DataType = {"FrameInput", mrb.free}
 mrb_entity_handle_type: mrb.DataType = {"Entity", mrb.free}
 mrb_vector_handle_type: mrb.DataType = {"Vector", mrb.free}
 mrb_color_handle_type: mrb.DataType = {"Color", mrb.free}
+mrb_collision_evt_handle_type: mrb.DataType = {"CollisionEvent", mrb.free}
 
 EngineRClass :: struct {
-	entity_class: ^mrb.RClass,
-	vector_class: ^mrb.RClass,
-	color_class:  ^mrb.RClass,
-	frame_class:  ^mrb.RClass,
+	entity_class:        ^mrb.RClass,
+	vector_class:        ^mrb.RClass,
+	color_class:         ^mrb.RClass,
+	frame_class:         ^mrb.RClass,
+	collision_evt_class: ^mrb.RClass,
 }
 
 engine_classes: EngineRClass
 
 game_load_mruby_raylib :: proc(game: ^Game) {
 	st := game.ruby
+
+	cls_evt_class := mrb.define_class(st, "CollisionEvent", mrb.state_get_object_class(st))
+	mrb.set_data_type(cls_evt_class, .CData)
+	mrb.define_method(st, cls_evt_class, "initialize", cls_evt_initialize, mrb.args_req(2))
+	engine_classes.collision_evt_class = cls_evt_class
 
 	setup_input(st)
 	setup_log_class(st)
@@ -675,4 +682,26 @@ color_from_pallet :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 	for val, idx in color {colors[idx] = mrb.int_value(state, cast(mrb.Int)val)}
 
 	return mrb.obj_new(state, engine_classes.color_class, len(colors), raw_data(colors[:]))
+}
+
+
+//////////////////////////////
+//// CollisionEvent
+//////////////////////////////
+
+@(private = "file")
+cls_evt_initialize :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	a, b: int
+	mrb.get_args(state, "ii", &a, &b)
+
+	v: ^CollisionEvent = mrb.get_data_from_value(CollisionEvent, self)
+	if (v == nil) {
+		mrb.data_init(self, nil, &mrb_collision_evt_handle_type)
+		v = cast(^CollisionEvent)mrb.malloc(state, size_of(CollisionEvent))
+		mrb.data_init(self, v, &mrb_collision_evt_handle_type)
+	}
+	v.a = cast(EntityHandle)a
+	v.b = cast(EntityHandle)b
+
+	return self
 }
