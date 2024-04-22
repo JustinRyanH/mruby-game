@@ -145,6 +145,12 @@ main :: proc() {
 
 	game_run_code(g, setup_handle)
 
+	game_class := mrb.class_get(g.ruby, "Game")
+	assert(game_class != nil, "Game class must be defined")
+	v := mrb.obj_value(game_class)
+	empty := []mrb.Value{}
+	mrb.funcall_argv(g.ruby, v, mrb.sym_from_string(g.ruby, "test"), 0, raw_data(empty))
+
 	for !rl.WindowShouldClose() {
 		defer {
 			is_bad := track_bad_free_tracking_allocator(&tracking_allocator)

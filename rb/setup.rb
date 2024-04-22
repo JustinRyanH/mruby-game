@@ -148,6 +148,10 @@ class Game
     @obstacles = []
   end
 
+  def self.test
+    puts 'HEY WE CALLED THIS FROM ODIN'
+  end
+
   def setup
     Log.info('Setting Up Game')
     width, height = FrameInput.screen_size
