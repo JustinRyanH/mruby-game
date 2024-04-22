@@ -11,10 +11,6 @@ Rectangle :: struct {
 	size: Vector2,
 }
 
-CollisionEvent :: struct {
-	a, b: EntityHandle,
-}
-
 // Check collision between two rectangles using AABB, assumes there is no rotation
 shape_are_rects_colliding_aabb :: proc(rec_a, rec_b: Rectangle) -> bool {
 	rect_a_min, rect_a_extends := shape_get_rect_extends(rec_a)
