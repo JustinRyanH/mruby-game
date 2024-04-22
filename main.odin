@@ -107,10 +107,6 @@ game_check_collisions :: proc(game: ^Game) {
 			if !collide {
 				continue
 			}
-			evt := r_collision_evt_new(game.ruby, handle_a, handle_b)
-			rgame := get_curent_game(game.ruby)
-			add_mth := mrb.sym_from_string(game.ruby, "add_event")
-			mrb.funcall_argv(game.ruby, rgame, add_mth, 1, &evt)
 		}
 	}
 }
