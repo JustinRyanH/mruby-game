@@ -187,6 +187,10 @@ class Game
     move_obstacles
   end
 
+  def add_event(event)
+    @events << event
+  end
+
   def add_obstacle(entity)
     @obstacles << entity
   end
