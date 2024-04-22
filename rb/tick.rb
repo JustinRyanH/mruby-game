@@ -6,4 +6,4 @@
 game = Game.current
 game.tick
 
-ImUI.draw_text(text: 'Test', pos: Vector.new(300, 200), size: 40, color: Color.blue)
+ImUI.draw_text(text: 'Test', pos: Vector.new(300, 200), size: 40, color: Color.pink)

@@ -69,35 +69,6 @@ setup_log_class :: proc(st: ^mrb.State) {
 	mrb.define_class_method(st, logger, "warning", logger_warning, mrb.args_req(1))
 }
 
-setup_color_class :: proc(st: ^mrb.State) {
-	color_class := mrb.define_class(st, "Color", mrb.state_get_object_class(st))
-	mrb.set_data_type(color_class, .CData)
-	mrb.define_method(st, color_class, "initialize", color_init, mrb.args_req(4))
-	mrb.define_method(st, color_class, "red", color_get_r, mrb.args_none())
-	mrb.define_method(st, color_class, "blue", color_get_b, mrb.args_none())
-	mrb.define_method(st, color_class, "green", color_get_g, mrb.args_none())
-	mrb.define_method(st, color_class, "alpha", color_get_a, mrb.args_none())
-
-	mrb.define_alias(st, color_class, "r", "red")
-	mrb.define_alias(st, color_class, "b", "blue")
-	mrb.define_alias(st, color_class, "g", "green")
-	mrb.define_alias(st, color_class, "a", "alpha")
-
-	for pallet in ColorPallet {
-		as_str, success := reflect.enum_name_from_value(pallet)
-		assert(success, "Somehow the name reflection failed")
-		snake_pallet := strings.to_snake_case(as_str, context.temp_allocator)
-		mrb.define_class_method_id(
-			st,
-			color_class,
-			mrb.sym_from_string(st, snake_pallet),
-			color_from_pallet,
-			mrb.args_none(),
-		)
-	}
-	engine_classes.color_class = color_class
-}
-
 setup_vector_class :: proc(st: ^mrb.State) {
 	vector_class := mrb.define_class(st, "Vector", mrb.state_get_object_class(st))
 	mrb.set_data_type(vector_class, .CData)
@@ -681,10 +652,40 @@ vector_add :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 //////////////////////////////
 //// Color
 //////////////////////////////
+
+setup_color_class :: proc(st: ^mrb.State) {
+	color_class := mrb.define_class(st, "Color", mrb.state_get_object_class(st))
+	mrb.set_data_type(color_class, .CData)
+	mrb.define_method(st, color_class, "initialize", color_init, mrb.args_req(4))
+	mrb.define_method(st, color_class, "red", color_get_r, mrb.args_none())
+	mrb.define_method(st, color_class, "blue", color_get_b, mrb.args_none())
+	mrb.define_method(st, color_class, "green", color_get_g, mrb.args_none())
+	mrb.define_method(st, color_class, "alpha", color_get_a, mrb.args_none())
+
+	mrb.define_alias(st, color_class, "r", "red")
+	mrb.define_alias(st, color_class, "b", "blue")
+	mrb.define_alias(st, color_class, "g", "green")
+	mrb.define_alias(st, color_class, "a", "alpha")
+
+	for pallet in ColorPallet {
+		as_str, success := reflect.enum_name_from_value(pallet)
+		assert(success, "Somehow the name reflection failed")
+		snake_pallet := strings.to_snake_case(as_str, context.temp_allocator)
+		mrb.define_class_method_id(
+			st,
+			color_class,
+			mrb.sym_from_string(st, snake_pallet),
+			color_from_pallet,
+			mrb.args_none(),
+		)
+	}
+	engine_classes.color_class = color_class
+}
+
 @(private = "file")
 color_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	r, b, g, a: int
-	mrb.get_args(state, "iiii", &r, &b, &g, &a)
+	mrb.get_args(state, "iiii", &r, &g, &b, &a)
 
 	v: ^rl.Color = mrb.get_data_from_value(rl.Color, self)
 	if (v == nil) {
