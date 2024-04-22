@@ -34,16 +34,20 @@ engine_classes: EngineRClass
 
 game_load_mruby_raylib :: proc(game: ^Game) {
 	st := game.ruby
+
+	setup_input(st)
+	setup_log_class(st)
+	setup_entity_class(st)
+	setup_vector_class(st)
+	setup_color_class(st)
+}
+
+setup_log_class :: proc(st: ^mrb.State) {
 	logger := mrb.define_class(st, "Log", mrb.state_get_object_class(st))
 	mrb.define_class_method(st, logger, "info", logger_info, mrb.args_req(1))
 	mrb.define_class_method(st, logger, "error", logger_error, mrb.args_req(1))
 	mrb.define_class_method(st, logger, "fatal", logger_fatal, mrb.args_req(1))
 	mrb.define_class_method(st, logger, "warning", logger_warning, mrb.args_req(1))
-
-	setup_input(st)
-	setup_entity_class(st)
-	setup_vector_class(st)
-	setup_color_class(st)
 }
 
 setup_color_class :: proc(st: ^mrb.State) {
