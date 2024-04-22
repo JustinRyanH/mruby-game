@@ -138,6 +138,23 @@ class Timer
   end
 end
 
+class DeathState
+  attr_reader :game
+
+  # @param [Game] game
+  def initialize(game)
+    @game = game
+  end
+
+  def tick
+    raise 'Unimplemented State'
+  end
+
+  def enter; end
+
+  def exit; end
+end
+
 class GameplayState
   # @return [Game]
   attr_reader :game
@@ -152,10 +169,12 @@ class GameplayState
     tick_wall_timer
     move_player
     move_obstacles
+    return nil if game.player.collisions.none?
+
+    DeathState.new(game)
   end
 
   def enter
-    Log.info('Setting Up Game')
     width, height = FrameInput.screen_size
 
     game.player = Entity.create(
@@ -232,8 +251,8 @@ class Game
     process_events
     cleanup
 
-    scene.tick
-    nil if player.collisions.any?
+    next_scene = scene.tick
+    change_scene(next_scene) unless next_scene.nil?
   end
 
   def add_event(event)
@@ -249,6 +268,12 @@ class Game
   end
 
   private
+
+  def change_scene(new_scene)
+    scene.exit
+    @scene = new_scene
+    scene.enter
+  end
 
   def process_events
     events.each(&:perform)
