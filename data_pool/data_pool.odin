@@ -120,6 +120,16 @@ new_iter :: proc "contextless" (dp: ^DataPool($N, $T, $H)) -> DataPoolIterator(N
 	return DataPoolIterator(N, T, H){dp = dp}
 }
 
+// Creates a new iterator that starts at a handle
+new_iter_start_at :: proc "contextless" (
+	dp: ^DataPool($N, $T, $H),
+	handle: H,
+) -> DataPoolIterator(N, T, H) {
+
+	start_index := get_handle_index(handle)
+	return DataPoolIterator(N, T, H){dp = dp, index = start_index}
+}
+
 
 // Soft resets the Data Pool.
 // This is used when there might be handles after clear
@@ -183,6 +193,12 @@ iter_next_ptr :: proc(it: ^DataPoolIterator($N, $T, $H)) -> (data: ^T, h: H, con
 	}
 
 	return
+}
+
+@(private = "file")
+get_handle_index :: proc($H: typeid) -> i32 {
+	hs := transmute(HandleStruct)h
+	return hs.idx
 }
 
 /////////////////////////////
