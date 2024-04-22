@@ -141,9 +141,12 @@ class MainScene
   # @param [Game] game
   def initialize(game)
     @game = game
+    @spawn_timer = Timer.new(0)
   end
 
-  def tick; end
+  def tick
+    tick_wall_timer
+  end
 
   def enter
     Log.info('Setting Up Game')
@@ -159,11 +162,22 @@ class MainScene
   end
 
   def exit; end
+
+  private
+
+  def tick_wall_timer
+    @spawn_timer.tick
+    return unless @spawn_timer.finished?
+
+    game.add_event(SpawnObstacle.new(game))
+
+    @spawn_timer.reset(FrameInput.random_int(2..4))
+  end
 end
 
 class Game
   attr_accessor :player, :player_velocity, :spawn_timer
-  attr_reader :events
+  attr_reader :events, :scene
 
   @current = nil
   def self.current
@@ -193,10 +207,10 @@ class Game
     process_events
     cleanup
 
+    scene.tick
     return if player.collisions.any?
 
     move_player
-    tick_wall_timer
     move_obstacles
   end
 
@@ -236,15 +250,6 @@ class Game
 
   def flap_player
     @player_velocity.y -= 4.5
-  end
-
-  def tick_wall_timer
-    @spawn_timer.tick
-    return unless @spawn_timer.finished?
-
-    events << SpawnObstacle.new(self)
-
-    @spawn_timer.reset(FrameInput.random_int(2..4))
   end
 
   def cleanup
