@@ -125,8 +125,7 @@ new_iter_start_at :: proc "contextless" (
 	dp: ^DataPool($N, $T, $H),
 	handle: H,
 ) -> DataPoolIterator(N, T, H) {
-
-	start_index := get_handle_index(handle)
+	start_index := get_handle_index(H, handle)
 	return DataPoolIterator(N, T, H){dp = dp, index = start_index}
 }
 
@@ -177,7 +176,13 @@ iter_next :: proc "contextless" (
 	return
 }
 
-iter_next_ptr :: proc(it: ^DataPoolIterator($N, $T, $H)) -> (data: ^T, h: H, cond: bool) {
+iter_next_ptr :: proc "contextless" (
+	it: ^DataPoolIterator($N, $T, $H),
+) -> (
+	data: ^T,
+	h: H,
+	cond: bool,
+) {
 	cond = it.index < cast(int)it.dp.items_len
 
 	for ; cond; cond = it.index < cast(int)it.dp.items_len {
@@ -196,9 +201,9 @@ iter_next_ptr :: proc(it: ^DataPoolIterator($N, $T, $H)) -> (data: ^T, h: H, con
 }
 
 @(private = "file")
-get_handle_index :: proc($H: typeid) -> i32 {
-	hs := transmute(HandleStruct)h
-	return hs.idx
+get_handle_index :: proc "contextless" ($H: typeid, handle: H) -> int {
+	hs := transmute(HandleStruct)handle
+	return cast(int)hs.idx
 }
 
 /////////////////////////////
