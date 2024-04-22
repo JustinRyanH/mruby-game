@@ -135,19 +135,35 @@ class Timer
 end
 
 class MainScene
+  # @return [Game]
+  attr_reader :game
+
+  # @param [Game] game
   def initialize(game)
     @game = game
   end
 
   def tick; end
 
-  def enter; end
+  def enter
+    Log.info('Setting Up Game')
+    width, height = FrameInput.screen_size
+
+    game.player = Entity.create(
+      pos: Vector.new(width * 0.2, height * 0.5),
+      size: Vector.new(45, 45),
+      color: Color.red
+    )
+    game.player_velocity = Vector.zero
+    game.spawn_timer = Timer.new(0)
+  end
 
   def exit; end
 end
 
 class Game
-  attr_reader :player, :player_velocity, :events
+  attr_accessor :player, :player_velocity, :spawn_timer
+  attr_reader :events
 
   @current = nil
   def self.current
@@ -163,16 +179,6 @@ class Game
 
   def setup
     @scene.enter
-    Log.info('Setting Up Game')
-    width, height = FrameInput.screen_size
-
-    @player = Entity.create(
-      pos: Vector.new(width * 0.2, height * 0.5),
-      size: Vector.new(45, 45),
-      color: Color.red
-    )
-    @player_velocity = Vector.zero
-    @spawn_timer = Timer.new(0)
 
     @ready = true
   end
