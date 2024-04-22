@@ -123,6 +123,7 @@ class Timer
 
   def initialize(time)
     @time = time
+    @total_time = time
   end
 
   def tick
@@ -136,6 +137,10 @@ class Timer
   def finished?
     @time <= 0
   end
+
+  def percentage
+    [1 - (@time / @total_time), 1].min
+  end
 end
 
 class DeathState
@@ -144,10 +149,16 @@ class DeathState
   # @param [Game] game
   def initialize(game)
     @game = game
+    @death_timer = Timer.new(0.5)
   end
 
   def tick
-    raise 'Unimplemented State'
+    @death_timer.tick
+
+    puts @death_timer.percentage
+    return unless @death_timer.finished?
+
+    raise 'Unimplmeneed Death State'
   end
 
   def enter; end
