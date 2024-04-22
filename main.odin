@@ -163,16 +163,6 @@ main :: proc() {
 		game_check_collisions(g)
 		game_run_code(g, tick_handle)
 
-		current := get_curent_game(g.ruby)
-		empty := []mrb.Value{}
-		count := mrb.funcall_argv(
-			g.ruby,
-			current,
-			mrb.sym_from_string(g.ruby, "obj_count"),
-			0,
-			raw_data(empty),
-		)
-
 		entity_iter := dp.new_iter(&g.entities)
 		for entity in dp.iter_next(&entity_iter) {
 			rect: rl.Rectangle = {entity.pos.x, entity.pos.y, entity.size.x, entity.size.y}
