@@ -177,8 +177,7 @@ class Game
     process_events
     cleanup
 
-    pc = player.collisions
-    puts "Player Collisions: #{pc.size}"
+    return if player.collisions.any?
 
     move_player
     tick_wall_timer
