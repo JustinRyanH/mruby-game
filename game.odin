@@ -47,6 +47,29 @@ game_setup_temp :: proc(game: ^Game) {
 	game.collision_evts_t = make(map[EntityHandle]CollisionTargets, 16, context.temp_allocator)
 }
 
+game_add_collision :: proc(game: ^Game, a, b: EntityHandle) {
+	if !(a in game.collision_evts_t) {
+		game.collision_evts_t[a] = make(CollisionTargets, 0, 8, context.temp_allocator)
+	}
+	if !(b in game.collision_evts_t) {
+		game.collision_evts_t[b] = make(CollisionTargets, 0, 8, context.temp_allocator)
+	}
+
+	when !ODIN_DISABLE_ASSERT {
+		for v in game.collision_evts_t[a] {
+			assert(v != a, "Item should not collide with itself")
+			assert(v != b, "An item should not collide with itself twice")
+		}
+		for v in game.collision_evts_t[b] {
+			assert(v != b, "Item should not collide with itself")
+			assert(v != a, "An item should not collide with itself twice")
+		}
+	}
+
+	append(&game.collision_evts_t[a], b)
+	append(&game.collision_evts_t[b], a)
+}
+
 game_deinit :: proc(game: ^Game) {
 	asset_system_deinit(&game.assets)
 	mrb.close(game.ruby)

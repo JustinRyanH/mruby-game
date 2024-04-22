@@ -107,6 +107,7 @@ game_check_collisions :: proc(game: ^Game) {
 			if !collide {
 				continue
 			}
+			game_add_collision(game, handle_a, handle_b)
 		}
 	}
 }
