@@ -92,6 +92,22 @@ game_run_code :: proc(game: ^Game, handle: RubyCodeHandle, loc := #caller_locati
 
 game_ctx: runtime.Context
 
+game_check_collisions :: proc(game: ^Game) {
+	iter_a := dp.new_iter(&game.entities)
+	for entity_a, handle_a in dp.iter_next(&iter_a) {
+		iter_b := dp.new_iter_start_at(&game.entities, handle_a)
+		for entity_b, handle_b in dp.iter_next(&iter_b) {
+			if handle_a == handle_b {
+				continue
+			}
+			rect_a := Rectangle{entity_a.pos, entity_a.size}
+			rect_b := Rectangle{entity_b.pos, entity_b.size}
+
+			collide := shape_are_rects_colliding_aabb(rect_a, rect_b)
+		}
+	}
+}
+
 g: ^Game
 main :: proc() {
 	default_allocator := context.allocator
@@ -143,6 +159,7 @@ main :: proc() {
 
 		rl.ClearBackground(rl.BLACK)
 
+		game_check_collisions(g)
 		game_run_code(g, tick_handle)
 
 		entity_iter := dp.new_iter(&g.entities)
