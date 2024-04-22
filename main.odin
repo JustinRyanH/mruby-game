@@ -145,19 +145,6 @@ main :: proc() {
 
 	game_run_code(g, setup_handle)
 
-	game_class := mrb.class_get(g.ruby, "Game")
-	assert(game_class != nil, "Game class must be defined")
-	v := mrb.obj_value(game_class)
-	empty := []mrb.Value{}
-	current := mrb.funcall_argv(
-		g.ruby,
-		v,
-		mrb.sym_from_string(g.ruby, "current"),
-		0,
-		raw_data(empty),
-	)
-	fmt.println("Is nil?", mrb.nil_p(current))
-	assert(mrb.object_p(current), "Expected this to be instance of Class")
 
 	for !rl.WindowShouldClose() {
 		defer {
@@ -175,6 +162,26 @@ main :: proc() {
 
 		game_check_collisions(g)
 		game_run_code(g, tick_handle)
+
+		game_class := mrb.class_get(g.ruby, "Game")
+		assert(game_class != nil, "Game class must be defined")
+		v := mrb.obj_value(game_class)
+		empty := []mrb.Value{}
+		current := mrb.funcall_argv(
+			g.ruby,
+			v,
+			mrb.sym_from_string(g.ruby, "current"),
+			0,
+			raw_data(empty),
+		)
+		assert(mrb.object_p(current), "Expected this to be instance of Class")
+		count := mrb.funcall_argv(
+			g.ruby,
+			current,
+			mrb.sym_from_string(g.ruby, "obj_count"),
+			0,
+			raw_data(empty),
+		)
 
 		entity_iter := dp.new_iter(&g.entities)
 		for entity in dp.iter_next(&entity_iter) {

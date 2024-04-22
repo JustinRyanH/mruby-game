@@ -191,6 +191,10 @@ class Game
     @obstacles << entity
   end
 
+  def obj_count
+    @obstacles.size
+  end
+
   private
 
   def process_events
