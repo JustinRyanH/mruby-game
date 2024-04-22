@@ -134,6 +134,18 @@ class Timer
   end
 end
 
+class Main
+  def initialize(game)
+    @game = game
+  end
+
+  def tick; end
+
+  def enter; end
+
+  def exit; end
+end
+
 class Game
   attr_reader :player, :player_velocity, :events
 
@@ -143,12 +155,14 @@ class Game
   end
 
   def initialize
+    @scene = Main.new(self)
     @ready = false
     @events = []
     @obstacles = []
   end
 
   def setup
+    @scene.enter
     Log.info('Setting Up Game')
     width, height = FrameInput.screen_size
 
