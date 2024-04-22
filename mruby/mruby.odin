@@ -636,8 +636,8 @@ foreign lib {
 	// Same as Ruby
 	//
 	// alias new, old
-	define_alias :: proc(state: ^State, c: ^RClass, old, new: cstring) ---
-	define_alias_id :: proc(state: ^State, c: ^RClass, old, new: Sym) ---
+	define_alias :: proc(state: ^State, c: ^RClass, new, old: cstring) ---
+	define_alias_id :: proc(state: ^State, c: ^RClass, new, old: Sym) ---
 
 	class_name :: proc(state: ^State, class: ^RClass) -> cstring ---
 	define_global_const :: proc(state: ^State, name: cstring, value: Value) ---
