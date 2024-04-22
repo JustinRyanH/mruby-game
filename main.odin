@@ -104,6 +104,13 @@ game_check_collisions :: proc(game: ^Game) {
 			rect_b := Rectangle{entity_b.pos, entity_b.size}
 
 			collide := shape_are_rects_colliding_aabb(rect_a, rect_b)
+			if !collide {
+				continue
+			}
+			evt := r_collision_evt_new(game.ruby, handle_a, handle_b)
+			rgame := get_curent_game(game.ruby)
+			add_mth := mrb.sym_from_string(game.ruby, "add_event")
+			mrb.funcall_argv(game.ruby, rgame, add_mth, 1, &evt)
 		}
 	}
 }

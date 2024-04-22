@@ -59,6 +59,11 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	setup_collison_evt(st)
 }
 
+r_collision_evt_new :: proc "contextless" (st: ^mrb.State, a, b: EntityHandle) -> mrb.Value {
+	handles := []mrb.Value{mrb.int_value(st, cast(mrb.Int)a), mrb.int_value(st, cast(mrb.Int)b)}
+	return mrb.obj_new(st, engine_classes.collision_evt_class, len(handles), raw_data(handles))
+}
+
 setup_collison_evt :: proc(st: ^mrb.State) {
 	cls_evt_class := mrb.define_class(st, "CollisionEvent", mrb.state_get_object_class(st))
 	mrb.set_data_type(cls_evt_class, .CData)
@@ -726,5 +731,7 @@ cls_evt_initialize :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 
 @(private = "file")
 cls_evt_perform :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+	fmt.println("COLLIDE?")
 	return mrb.nil_value()
 }
