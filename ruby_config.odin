@@ -51,16 +51,20 @@ engine_classes: EngineRClass
 game_load_mruby_raylib :: proc(game: ^Game) {
 	st := game.ruby
 
-	cls_evt_class := mrb.define_class(st, "CollisionEvent", mrb.state_get_object_class(st))
-	mrb.set_data_type(cls_evt_class, .CData)
-	mrb.define_method(st, cls_evt_class, "initialize", cls_evt_initialize, mrb.args_req(2))
-	engine_classes.collision_evt_class = cls_evt_class
-
 	setup_input(st)
 	setup_log_class(st)
 	setup_entity_class(st)
 	setup_vector_class(st)
 	setup_color_class(st)
+	setup_collison_evt(st)
+}
+
+setup_collison_evt :: proc(st: ^mrb.State) {
+	cls_evt_class := mrb.define_class(st, "CollisionEvent", mrb.state_get_object_class(st))
+	mrb.set_data_type(cls_evt_class, .CData)
+	mrb.define_method(st, cls_evt_class, "initialize", cls_evt_initialize, mrb.args_req(2))
+	mrb.define_method(st, cls_evt_class, "perform", cls_evt_perform, mrb.args_none())
+	engine_classes.collision_evt_class = cls_evt_class
 }
 
 setup_log_class :: proc(st: ^mrb.State) {
@@ -718,4 +722,9 @@ cls_evt_initialize :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 	v.b = cast(EntityHandle)b
 
 	return self
+}
+
+@(private = "file")
+cls_evt_perform :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return mrb.nil_value()
 }
