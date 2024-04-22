@@ -20,15 +20,20 @@ EntityHandle :: distinct dp.Handle
 
 EntityPool :: dp.DataPool(128, Entity, EntityHandle)
 
+CollisionTargets :: [dynamic]EntityHandle
+
 Game :: struct {
-	ruby:     ^mrb.State,
-	ctx:      runtime.Context,
-	assets:   AssetSystem,
-	input:    input.FrameInput,
-	rand:     rand.Rand,
+	ruby:             ^mrb.State,
+	ctx:              runtime.Context,
+	assets:           AssetSystem,
+	input:            input.FrameInput,
+	rand:             rand.Rand,
+
+	// Temp Data
+	collision_evts_t: map[EntityHandle]CollisionTargets,
 
 	// Game Data
-	entities: EntityPool,
+	entities:         EntityPool,
 }
 
 game_init :: proc(game: ^Game) {
@@ -36,6 +41,10 @@ game_init :: proc(game: ^Game) {
 	game.rand = rand.create(1)
 	game.ruby = mrb.open_allocf(mruby_odin_allocf, &game.ctx)
 	asset_system_init(&game.assets)
+}
+
+game_setup_temp :: proc(game: ^Game) {
+	game.collision_evts_t = make(map[EntityHandle]CollisionTargets, 16, context.temp_allocator)
 }
 
 game_deinit :: proc(game: ^Game) {

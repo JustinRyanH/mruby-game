@@ -157,6 +157,8 @@ main :: proc() {
 		defer free_all(context.temp_allocator)
 		defer mrb.incremental_gc(g.ruby)
 
+		game_setup_temp(g)
+
 		input.update_input(&g.input)
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
