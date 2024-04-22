@@ -11,8 +11,8 @@ import "./input"
 import mrb "./mruby"
 
 Entity :: struct {
-	pos:   rl.Vector2,
-	size:  rl.Vector2,
+	pos:   Vector2,
+	size:  Vector2,
 	color: rl.Color,
 }
 

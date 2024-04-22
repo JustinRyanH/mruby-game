@@ -13,6 +13,8 @@ import dp "./data_pool"
 import "./input"
 import mrb "./mruby"
 
+Vector2 :: rl.Vector2
+
 debug_print_mrb_obj :: proc(game: ^Game) {
 	fmt.println("Live Objects", mrb.gc_get_live(game.ruby), "State", mrb.gc_get_state(game.ruby))
 	fmt.println(
@@ -143,8 +145,8 @@ main :: proc() {
 	rl.SetTargetFPS(TargetFPS)
 
 	entity: Entity
-	entity.pos = rl.Vector2{100, 300}
-	entity.size = rl.Vector2{45, 45}
+	entity.pos = Vector2{100, 300}
+	entity.size = Vector2{45, 45}
 	entity.color = rl.GREEN
 
 	game_run_code(g, setup_handle)

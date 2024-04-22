@@ -430,7 +430,7 @@ entity_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		"Can only assign Vector to position",
 	)
 
-	pos := mrb.get_data_from_value(rl.Vector2, new_pos)
+	pos := mrb.get_data_from_value(Vector2, new_pos)
 
 	i := mrb.get_data_from_value(EntityHandle, self)
 	entity := dp.get_ptr(&g.entities, i^)
@@ -501,8 +501,8 @@ entity_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	mrb.get_args(state, ":", &kwargs)
 	assert(!mrb.undef_p(values[0]), "Entity Required for `pos:`")
 	assert(!mrb.undef_p(values[1]), "Entity Required for `size:`")
-	pos: rl.Vector2 = mrb.get_data_from_value(rl.Vector2, values[0])^
-	size: rl.Vector2 = mrb.get_data_from_value(rl.Vector2, values[1])^
+	pos: Vector2 = mrb.get_data_from_value(Vector2, values[0])^
+	size: Vector2 = mrb.get_data_from_value(Vector2, values[1])^
 
 	color: rl.Color
 	if (mrb.undef_p(values[2])) {
@@ -540,10 +540,10 @@ vector_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	inc_y: mrb.Float
 	mrb.get_args(state, "ff", &inc_x, &inc_y)
 
-	v := mrb.get_data_from_value(rl.Vector2, self)
+	v := mrb.get_data_from_value(Vector2, self)
 	if (v == nil) {
 		mrb.data_init(self, nil, &mrb_entity_handle_type)
-		v = cast(^rl.Vector2)mrb.malloc(state, size_of(rl.Vector2))
+		v = cast(^Vector2)mrb.malloc(state, size_of(Vector2))
 		mrb.data_init(self, v, &mrb_entity_handle_type)
 	}
 	v.x = cast(f32)inc_x
@@ -553,7 +553,7 @@ vector_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 vector_get_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	v := mrb.get_data_from_value(rl.Vector2, self)
+	v := mrb.get_data_from_value(Vector2, self)
 	return mrb.float_value(state, cast(mrb.Float)v.x)
 }
 
@@ -562,7 +562,7 @@ vector_set_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	new_x: mrb.Float
 	mrb.get_args(state, "f", &new_x)
 
-	v := mrb.get_data_from_value(rl.Vector2, self)
+	v := mrb.get_data_from_value(Vector2, self)
 	v.x = cast(f32)new_x
 	return mrb.nil_value()
 }
@@ -570,7 +570,7 @@ vector_set_x :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 vector_get_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	v := mrb.get_data_from_value(rl.Vector2, self)
+	v := mrb.get_data_from_value(Vector2, self)
 	return mrb.float_value(state, cast(mrb.Float)v.y)
 }
 
@@ -581,7 +581,7 @@ vector_set_y :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	new_y: mrb.Float
 	mrb.get_args(state, "f", &new_y)
 
-	v := mrb.get_data_from_value(rl.Vector2, self)
+	v := mrb.get_data_from_value(Vector2, self)
 	v.y = cast(f32)new_y
 	return mrb.nil_value()
 }
@@ -593,7 +593,7 @@ vector_scale :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	scale: mrb.Float
 	mrb.get_args(state, "f", &scale)
 
-	v := mrb.get_data_from_value(rl.Vector2, self)
+	v := mrb.get_data_from_value(Vector2, self)
 	new_v := [2]mrb.Value {
 		mrb.float_value(state, cast(f64)v.x * scale),
 		mrb.float_value(state, cast(f64)v.y * scale),
@@ -614,8 +614,8 @@ vector_lerp :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		mrb.obj_is_kind_of(state, other, engine_classes.vector_class),
 		"can only add two Vectors together",
 	)
-	a := mrb.get_data_from_value(rl.Vector2, self)^
-	b := mrb.get_data_from_value(rl.Vector2, other)^
+	a := mrb.get_data_from_value(Vector2, self)^
+	b := mrb.get_data_from_value(Vector2, other)^
 
 	c := math.lerp(a, b, cast(f32)t)
 	values := []mrb.Value {
@@ -638,7 +638,7 @@ vector_add :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		"can only add two Vectors together",
 	)
 	a := mrb.get_data_from_value(rl.Vector2, self)
-	b := mrb.get_data_from_value(rl.Vector2, other)
+	b := mrb.get_data_from_value(Vector2, other)
 
 	c := a^ + b^
 	values := []mrb.Value {
@@ -774,7 +774,7 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	assert(!mrb.undef_p(values[0]), "Entity Required for `text:`")
 	assert(!mrb.undef_p(values[1]), "Entity Required for `pos:`")
 	text: cstring = mrb.string_cstr(state, values[0])
-	pos: rl.Vector2 = mrb.get_data_from_value(rl.Vector2, values[1])^
+	pos: Vector2 = mrb.get_data_from_value(Vector2, values[1])^
 	size: f32 = 24
 	color: rl.Color = rl.WHITE
 	if !mrb.undef_p(values[2]) {
