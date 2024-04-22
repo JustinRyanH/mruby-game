@@ -138,7 +138,7 @@ class Timer
   end
 end
 
-class MainScene
+class GameplayState
   # @return [Game]
   attr_reader :game
 
@@ -151,6 +151,7 @@ class MainScene
   def tick
     tick_wall_timer
     move_player
+    move_obstacles
   end
 
   def enter
@@ -190,6 +191,13 @@ class MainScene
 
     @spawn_timer.reset(FrameInput.random_int(2..4))
   end
+
+  def move_obstacles
+    game.obstacles.each do |obstacle|
+      obstacle.pos += Vector.new(-WORLD_SPEED, 0) * dt
+      game.add_event(DestroyObstacle.new(game, obstacle)) if obstacle.offscreen_left?
+    end
+  end
 end
 
 class Game
@@ -202,7 +210,7 @@ class Game
   end
 
   def initialize
-    @scene = MainScene.new(self)
+    @scene = GameplayState.new(self)
     @ready = false
     @events = []
     @obstacles = []
@@ -225,10 +233,7 @@ class Game
     cleanup
 
     scene.tick
-    return if player.collisions.any?
-
-    # move_player
-    move_obstacles
+    nil if player.collisions.any?
   end
 
   def add_event(event)
@@ -248,13 +253,6 @@ class Game
   def process_events
     events.each(&:perform)
     events.clear
-  end
-
-  def move_obstacles
-    @obstacles.each do |obstacle|
-      obstacle.pos += Vector.new(-WORLD_SPEED, 0) * dt
-      events << DestroyObstacle.new(self, obstacle) if obstacle.offscreen_left?
-    end
   end
 
   def cleanup
