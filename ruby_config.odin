@@ -71,13 +71,14 @@ setup_color_class :: proc(st: ^mrb.State) {
 	mrb.set_data_type(color_class, .CData)
 	mrb.define_method(st, color_class, "initialize", color_init, mrb.args_req(4))
 	mrb.define_method(st, color_class, "red", color_get_r, mrb.args_none())
-	mrb.define_method(st, color_class, "r", color_get_r, mrb.args_none())
 	mrb.define_method(st, color_class, "blue", color_get_b, mrb.args_none())
-	mrb.define_method(st, color_class, "b", color_get_b, mrb.args_none())
 	mrb.define_method(st, color_class, "green", color_get_g, mrb.args_none())
-	mrb.define_method(st, color_class, "g", color_get_g, mrb.args_none())
 	mrb.define_method(st, color_class, "alpha", color_get_a, mrb.args_none())
-	mrb.define_method(st, color_class, "a", color_get_a, mrb.args_none())
+
+	mrb.define_alias(st, color_class, "r", "red")
+	mrb.define_alias(st, color_class, "b", "blue")
+	mrb.define_alias(st, color_class, "g", "green")
+	mrb.define_alias(st, color_class, "a", "alpha")
 
 	for pallet in ColorPallet {
 		as_str, success := reflect.enum_name_from_value(pallet)
