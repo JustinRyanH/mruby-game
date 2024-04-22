@@ -6,6 +6,7 @@ import "core:fmt"
 import "core:os"
 
 
+FontHandle :: distinct u64
 RubyCodeHandle :: distinct u64
 
 ruby_code_handle :: proc(str: string) -> RubyCodeHandle {
