@@ -164,14 +164,14 @@ class DeathState
     game.player.pos = @player_start.lerp(@player_end, @death_timer.percentage)
 
     width, height = FrameInput.screen_size
-    # ImUI.draw_rect(pos: Vector.new(width / 2, height / 2), size: Vector.new(300, 80),
-    #                anchor_percentage: Vector.new(0.5, 0.5), color: Color.blue)
+    ImUI.draw_rect(pos: Vector.new(width / 2, height / 2), size: Vector.new(700, 80),
+                   anchor_percentage: Vector.new(0.5, 0.5), color: Color.blue)
     ImUI.draw_text(
       text: 'Game Over',
       pos: Vector.new(width / 2, height / 2),
       size: 96,
       font: Fonts.kenney_future,
-      color: Color.red,
+      color: Color.white,
       halign: :center
     )
     nil unless @death_timer.finished?
