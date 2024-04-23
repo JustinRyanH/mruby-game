@@ -9,6 +9,11 @@ TextAlignment :: enum {
 	Center,
 }
 
+DrawMode :: enum {
+	Solid,
+	Outline,
+}
+
 ImuiDrawTextCmd :: struct {
 	font:      FontHandle,
 	txt:       cstring,
@@ -19,8 +24,15 @@ ImuiDrawTextCmd :: struct {
 	pos:       Vector2,
 }
 
+ImuiDrawRectCmd :: struct {
+	top, right, bottom, left: f32,
+	color:                    Color,
+	mode:                     DrawMode,
+}
+
 ImuiCommand :: union {
 	ImuiDrawTextCmd,
+	ImuiDrawRectCmd,
 }
 
 ImUiState :: struct {
@@ -44,7 +56,16 @@ imui_draw :: proc(imui: ^ImUiState) {
 			measure := rl.MeasureTextEx(ft.font, c.txt, c.size, c.spacing)
 			offset := alignment_offset(c.alignment, measure)
 			rl.DrawTextPro(ft.font, c.txt, c.pos, offset, 0, c.size, c.spacing, c.color)
+		case ImuiDrawRectCmd:
+			rect: rl.Rectangle = {c.left, c.top, c.bottom - c.top, c.right - c.left}
+			switch c.mode {
+			case .Solid:
+				rl.DrawRectangleRec(rect, c.color)
+			case .Outline:
+				rl.DrawRectangleLinesEx(rect, 2, c.color)
+			}
 		}
+
 	}
 }
 

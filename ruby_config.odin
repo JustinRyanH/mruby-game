@@ -749,7 +749,8 @@ color_from_pallet :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 setup_imui :: proc(st: ^mrb.State) {
 	ui_module := mrb.define_module(st, "ImUI")
 	engine_classes.ui_module = ui_module
-	mrb.define_class_method(st, ui_module, "draw_text", imui_draw_text, mrb.args_key(3, 0))
+	mrb.define_class_method(st, ui_module, "draw_text", imui_draw_text, mrb.args_key(5, 0))
+	mrb.define_class_method(st, ui_module, "draw_rect", imui_draw_rect, mrb.args_key(5, 0))
 }
 
 @(private = "file")
@@ -781,18 +782,12 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	cmd.size = 24
 	// Spacing
 	cmd.spacing = 2
-	cmd.color = rl.WHITE
+	cmd.color = extract_color_from_value(state, values[3], rl.WHITE)
 	cmd.alignment = .Left
 	if !mrb.undef_p(values[2]) {
 		cmd.size = cast(f32)mrb.as_float(state, values[2])
 	}
-	if !mrb.undef_p(values[3]) {
-		assert(
-			mrb.obj_is_kind_of(state, values[3], engine_classes.color_class),
-			"ImUI.draw_text(color: ) should be a Color",
-		)
-		cmd.color = mrb.get_data_from_value(rl.Color, values[3])^
-	}
+
 	alignment_value := values[4]
 	if !mrb.undef_p(alignment_value) {
 		assert(
@@ -811,4 +806,71 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	imui_add_cmd(&g.imui, cmd)
 
 	return mrb.nil_value()
+}
+
+@(private = "file")
+imui_draw_rect :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	NumOfArgs :: 6
+	kwargs: mrb.Kwargs
+	kwargs.num = NumOfArgs
+
+	names: [NumOfArgs]string = {"top", "right", "bottom", "left", "color", "mode"}
+	syms: [NumOfArgs]mrb.Sym = {}
+
+	for n, idx in names {syms[idx] = mrb.sym_from_string(state, n)}
+
+	values := [NumOfArgs]mrb.Value{}
+
+	kwargs.table = raw_data(syms[:])
+	kwargs.values = raw_data(values[:])
+
+	for i := 0; i < 4; i += 1 {
+		assert(!mrb.undef_p(values[i]), fmt.tprintf("`:%s` is required", names[i]))
+	}
+	mrb.get_args(state, ":", &kwargs)
+
+	cmd: ImuiDrawRectCmd
+	cmd.top = cast(f32)mrb.as_float(state, values[0])
+	cmd.right = cast(f32)mrb.as_float(state, values[1])
+	cmd.bottom = cast(f32)mrb.as_float(state, values[2])
+	cmd.left = cast(f32)mrb.as_float(state, values[3])
+	cmd.color = extract_color_from_value(state, values[4], rl.WHITE)
+
+	mode_value := values[4]
+	if mrb.undef_p(mode_value) {
+		mode_sym := mrb.symbol_p(mode_value)
+		assert(mode_sym, "Expect the alignment as symbol of `:solid` or `:outline`")
+
+		sym := mrb.obj_to_sym(state, mode_value)
+		sym_name := mrb.sym_to_string(state, sym)
+		v := strings.to_pascal_case(sym_name, context.temp_allocator)
+
+		mode, success := reflect.enum_from_name(DrawMode, v)
+		assert(success, "Expect the alignment as symbol of `:solid` or `:outline`")
+
+		cmd.mode = mode
+	}
+
+	imui_add_cmd(&g.imui, cmd)
+
+	return mrb.nil_value()
+}
+
+
+@(private = "file")
+extract_color_from_value :: proc(
+	state: ^mrb.State,
+	value: mrb.Value,
+	default: rl.Color,
+) -> rl.Color {
+	if !mrb.undef_p(value) {
+		assert(
+			mrb.obj_is_kind_of(state, value, engine_classes.color_class),
+			"ImUI.draw_text(color: ) should be a Color",
+		)
+		return mrb.get_data_from_value(rl.Color, value)^
+	}
+	return default
 }
