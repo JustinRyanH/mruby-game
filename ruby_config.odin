@@ -812,7 +812,7 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	// TODO: I can totally do this with generics and reflection
-	names: [NumOfArgs]mrb.Sym =  {
+	names: []mrb.Sym =  {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
@@ -871,41 +871,50 @@ imui_draw_rect :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	kwargs: mrb.Kwargs
 	kwargs.num = NumOfArgs
 
+	KValues :: struct {
+		pos:      mrb.Value,
+		size:     mrb.Value,
+		offset_p: mrb.Value,
+		color:    mrb.Value,
+		mode:     mrb.Value,
+	}
+
+	// TODO: I can totally do this with generics and reflection
+
 	names: [NumOfArgs]string = {"pos", "size", "anchor_percentage", "color", "mode"}
 	syms: [NumOfArgs]mrb.Sym = {}
 
 	for n, idx in names {syms[idx] = mrb.sym_from_string(state, n)}
 
-	values := [NumOfArgs]mrb.Value{}
+	values: KValues
 
 	kwargs.table = raw_data(syms[:])
-	kwargs.values = raw_data(values[:])
+	kwargs.values = transmute([^]mrb.Value)&values
 
-	for i := 0; i < 2; i += 1 {
-		assert(!mrb.undef_p(values[i]), fmt.tprintf("`:%s` is required", names[i]))
-	}
 	mrb.get_args(state, ":", &kwargs)
 
-	cmd: ImuiDrawRectCmd
-	cmd.pos = mrb.get_data_from_value(Vector2, values[0])^
-	cmd.size = mrb.get_data_from_value(Vector2, values[1])^
+	assert(!mrb.undef_p(values.pos), "`:pos` is required")
+	assert(!mrb.undef_p(values.size), "`:size` is required")
 
-	if !mrb.undef_p(values[2]) {
+	cmd: ImuiDrawRectCmd
+	cmd.pos = mrb.get_data_from_value(Vector2, values.pos)^
+	cmd.size = mrb.get_data_from_value(Vector2, values.size)^
+
+	if !mrb.undef_p(values.offset_p) {
 		cmd.offset_p = math.clamp(
-			mrb.get_data_from_value(Vector2, values[2])^,
+			mrb.get_data_from_value(Vector2, values.offset_p)^,
 			Vector2{},
 			Vector2{1, 1},
 		)
 	}
 
-	cmd.color = extract_color_from_value(state, values[3], rl.RED)
+	cmd.color = extract_color_from_value(state, values.color, rl.RED)
 
-	mode_value := values[4]
-	if !mrb.undef_p(mode_value) {
-		mode_sym := mrb.symbol_p(mode_value)
+	if !mrb.undef_p(values.mode) {
+		mode_sym := mrb.symbol_p(values.mode)
 		assert(mode_sym, "Expect the alignment as symbol of `:solid` or `:outline`")
 
-		sym := mrb.obj_to_sym(state, mode_value)
+		sym := mrb.obj_to_sym(state, values.mode)
 		sym_name := mrb.sym_to_string(state, sym)
 		v := strings.to_pascal_case(sym_name, context.temp_allocator)
 
