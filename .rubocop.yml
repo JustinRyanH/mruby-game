@@ -16,3 +16,6 @@ Naming/MethodParameterName:
 
 Metrics/MethodLength:
   Enabled: false
+
+Style/GlobalVars:
+  Enabled: false
