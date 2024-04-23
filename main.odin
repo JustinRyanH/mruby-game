@@ -14,6 +14,7 @@ import "./input"
 import mrb "./mruby"
 
 Vector2 :: rl.Vector2
+Color :: rl.Color
 
 debug_print_mrb_obj :: proc(game: ^Game) {
 	fmt.println("Live Objects", mrb.gc_get_live(game.ruby), "State", mrb.gc_get_state(game.ruby))

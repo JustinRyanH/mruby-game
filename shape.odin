@@ -4,8 +4,6 @@ import math "core:math/linalg"
 
 import rl "vendor:raylib"
 
-Vector2 :: rl.Vector2
-
 Rectangle :: struct {
 	pos:  Vector2,
 	size: Vector2,
