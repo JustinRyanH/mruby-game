@@ -34,8 +34,8 @@ get_curent_game :: proc "contextless" (state: ^mrb.State) -> mrb.Value {
 
 mrb_frame_input_type: mrb.DataType = {"FrameInput", mrb.free}
 mrb_entity_handle_type: mrb.DataType = {"Entity", mrb.free}
-mrb_vector_handle_type: mrb.DataType = {"Vector", mrb.free}
-mrb_color_handle_type: mrb.DataType = {"Color", mrb.free}
+mrb_vector_type: mrb.DataType = {"Vector", mrb.free}
+mrb_color_type: mrb.DataType = {"Color", mrb.free}
 mrb_collision_evt_handle_type: mrb.DataType = {"CollisionEvent", mrb.free}
 EngineRClass :: struct {
 	entity_class: ^mrb.RClass,
@@ -562,9 +562,9 @@ vector_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	v := mrb.get_data_from_value(Vector2, self)
 	if (v == nil) {
-		mrb.data_init(self, nil, &mrb_entity_handle_type)
+		mrb.data_init(self, nil, &mrb_vector_type)
 		v = cast(^Vector2)mrb.malloc(state, size_of(Vector2))
-		mrb.data_init(self, v, &mrb_entity_handle_type)
+		mrb.data_init(self, v, &mrb_vector_type)
 	}
 	v.x = cast(f32)inc_x
 	v.y = cast(f32)inc_y
@@ -726,9 +726,9 @@ color_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	v: ^Color = mrb.get_data_from_value(Color, self)
 	if (v == nil) {
-		mrb.data_init(self, nil, &mrb_color_handle_type)
+		mrb.data_init(self, nil, &mrb_color_type)
 		v = cast(^Color)mrb.malloc(state, size_of(Color))
-		mrb.data_init(self, v, &mrb_color_handle_type)
+		mrb.data_init(self, v, &mrb_color_type)
 	}
 	v.r = cast(u8)math.clamp(r, 0, 255)
 	v.b = cast(u8)math.clamp(b, 0, 255)
