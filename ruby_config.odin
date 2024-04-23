@@ -68,21 +68,6 @@ setup_log_class :: proc(st: ^mrb.State) {
 	mrb.define_class_method(st, logger, "warning", logger_warning, mrb.args_req(1))
 }
 
-setup_vector_class :: proc(st: ^mrb.State) {
-	vector_class := mrb.define_class(st, "Vector", mrb.state_get_object_class(st))
-	mrb.set_data_type(vector_class, .CData)
-	mrb.define_class_method(st, vector_class, "zero", vector_zero, mrb.args_none())
-	mrb.define_method(st, vector_class, "initialize", vector_init, mrb.args_req(2))
-	mrb.define_method(st, vector_class, "x", vector_get_x, mrb.args_none())
-	mrb.define_method(st, vector_class, "x=", vector_set_x, mrb.args_req(1))
-	mrb.define_method(st, vector_class, "y", vector_get_y, mrb.args_none())
-	mrb.define_method(st, vector_class, "y=", vector_set_y, mrb.args_req(1))
-	mrb.define_method(st, vector_class, "*", vector_scale, mrb.args_req(1))
-	mrb.define_method(st, vector_class, "+", vector_add, mrb.args_req(1))
-	mrb.define_method(st, vector_class, "lerp", vector_lerp, mrb.args_req(2))
-	engine_classes.vector_class = vector_class
-}
-
 setup_input :: proc(st: ^mrb.State) {
 	frame_class := mrb.define_class(st, "FrameInput", mrb.state_get_object_class(st))
 	mrb.define_class_method(st, frame_class, "delta_time", frame_input_dt, mrb.args_none())
@@ -499,7 +484,6 @@ entity_eq :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return mrb.bool_value(entity == other)
 }
 
-
 @(private = "file")
 entity_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
@@ -545,6 +529,22 @@ entity_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 //////////////////////////////
 //// Vector
 //////////////////////////////
+
+setup_vector_class :: proc(st: ^mrb.State) {
+	vector_class := mrb.define_class(st, "Vector", mrb.state_get_object_class(st))
+	mrb.set_data_type(vector_class, .CData)
+	mrb.define_class_method(st, vector_class, "zero", vector_zero, mrb.args_none())
+	mrb.define_method(st, vector_class, "initialize", vector_init, mrb.args_req(2))
+	mrb.define_method(st, vector_class, "x", vector_get_x, mrb.args_none())
+	mrb.define_method(st, vector_class, "x=", vector_set_x, mrb.args_req(1))
+	mrb.define_method(st, vector_class, "y", vector_get_y, mrb.args_none())
+	mrb.define_method(st, vector_class, "y=", vector_set_y, mrb.args_req(1))
+	mrb.define_method(st, vector_class, "*", vector_scale, mrb.args_req(1))
+	mrb.define_method(st, vector_class, "+", vector_add, mrb.args_req(1))
+	mrb.define_method(st, vector_class, "lerp", vector_lerp, mrb.args_req(2))
+	engine_classes.vector_class = vector_class
+}
+
 @(private = "file")
 vector_zero :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	x := mrb.float_value(state, 0)
