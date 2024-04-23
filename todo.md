@@ -4,7 +4,6 @@
 
 [ ] Font Asset System
 [ ] Do death animation on collision
-[ ] == for Entity, Vector
 [ ] Display "You Died Text"
 [ ] Restart Game After Animation Finishes restart
 
@@ -22,4 +21,5 @@
 [x] Recompile libmruby without require
 [x] Have ruby code change entities
 [x] Track Memory Usage
+[x] == for Entity, Vector
 [x] I picked the wrong size for mrb_int, it's actually 64 bit, I need to audit and fix it

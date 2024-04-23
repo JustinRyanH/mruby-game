@@ -541,6 +541,7 @@ setup_vector_class :: proc(st: ^mrb.State) {
 	mrb.define_method(st, vector_class, "y=", vector_set_y, mrb.args_req(1))
 	mrb.define_method(st, vector_class, "*", vector_scale, mrb.args_req(1))
 	mrb.define_method(st, vector_class, "+", vector_add, mrb.args_req(1))
+	mrb.define_method(st, vector_class, "==", vector_eq, mrb.args_req(1))
 	mrb.define_method(st, vector_class, "lerp", vector_lerp, mrb.args_req(2))
 	engine_classes.vector_class = vector_class
 }
@@ -643,6 +644,23 @@ vector_lerp :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(values))
+}
+
+@(private = "file")
+vector_eq :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	other_v: mrb.Value
+	mrb.get_args(state, "o", &other_v)
+	assert(
+		mrb.obj_is_kind_of(state, other_v, engine_classes.vector_class),
+		"Vector can only equal another Vector",
+	)
+
+	entity := mrb.get_data_from_value(Vector2, self)^
+	other := mrb.get_data_from_value(Vector2, self)^
+
+	return mrb.bool_value(entity == other)
 }
 
 
