@@ -838,7 +838,6 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	// Spacing
 	cmd.spacing = 2
 	cmd.color = extract_color_from_value(state, values.color, rl.WHITE)
-	fmt.println("Is Undefined: ", mrb.undef_p(values.font), "Is Nil: ", mrb.nil_p(values.font))
 	if !mrb.undef_p(values.font) && !mrb.nil_p(values.font) {
 		assert(
 			mrb.obj_is_kind_of(state, values.font, engine_classes.font_asset_class),
@@ -846,7 +845,6 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		)
 
 		cmd.font = mrb.get_data_from_value(FontHandle, values.font)^
-		fmt.println("FONT", cmd.font)
 	}
 
 
