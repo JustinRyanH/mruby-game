@@ -803,6 +803,14 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	kwargs: mrb.Kwargs
 	kwargs.num = NumOfArgs
 
+	KValues :: struct {
+		text:              mrb.Value,
+		pos:               mrb.Value,
+		size:              mrb.Value,
+		color:             mrb.Value,
+		offset_percentage: mrb.Value,
+	}
+
 	names: [NumOfArgs]mrb.Sym =  {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "pos"),
@@ -810,27 +818,27 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		mrb.sym_from_string(state, "color"),
 		mrb.sym_from_string(state, "offset_percentage"),
 	}
-	values := [NumOfArgs]mrb.Value{}
+	values_two: KValues
 	kwargs.table = raw_data(names[:])
-	kwargs.values = raw_data(values[:])
+	kwargs.values = transmute([^]mrb.Value)&values_two
 
 	mrb.get_args(state, ":", &kwargs)
-	assert(!mrb.undef_p(values[0]), "Entity Required for `text:`")
-	assert(!mrb.undef_p(values[1]), "Entity Required for `pos:`")
+	assert(!mrb.undef_p(values_two.text), "Entity Required for `text:`")
+	assert(!mrb.undef_p(values_two.pos), "Entity Required for `pos:`")
 	cmd: ImuiDrawTextCmd
 
-	cmd.txt = mrb.string_cstr(state, values[0])
-	cmd.pos = mrb.get_data_from_value(Vector2, values[1])^
+	cmd.txt = mrb.string_cstr(state, values_two.text)
+	cmd.pos = mrb.get_data_from_value(Vector2, values_two.pos)^
 	cmd.size = 24
 	// Spacing
 	cmd.spacing = 2
-	cmd.color = extract_color_from_value(state, values[3], rl.WHITE)
+	cmd.color = extract_color_from_value(state, values_two.color, rl.WHITE)
 	cmd.alignment = .Left
-	if !mrb.undef_p(values[2]) {
-		cmd.size = cast(f32)mrb.as_float(state, values[2])
+	if !mrb.undef_p(values_two.size) {
+		cmd.size = cast(f32)mrb.as_float(state, values_two.size)
 	}
 
-	alignment_value := values[4]
+	alignment_value := values_two.offset_percentage
 	if !mrb.undef_p(alignment_value) {
 		assert(
 			mrb.symbol_p(alignment_value),
@@ -839,10 +847,6 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		sym := mrb.obj_to_sym(state, alignment_value)
 		sym_name := mrb.sym_to_string(state, sym)
 		v := strings.to_pascal_case(sym_name, context.temp_allocator)
-		// align_enum, success := reflect.enum_from_name(TextAlignment, v)
-		// assert(success, "Expect the alignment as symbol of `:left`, `:right`, or `:center`")
-
-		// cmd.alignment = align_enum
 	}
 
 	imui_add_cmd(&g.imui, cmd)
