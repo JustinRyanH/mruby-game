@@ -343,6 +343,7 @@ setup_entity_class :: proc(st: ^mrb.State) {
 	mrb.define_method(st, entity_class, "pos=", entity_pos_set, mrb.args_req(1))
 	mrb.define_method(st, entity_class, "size", entity_size_get, mrb.args_none())
 	mrb.define_method(st, entity_class, "collisions", entity_collisions_get, mrb.args_none())
+	mrb.define_method(st, entity_class, "==", entity_eq, mrb.args_req(1))
 	mrb.define_class_method(st, entity_class, "create", entity_create, mrb.args_key(1, 0))
 	engine_classes.entity_class = entity_class
 }
@@ -478,6 +479,24 @@ entity_collisions_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Va
 	}
 
 	return mrb.ary_new_from_values(state, len(out), raw_data(out))
+}
+
+
+@(private = "file")
+entity_eq :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	other_v: mrb.Value
+	mrb.get_args(state, "o", &other_v)
+	assert(
+		mrb.obj_is_kind_of(state, other_v, engine_classes.entity_class),
+		"Entity can only equal another entity",
+	)
+
+	entity := mrb.get_data_from_value(EntityHandle, self)^
+	other := mrb.get_data_from_value(EntityHandle, self)^
+
+	return mrb.bool_value(entity == other)
 }
 
 
