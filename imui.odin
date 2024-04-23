@@ -1,6 +1,7 @@
 package main
 
 import "core:fmt"
+import "core:math"
 import rl "vendor:raylib"
 
 TextAlignment :: enum {
@@ -57,7 +58,7 @@ imui_draw :: proc(imui: ^ImUiState) {
 			offset := alignment_offset(c.alignment, measure)
 			rl.DrawTextPro(ft.font, c.txt, c.pos, offset, 0, c.size, c.spacing, c.color)
 		case ImuiDrawRectCmd:
-			rect: rl.Rectangle = {c.left, c.top, c.bottom - c.top, c.right - c.left}
+			rect: rl.Rectangle = {c.left, c.top, c.right - c.left, c.bottom - c.top}
 			switch c.mode {
 			case .Solid:
 				rl.DrawRectangleRec(rect, c.color)
@@ -74,11 +75,11 @@ alignment_offset :: proc(algn: TextAlignment, measurement: Vector2) -> (offset: 
 	offset.y = measurement.y * 0.5
 	switch algn {
 	case .Left:
-		offset.x = -measurement.x
+		offset.x = 0
 	case .Center:
 		offset.x = measurement.x * 0.5
 	case .Right:
-		offset.x = 0
+		offset.x = measurement.x
 	}
 
 	return

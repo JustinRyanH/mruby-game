@@ -8,8 +8,8 @@ game.tick
 
 text = 'Really, Really Long Text'
 
-ImUI.draw_rect(left: 50, right: 120, top: 50, bottom: 140, color: Color.orange)
-ImUI.draw_text(text:, pos: Vector.new(200, 260), size: 24, color: Color.pink, alignment: :left)
-
-# ImUI.draw_text(text:, pos: Vector.new(200, 320), size: 24, color: Color.pink, alignment: :center)
-# ImUI.draw_text(text:, pos: Vector.new(300, 200), size: 24, color: Color.pink, alignment: :right)
+ImUI.draw_rect(left: 50, right: 450, top: 50, bottom: 140, color: Color.orange)
+ImUI.draw_text(text:, pos: Vector.new(60, 50 + 12), size: 24, color: Color.black, alignment: :left)
+ImUI.draw_text(text:, pos: Vector.new(450 - 12, 50 + 36), size: 24, color: Color.black, alignment: :right)
+ImUI.draw_text(text:, pos: Vector.new(50 + ((450 - 50) * 0.5), 50 + 36 + 24), size: 24, color: Color.black,
+               alignment: :center)
