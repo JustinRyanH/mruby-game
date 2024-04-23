@@ -2,8 +2,11 @@
 
 ## Current
 
-[ ] Do death animation on collision, restart
+[ ] Font Asset System
+[ ] Do death animation on collision
 [ ] == for Entity, Vector
+[ ] Display "You Died Text"
+[ ] Restart Game After Animation Finishes restart
 
 ## Nice to
 
@@ -11,7 +14,6 @@
 [ ] Come up with an algorithm to make sure the more challenging gaps are achieveable
 [ ] Introduce Better errors for assets
 [ ] Some sort of imgui I can communicate from ruby for debug
-[ ] Font Asset System
 
 ## Done
 
