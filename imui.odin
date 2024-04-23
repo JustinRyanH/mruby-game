@@ -71,8 +71,8 @@ imui_draw :: proc(imui: ^ImUiState) {
 			rect.width = c.size.x
 			rect.height = c.size.y
 
-			rect.y = c.pos.y + c.size.y * c.offset_p.y
-			rect.x = c.pos.x + c.size.x * c.offset_p.y
+			rect.y = c.pos.y - c.size.y * c.offset_p.y
+			rect.x = c.pos.x - c.size.x * c.offset_p.y
 
 			switch c.mode {
 			case .Solid:
