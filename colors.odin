@@ -37,7 +37,7 @@ ColorPallet :: enum {
 	RayWhite,
 }
 
-pallet_to_color := [ColorPallet]rl.Color {
+pallet_to_color := [ColorPallet]Color {
 	.LightGray  = rl.LIGHTGRAY,
 	.Gray       = rl.GRAY,
 	.DarkGray   = rl.DARKGRAY,

@@ -13,7 +13,7 @@ import mrb "./mruby"
 Entity :: struct {
 	pos:   Vector2,
 	size:  Vector2,
-	color: rl.Color,
+	color: Color,
 }
 
 EntityHandle :: distinct dp.Handle

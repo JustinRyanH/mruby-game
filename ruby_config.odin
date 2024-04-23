@@ -508,7 +508,7 @@ entity_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	if (mrb.undef_p(values[2])) {
 		color = rl.WHITE
 	} else {
-		color = mrb.get_data_from_value(rl.Color, values[2])^
+		color = mrb.get_data_from_value(Color, values[2])^
 	}
 
 	entity_ptr, handle, success := dp.add_empty(&g.entities)
@@ -687,10 +687,10 @@ color_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	r, b, g, a: int
 	mrb.get_args(state, "iiii", &r, &g, &b, &a)
 
-	v: ^rl.Color = mrb.get_data_from_value(rl.Color, self)
+	v: ^Color = mrb.get_data_from_value(Color, self)
 	if (v == nil) {
 		mrb.data_init(self, nil, &mrb_color_handle_type)
-		v = cast(^rl.Color)mrb.malloc(state, size_of(rl.Color))
+		v = cast(^Color)mrb.malloc(state, size_of(Color))
 		mrb.data_init(self, v, &mrb_color_handle_type)
 	}
 	v.r = cast(u8)math.clamp(r, 0, 255)
@@ -702,19 +702,19 @@ color_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 color_get_r :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	v := mrb.get_data_from_value(rl.Color, self)
+	v := mrb.get_data_from_value(Color, self)
 	return mrb.int_value(state, cast(mrb.Int)v.r)
 }
 
 @(private = "file")
 color_get_b :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	v := mrb.get_data_from_value(rl.Color, self)
+	v := mrb.get_data_from_value(Color, self)
 	return mrb.int_value(state, cast(mrb.Int)v.b)
 }
 
 @(private = "file")
 color_get_g :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	v := mrb.get_data_from_value(rl.Color, self)
+	v := mrb.get_data_from_value(Color, self)
 	return mrb.int_value(state, cast(mrb.Int)v.g)
 }
 
