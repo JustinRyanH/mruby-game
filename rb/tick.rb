@@ -6,4 +6,8 @@
 game = Game.current
 game.tick
 
-# ImUI.draw_text(text: 'Test', pos: Vector.new(300, 200), size: 40, color: Color.pink)
+text = 'Really, Really Long Text'
+
+ImUI.draw_text(text:, pos: Vector.new(200, 260), size: 24, color: Color.pink, alignment: :left)
+ImUI.draw_text(text:, pos: Vector.new(200, 320), size: 24, color: Color.pink, alignment: :center)
+ImUI.draw_text(text:, pos: Vector.new(300, 200), size: 24, color: Color.pink, alignment: :right)

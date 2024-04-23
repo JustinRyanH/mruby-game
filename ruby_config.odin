@@ -756,7 +756,7 @@ setup_imui :: proc(st: ^mrb.State) {
 imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
-	NumOfArgs :: 4
+	NumOfArgs :: 5
 	kwargs: mrb.Kwargs
 	kwargs.num = NumOfArgs
 
@@ -765,6 +765,7 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "color"),
+		mrb.sym_from_string(state, "alignment"),
 	}
 	values := [NumOfArgs]mrb.Value{}
 	kwargs.table = raw_data(names[:])
@@ -781,6 +782,7 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	// Spacing
 	cmd.spacing = 2
 	cmd.color = rl.WHITE
+	cmd.alignment = .Left
 	if !mrb.undef_p(values[2]) {
 		cmd.size = cast(f32)mrb.as_float(state, values[2])
 	}
@@ -790,6 +792,20 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 			"ImUI.draw_text(color: ) should be a Color",
 		)
 		cmd.color = mrb.get_data_from_value(rl.Color, values[3])^
+	}
+	alignment_value := values[4]
+	if !mrb.undef_p(alignment_value) {
+		assert(
+			mrb.symbol_p(alignment_value),
+			"Expect the alignment as symbol of `:left`, `:right`, or `:center`",
+		)
+		sym := mrb.obj_to_sym(state, alignment_value)
+		sym_name := mrb.sym_to_string(state, sym)
+		v := strings.to_pascal_case(sym_name, context.temp_allocator)
+		align_enum, success := reflect.enum_from_name(TextAlignment, v)
+		assert(success, "Expect the alignment as symbol of `:left`, `:right`, or `:center`")
+
+		cmd.alignment = align_enum
 	}
 
 	imui_add_cmd(&g.imui, cmd)
