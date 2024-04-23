@@ -56,11 +56,13 @@ ruby_code_deinit :: proc(rc: ^RubyCode) {
 }
 
 AssetSystem :: struct {
-	ruby: map[RubyCodeHandle]RubyCode,
+	ruby:  map[RubyCodeHandle]RubyCode,
+	fonts: map[FontHandle]FontAsset,
 }
 
 asset_system_init :: proc(as: ^AssetSystem) {
 	as.ruby = make(map[RubyCodeHandle]RubyCode, 32)
+	as.fonts = make(map[FontHandle]FontAsset, 32)
 }
 
 asset_system_deinit :: proc(as: ^AssetSystem) {
@@ -98,6 +100,10 @@ asset_system_check :: proc(as: ^AssetSystem) {
 		rc := &as.ruby[i]
 		ruby_code_load(rc)
 	}
+}
+
+asset_load_font :: proc(as: ^AssetSystem, path: string) -> (FontHandle, bool) {
+	return {}, false
 }
 
 asset_get_font :: proc(as: ^AssetSystem, fh: FontHandle) -> FontAsset {
