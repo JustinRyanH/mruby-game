@@ -27,13 +27,13 @@ class FrameInput
   # @return [Boolean]
   def self.key_down?(key); end
 
-  # Whether the key is down this frame, 
+  # Whether the key is down this frame,
   # but not the last
   #
   # @return [Boolean]
   def self.key_just_pressed?(key); end
 
-  # Whether the key is up this frame, 
+  # Whether the key is up this frame,
   # but not the last
   #
   # @return [Boolean]
@@ -56,7 +56,6 @@ class FrameInput
   # @param [Range] low..high
   # @return [Float]
   def self.random_int(rng); end
-
 end
 
 class Vector
@@ -87,4 +86,14 @@ class Vector
   # @param [Float] scalar
   # @return [Vector]
   def *(other); end
+end
+
+module ImUI
+  # Draws a Rectangle
+  #
+  # @param [Vector] pos
+  # @param [Vector] size
+  # @param [Vector] anchor_percetnage - 0..1 values inside the
+  # @param [Symbol] mode `:solid` or `:outline`
+  def self.draw_rect(pos:, size:, anchor_percetnage: Vector.zero, mode: solid); end
 end

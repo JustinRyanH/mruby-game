@@ -766,7 +766,7 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "color"),
-		mrb.sym_from_string(state, "alignment"),
+		mrb.sym_from_string(state, "offset_percentage"),
 	}
 	values := [NumOfArgs]mrb.Value{}
 	kwargs.table = raw_data(names[:])
@@ -797,10 +797,10 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		sym := mrb.obj_to_sym(state, alignment_value)
 		sym_name := mrb.sym_to_string(state, sym)
 		v := strings.to_pascal_case(sym_name, context.temp_allocator)
-		align_enum, success := reflect.enum_from_name(TextAlignment, v)
-		assert(success, "Expect the alignment as symbol of `:left`, `:right`, or `:center`")
+		// align_enum, success := reflect.enum_from_name(TextAlignment, v)
+		// assert(success, "Expect the alignment as symbol of `:left`, `:right`, or `:center`")
 
-		cmd.alignment = align_enum
+		// cmd.alignment = align_enum
 	}
 
 	imui_add_cmd(&g.imui, cmd)
@@ -812,11 +812,11 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 imui_draw_rect :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
-	NumOfArgs :: 6
+	NumOfArgs :: 5
 	kwargs: mrb.Kwargs
 	kwargs.num = NumOfArgs
 
-	names: [NumOfArgs]string = {"top", "right", "bottom", "left", "color", "mode"}
+	names: [NumOfArgs]string = {"pos", "size", "anchor_percentage", "color", "mode"}
 	syms: [NumOfArgs]mrb.Sym = {}
 
 	for n, idx in names {syms[idx] = mrb.sym_from_string(state, n)}
@@ -826,20 +826,27 @@ imui_draw_rect :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	kwargs.table = raw_data(syms[:])
 	kwargs.values = raw_data(values[:])
 
-	for i := 0; i < 4; i += 1 {
+	for i := 0; i < 2; i += 1 {
 		assert(!mrb.undef_p(values[i]), fmt.tprintf("`:%s` is required", names[i]))
 	}
 	mrb.get_args(state, ":", &kwargs)
 
 	cmd: ImuiDrawRectCmd
-	cmd.top = cast(f32)mrb.as_float(state, values[0])
-	cmd.right = cast(f32)mrb.as_float(state, values[1])
-	cmd.bottom = cast(f32)mrb.as_float(state, values[2])
-	cmd.left = cast(f32)mrb.as_float(state, values[3])
-	cmd.color = extract_color_from_value(state, values[4], rl.WHITE)
+	cmd.pos = mrb.get_data_from_value(Vector2, values[0])^
+	cmd.size = mrb.get_data_from_value(Vector2, values[1])^
+
+	if !mrb.undef_p(values[2]) {
+		cmd.offset_p = math.clamp(
+			mrb.get_data_from_value(Vector2, values[2])^,
+			Vector2{},
+			Vector2{1, 1},
+		)
+	}
+
+	cmd.color = extract_color_from_value(state, values[3], rl.RED)
 
 	mode_value := values[4]
-	if mrb.undef_p(mode_value) {
+	if !mrb.undef_p(mode_value) {
 		mode_sym := mrb.symbol_p(mode_value)
 		assert(mode_sym, "Expect the alignment as symbol of `:solid` or `:outline`")
 

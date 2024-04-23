@@ -4,7 +4,13 @@ import "core:fmt"
 import "core:math"
 import rl "vendor:raylib"
 
-TextAlignment :: enum {
+VerticalAlignment :: enum {
+	Top,
+	Bottom,
+	Center,
+}
+
+HorizontalAlignment :: enum {
 	Left,
 	Right,
 	Center,
@@ -18,7 +24,8 @@ DrawMode :: enum {
 ImuiDrawTextCmd :: struct {
 	font:      FontHandle,
 	txt:       cstring,
-	alignment: TextAlignment,
+	// TODO: Rename to valign
+	alignment: HorizontalAlignment,
 	size:      f32,
 	spacing:   f32,
 	color:     Color,
@@ -26,9 +33,11 @@ ImuiDrawTextCmd :: struct {
 }
 
 ImuiDrawRectCmd :: struct {
-	top, right, bottom, left: f32,
-	color:                    Color,
-	mode:                     DrawMode,
+	pos:      Vector2,
+	size:     Vector2,
+	offset_p: Vector2,
+	color:    Color,
+	mode:     DrawMode,
 }
 
 ImuiCommand :: union {
@@ -58,7 +67,13 @@ imui_draw :: proc(imui: ^ImUiState) {
 			offset := alignment_offset(c.alignment, measure)
 			rl.DrawTextPro(ft.font, c.txt, c.pos, offset, 0, c.size, c.spacing, c.color)
 		case ImuiDrawRectCmd:
-			rect: rl.Rectangle = {c.left, c.top, c.right - c.left, c.bottom - c.top}
+			rect: rl.Rectangle
+			rect.width = c.size.x
+			rect.height = c.size.y
+
+			rect.y = c.pos.y + c.size.y * c.offset_p.y
+			rect.x = c.pos.x + c.size.x * c.offset_p.y
+
 			switch c.mode {
 			case .Solid:
 				rl.DrawRectangleRec(rect, c.color)
@@ -71,7 +86,7 @@ imui_draw :: proc(imui: ^ImUiState) {
 }
 
 @(private = "file")
-alignment_offset :: proc(algn: TextAlignment, measurement: Vector2) -> (offset: Vector2) {
+alignment_offset :: proc(algn: HorizontalAlignment, measurement: Vector2) -> (offset: Vector2) {
 	offset.y = measurement.y * 0.5
 	switch algn {
 	case .Left:
