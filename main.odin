@@ -161,6 +161,8 @@ main :: proc() {
 		defer free_all(context.temp_allocator)
 		defer mrb.incremental_gc(g.ruby)
 
+		imui_beign(&g.imui)
+
 		game_setup_temp(g)
 
 		input.update_input(&g.input)
@@ -177,6 +179,8 @@ main :: proc() {
 			rect: rl.Rectangle = {entity.pos.x, entity.pos.y, entity.size.x, entity.size.y}
 			rl.DrawRectanglePro(rect, entity.size * 0.5, 0.0, entity.color)
 		}
+
+		imui_draw(&g.imui)
 
 		// Check for asset change every second or so
 		if input.frame_query_id(g.input) % TargetFPS == 0 {

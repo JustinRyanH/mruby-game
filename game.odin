@@ -25,7 +25,10 @@ CollisionTargets :: [dynamic]EntityHandle
 Game :: struct {
 	ruby:             ^mrb.State,
 	ctx:              runtime.Context,
+
+	// Systems
 	assets:           AssetSystem,
+	imui:             ImUiState,
 	input:            input.FrameInput,
 	rand:             rand.Rand,
 

@@ -1,12 +1,20 @@
 package main
 
-import "./utils"
-
 import "core:fmt"
 import "core:os"
 
+import rl "vendor:raylib"
+
+import "./utils"
+
 
 FontHandle :: distinct u64
+
+FontAsset :: struct {
+	handle: FontHandle,
+	font:   rl.Font,
+}
+
 RubyCodeHandle :: distinct u64
 
 ruby_code_handle :: proc(str: string) -> RubyCodeHandle {
@@ -84,9 +92,17 @@ asset_system_load_ruby :: proc(as: ^AssetSystem, file: string) -> (RubyCodeHandl
 asset_system_find_ruby :: proc(as: ^AssetSystem, handle: RubyCodeHandle) -> (RubyCode, bool) {
 	return as.ruby[handle]
 }
+
 asset_system_check :: proc(as: ^AssetSystem) {
 	for i in as.ruby {
 		rc := &as.ruby[i]
 		ruby_code_load(rc)
 	}
+}
+
+asset_get_font :: proc(as: ^AssetSystem, fh: FontHandle) -> FontAsset {
+	if fh == 0 {
+		return FontAsset{0, rl.GetFontDefault()}
+	}
+	unimplemented("Font AssetSystem not implemented")
 }

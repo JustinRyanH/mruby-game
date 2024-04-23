@@ -773,22 +773,26 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	mrb.get_args(state, ":", &kwargs)
 	assert(!mrb.undef_p(values[0]), "Entity Required for `text:`")
 	assert(!mrb.undef_p(values[1]), "Entity Required for `pos:`")
-	text: cstring = mrb.string_cstr(state, values[0])
-	pos: Vector2 = mrb.get_data_from_value(Vector2, values[1])^
-	size: f32 = 24
-	color: rl.Color = rl.WHITE
+	cmd: ImuiDrawTextCmd
+
+	cmd.txt = mrb.string_cstr(state, values[0])
+	cmd.pos = mrb.get_data_from_value(Vector2, values[1])^
+	cmd.size = 24
+	// Spacing
+	cmd.spacing = 2
+	cmd.color = rl.WHITE
 	if !mrb.undef_p(values[2]) {
-		size = cast(f32)mrb.as_float(state, values[2])
+		cmd.size = cast(f32)mrb.as_float(state, values[2])
 	}
 	if !mrb.undef_p(values[3]) {
 		assert(
 			mrb.obj_is_kind_of(state, values[3], engine_classes.color_class),
 			"ImUI.draw_text(color: ) should be a Color",
 		)
-		color = mrb.get_data_from_value(rl.Color, values[3])^
+		cmd.color = mrb.get_data_from_value(rl.Color, values[3])^
 	}
 
-	rl.DrawTextPro(rl.GetFontDefault(), text, pos, {}, 0, size, 2, color)
+	imui_add_cmd(&g.imui, cmd)
 
 	return mrb.nil_value()
 }
