@@ -37,7 +37,6 @@ mrb_entity_handle_type: mrb.DataType = {"Entity", mrb.free}
 mrb_vector_handle_type: mrb.DataType = {"Vector", mrb.free}
 mrb_color_handle_type: mrb.DataType = {"Color", mrb.free}
 mrb_collision_evt_handle_type: mrb.DataType = {"CollisionEvent", mrb.free}
-
 EngineRClass :: struct {
 	entity_class: ^mrb.RClass,
 	vector_class: ^mrb.RClass,
@@ -82,23 +81,6 @@ setup_vector_class :: proc(st: ^mrb.State) {
 	mrb.define_method(st, vector_class, "+", vector_add, mrb.args_req(1))
 	mrb.define_method(st, vector_class, "lerp", vector_lerp, mrb.args_req(2))
 	engine_classes.vector_class = vector_class
-}
-
-setup_entity_class :: proc(st: ^mrb.State) {
-	entity_class := mrb.define_class(st, "Entity", mrb.state_get_object_class(st))
-	mrb.set_data_type(entity_class, .CData)
-	mrb.define_method(st, entity_class, "initialize", entity_init, mrb.args_req(1))
-	// Removes the Entity, returns true if is was destroyed,
-	// return false if failed (likely because it was already destroyed)
-	mrb.define_method(st, entity_class, "destroy", entity_destroy, mrb.args_none())
-	mrb.define_method(st, entity_class, "id", entity_get_id, mrb.args_none())
-	mrb.define_method(st, entity_class, "valid?", entity_valid, mrb.args_none())
-	mrb.define_method(st, entity_class, "pos", entity_pos_get, mrb.args_none())
-	mrb.define_method(st, entity_class, "pos=", entity_pos_set, mrb.args_req(1))
-	mrb.define_method(st, entity_class, "size", entity_size_get, mrb.args_none())
-	mrb.define_method(st, entity_class, "collisions", entity_collisions_get, mrb.args_none())
-	mrb.define_class_method(st, entity_class, "create", entity_create, mrb.args_key(1, 0))
-	engine_classes.entity_class = entity_class
 }
 
 setup_input :: proc(st: ^mrb.State) {
@@ -347,6 +329,24 @@ logger_fatal :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 //////////////////////////////
 //// Entity
 //////////////////////////////
+
+setup_entity_class :: proc(st: ^mrb.State) {
+	entity_class := mrb.define_class(st, "Entity", mrb.state_get_object_class(st))
+	mrb.set_data_type(entity_class, .CData)
+	mrb.define_method(st, entity_class, "initialize", entity_init, mrb.args_req(1))
+	// Removes the Entity, returns true if is was destroyed,
+	// return false if failed (likely because it was already destroyed)
+	mrb.define_method(st, entity_class, "destroy", entity_destroy, mrb.args_none())
+	mrb.define_method(st, entity_class, "id", entity_get_id, mrb.args_none())
+	mrb.define_method(st, entity_class, "valid?", entity_valid, mrb.args_none())
+	mrb.define_method(st, entity_class, "pos", entity_pos_get, mrb.args_none())
+	mrb.define_method(st, entity_class, "pos=", entity_pos_set, mrb.args_req(1))
+	mrb.define_method(st, entity_class, "size", entity_size_get, mrb.args_none())
+	mrb.define_method(st, entity_class, "collisions", entity_collisions_get, mrb.args_none())
+	mrb.define_class_method(st, entity_class, "create", entity_create, mrb.args_key(1, 0))
+	engine_classes.entity_class = entity_class
+}
+
 @(private = "file")
 entity_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	entity_id: int
