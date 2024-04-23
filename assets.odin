@@ -2,6 +2,7 @@ package main
 
 import "core:fmt"
 import "core:os"
+import "core:strings"
 
 import rl "vendor:raylib"
 
@@ -9,6 +10,10 @@ import "./utils"
 
 
 FontHandle :: distinct u64
+
+font_handle :: proc(str: string) -> FontHandle {
+	return cast(FontHandle)utils.generate_u64_from_string(str)
+}
 
 FontAsset :: struct {
 	handle: FontHandle,
@@ -19,7 +24,6 @@ RubyCodeHandle :: distinct u64
 
 ruby_code_handle :: proc(str: string) -> RubyCodeHandle {
 	return cast(RubyCodeHandle)utils.generate_u64_from_string(str)
-
 }
 
 RubyCode :: struct {
@@ -103,7 +107,21 @@ asset_system_check :: proc(as: ^AssetSystem) {
 }
 
 asset_load_font :: proc(as: ^AssetSystem, path: string) -> (FontHandle, bool) {
-	return {}, false
+	handle := font_handle(path)
+	if handle in as.fonts {
+		// TODO: Check if the file has change and reload
+		return handle, true
+	}
+
+	cpath := strings.clone_to_cstring(path, context.temp_allocator)
+	font := rl.LoadFont(cpath)
+	if font == {} {
+		return {}, false
+	}
+	fa := FontAsset{handle, font}
+	as.fonts[handle] = fa
+
+	return handle, true
 }
 
 asset_get_font :: proc(as: ^AssetSystem, fh: FontHandle) -> FontAsset {
