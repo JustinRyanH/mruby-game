@@ -798,16 +798,17 @@ setup_imui :: proc(st: ^mrb.State) {
 imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
-	NumOfArgs :: 5
+	NumOfArgs :: 6
 	kwargs: mrb.Kwargs
 	kwargs.num = NumOfArgs
 
 	KValues :: struct {
-		text:  mrb.Value,
-		pos:   mrb.Value,
-		size:  mrb.Value,
-		color: mrb.Value,
-		font:  mrb.Value,
+		text:   mrb.Value,
+		pos:    mrb.Value,
+		size:   mrb.Value,
+		color:  mrb.Value,
+		font:   mrb.Value,
+		halign: mrb.Value,
 	}
 
 	// TODO: I can totally do this with generics and reflection
@@ -817,6 +818,7 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "color"),
 		mrb.sym_from_string(state, "font"),
+		mrb.sym_from_string(state, "halign"),
 	}
 	values: KValues
 	kwargs.table = raw_data(names[:])
@@ -846,7 +848,15 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 		cmd.font = mrb.get_data_from_value(FontHandle, values.font)^
 	}
-
+	if !mrb.undef_p(values.halign) && !mrb.nil_p(values.halign) {
+		assert(mrb.symbol_p(values.halign), "halign: should be `:left`, `:right`, or `:center`")
+		halign := mrb.obj_to_sym(state, values.halign)
+		str := mrb.sym_to_string(state, halign)
+		str_c := strings.to_pascal_case(str, context.temp_allocator)
+		alignment, success := reflect.enum_from_name(HorizontalAlignment, str_c)
+		assert(success, "halign: should be `:left`, `:right`, or `:center`")
+		cmd.halign = alignment
+	}
 
 	imui_add_cmd(&g.imui, cmd)
 
@@ -933,7 +943,8 @@ extract_color_from_value :: proc(
 
 setup_assets :: proc(st: ^mrb.State) {
 	setup_fonts(st)
-	asset_system_class := mrb.define_module(st, "AssetSystem")
+
+	asset_system_class := mrb.define_class(st, "AssetSystem", mrb.state_get_object_class(st))
 	mrb.define_class_method(st, asset_system_class, "add_font", assets_add_font, mrb.args_req(1))
 	engine_classes.asset_system_class = asset_system_class
 }
@@ -963,12 +974,13 @@ assets_add_font :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 setup_fonts :: proc(st: ^mrb.State) {
 	font_asset_class := mrb.define_class(st, "Font", mrb.state_get_object_class(st))
-	mrb.define_method(st, font_asset_class, "initialize", font_initialize, mrb.args_req(1))
+	mrb.set_data_type(font_asset_class, .CData)
+	mrb.define_method(st, font_asset_class, "initialize", font_init, mrb.args_req(1))
 	engine_classes.font_asset_class = font_asset_class
 }
 
 @(private = "file")
-font_initialize :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+font_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	handle_id: int
 	mrb.get_args(state, "i", &handle_id)
 
@@ -976,8 +988,7 @@ font_initialize :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	if (i == nil) {
 		mrb.data_init(self, nil, &mrb_font_handle_type)
-		v := mrb.malloc(state, size_of(FontHandle))
-		i = cast(^FontHandle)v
+		i = cast(^FontHandle)mrb.malloc(state, size_of(FontHandle))
 		mrb.data_init(self, i, &mrb_font_handle_type)
 	}
 	i^ = cast(FontHandle)handle_id
