@@ -130,5 +130,9 @@ asset_system_get_font :: proc(as: ^AssetSystem, fh: FontHandle) -> FontAsset {
 	if fh == 0 {
 		return FontAsset{0, rl.GetFontDefault()}
 	}
-	unimplemented("Font AssetSystem not implemented")
+	fa, success := as.fonts[fh]
+	if !success {
+		return FontAsset{0, rl.GetFontDefault()}
+	}
+	return fa
 }

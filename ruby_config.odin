@@ -54,7 +54,6 @@ engine_classes: EngineRClass
 game_load_mruby_raylib :: proc(game: ^Game) {
 	st := game.ruby
 
-	setup_fonts(st)
 	setup_assets(st)
 	setup_imui(st)
 	setup_input(st)
@@ -804,11 +803,11 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	kwargs.num = NumOfArgs
 
 	KValues :: struct {
-		text:              mrb.Value,
-		pos:               mrb.Value,
-		size:              mrb.Value,
-		color:             mrb.Value,
-		offset_percentage: mrb.Value,
+		text:  mrb.Value,
+		pos:   mrb.Value,
+		size:  mrb.Value,
+		color: mrb.Value,
+		font:  mrb.Value,
 	}
 
 	// TODO: I can totally do this with generics and reflection
@@ -817,38 +816,39 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "color"),
-		mrb.sym_from_string(state, "offset_percentage"),
+		mrb.sym_from_string(state, "font"),
 	}
-	values_two: KValues
+	values: KValues
 	kwargs.table = raw_data(names[:])
-	kwargs.values = transmute([^]mrb.Value)&values_two
+	kwargs.values = transmute([^]mrb.Value)&values
 
 	mrb.get_args(state, ":", &kwargs)
-	assert(!mrb.undef_p(values_two.text), "Entity Required for `text:`")
-	assert(!mrb.undef_p(values_two.pos), "Entity Required for `pos:`")
+	assert(!mrb.undef_p(values.text), "Entity Required for `text:`")
+	assert(!mrb.undef_p(values.pos), "Entity Required for `pos:`")
 	cmd: ImuiDrawTextCmd
 
-	cmd.txt = mrb.string_cstr(state, values_two.text)
-	cmd.pos = mrb.get_data_from_value(Vector2, values_two.pos)^
+	cmd.txt = mrb.string_cstr(state, values.text)
+	cmd.pos = mrb.get_data_from_value(Vector2, values.pos)^
+
 	cmd.size = 24
-	// Spacing
-	cmd.spacing = 2
-	cmd.color = extract_color_from_value(state, values_two.color, rl.WHITE)
-	cmd.alignment = .Left
-	if !mrb.undef_p(values_two.size) {
-		cmd.size = cast(f32)mrb.as_float(state, values_two.size)
+	if !mrb.undef_p(values.size) {
+		cmd.size = cast(f32)mrb.as_float(state, values.size)
 	}
 
-	alignment_value := values_two.offset_percentage
-	if !mrb.undef_p(alignment_value) {
+	// Spacing
+	cmd.spacing = 2
+	cmd.color = extract_color_from_value(state, values.color, rl.WHITE)
+	fmt.println("Is Undefined: ", mrb.undef_p(values.font), "Is Nil: ", mrb.nil_p(values.font))
+	if !mrb.undef_p(values.font) && !mrb.nil_p(values.font) {
 		assert(
-			mrb.symbol_p(alignment_value),
-			"Expect the alignment as symbol of `:left`, `:right`, or `:center`",
+			mrb.obj_is_kind_of(state, values.font, engine_classes.font_asset_class),
+			"`:font` must be a Font",
 		)
-		sym := mrb.obj_to_sym(state, alignment_value)
-		sym_name := mrb.sym_to_string(state, sym)
-		v := strings.to_pascal_case(sym_name, context.temp_allocator)
+
+		cmd.font = mrb.get_data_from_value(FontHandle, values.font)^
+		fmt.println("FONT", cmd.font)
 	}
+
 
 	imui_add_cmd(&g.imui, cmd)
 
@@ -934,6 +934,7 @@ extract_color_from_value :: proc(
 //////////////////////////////
 
 setup_assets :: proc(st: ^mrb.State) {
+	setup_fonts(st)
 	asset_system_class := mrb.define_module(st, "AssetSystem")
 	mrb.define_class_method(st, asset_system_class, "add_font", assets_add_font, mrb.args_req(1))
 	engine_classes.asset_system_class = asset_system_class
@@ -963,7 +964,7 @@ assets_add_font :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 
 setup_fonts :: proc(st: ^mrb.State) {
-	font_asset_class := mrb.define_module(st, "Font")
+	font_asset_class := mrb.define_class(st, "Font", mrb.state_get_object_class(st))
 	mrb.define_method(st, font_asset_class, "initialize", font_initialize, mrb.args_req(1))
 	engine_classes.font_asset_class = font_asset_class
 }

@@ -22,14 +22,14 @@ DrawMode :: enum {
 }
 
 ImuiDrawTextCmd :: struct {
-	font:      FontHandle,
-	txt:       cstring,
+	font:    FontHandle,
+	txt:     cstring,
 	// TODO: Rename to valign
-	alignment: HorizontalAlignment,
-	size:      f32,
-	spacing:   f32,
-	color:     Color,
-	pos:       Vector2,
+	halign:  HorizontalAlignment,
+	size:    f32,
+	spacing: f32,
+	color:   Color,
+	pos:     Vector2,
 }
 
 ImuiDrawRectCmd :: struct {
@@ -64,7 +64,7 @@ imui_draw :: proc(imui: ^ImUiState) {
 		case ImuiDrawTextCmd:
 			ft := asset_system_get_font(assets, c.font)
 			measure := rl.MeasureTextEx(ft.font, c.txt, c.size, c.spacing)
-			offset := alignment_offset(c.alignment, measure)
+			offset := alignment_offset(c.halign, measure)
 			rl.DrawTextPro(ft.font, c.txt, c.pos, offset, 0, c.size, c.spacing, c.color)
 		case ImuiDrawRectCmd:
 			rect: rl.Rectangle
