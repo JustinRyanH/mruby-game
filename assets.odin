@@ -75,6 +75,7 @@ asset_system_deinit :: proc(as: ^AssetSystem) {
 		ruby_code_deinit(rc)
 	}
 	delete(as.ruby)
+	delete(as.fonts)
 }
 
 asset_system_load_ruby :: proc(as: ^AssetSystem, file: string) -> (RubyCodeHandle, bool) {
@@ -106,7 +107,8 @@ asset_system_check :: proc(as: ^AssetSystem) {
 	}
 }
 
-asset_load_font :: proc(as: ^AssetSystem, path: string) -> (FontHandle, bool) {
+// TODO: Replace with proper error
+asset_system_load_font :: proc(as: ^AssetSystem, path: string) -> (FontHandle, bool) {
 	handle := font_handle(path)
 	if handle in as.fonts {
 		// TODO: Check if the file has change and reload
@@ -124,7 +126,7 @@ asset_load_font :: proc(as: ^AssetSystem, path: string) -> (FontHandle, bool) {
 	return handle, true
 }
 
-asset_get_font :: proc(as: ^AssetSystem, fh: FontHandle) -> FontAsset {
+asset_system_get_font :: proc(as: ^AssetSystem, fh: FontHandle) -> FontAsset {
 	if fh == 0 {
 		return FontAsset{0, rl.GetFontDefault()}
 	}

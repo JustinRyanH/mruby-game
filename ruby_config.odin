@@ -34,15 +34,19 @@ get_curent_game :: proc "contextless" (state: ^mrb.State) -> mrb.Value {
 
 mrb_frame_input_type: mrb.DataType = {"FrameInput", mrb.free}
 mrb_entity_handle_type: mrb.DataType = {"Entity", mrb.free}
+mrb_font_handle_type: mrb.DataType = {"Font", mrb.free}
 mrb_vector_type: mrb.DataType = {"Vector", mrb.free}
 mrb_color_type: mrb.DataType = {"Color", mrb.free}
 mrb_collision_evt_handle_type: mrb.DataType = {"CollisionEvent", mrb.free}
+
 EngineRClass :: struct {
-	entity_class: ^mrb.RClass,
-	vector_class: ^mrb.RClass,
-	color_class:  ^mrb.RClass,
-	frame_class:  ^mrb.RClass,
-	ui_module:    ^mrb.RClass,
+	entity_class:       ^mrb.RClass,
+	vector_class:       ^mrb.RClass,
+	color_class:        ^mrb.RClass,
+	frame_class:        ^mrb.RClass,
+	ui_module:          ^mrb.RClass,
+	asset_system_class: ^mrb.RClass,
+	font_asset_class:   ^mrb.RClass,
 }
 
 engine_classes: EngineRClass
@@ -50,7 +54,8 @@ engine_classes: EngineRClass
 game_load_mruby_raylib :: proc(game: ^Game) {
 	st := game.ruby
 
-
+	setup_fonts(st)
+	setup_assets(st)
 	setup_imui(st)
 	setup_input(st)
 	setup_log_class(st)
@@ -917,4 +922,60 @@ extract_color_from_value :: proc(
 		return mrb.get_data_from_value(rl.Color, value)^
 	}
 	return default
+}
+
+//////////////////////////////
+//// Assets
+//////////////////////////////
+
+setup_assets :: proc(st: ^mrb.State) {
+	asset_system_class := mrb.define_module(st, "AssetSystem")
+	mrb.define_class_method(st, asset_system_class, "add_font", assets_add_font, mrb.args_req(1))
+	engine_classes.asset_system_class = asset_system_class
+}
+
+@(private = "file")
+assets_add_font :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	name_data: [^]u8
+	name_len: int
+	mrb.get_args(state, "s", &name_data, &name_len)
+	name := strings.string_from_ptr(name_data, name_len)
+
+	// TOOD: Replace with proper raised exception
+	handle, success := asset_system_load_font(&g.assets, name)
+	assert(success, fmt.tprintf("Failed to load %s for some reason", name))
+
+	handle_v := mrb.int_value(state, cast(mrb.Int)handle)
+
+	return mrb.obj_new(state, engine_classes.font_asset_class, 1, &handle_v)
+}
+
+//////////////////////////////
+//// Fonts
+//////////////////////////////
+
+
+setup_fonts :: proc(st: ^mrb.State) {
+	font_asset_class := mrb.define_module(st, "Font")
+	mrb.define_method(st, font_asset_class, "initialize", font_initialize, mrb.args_req(1))
+	engine_classes.font_asset_class = font_asset_class
+}
+
+@(private = "file")
+font_initialize :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	handle_id: int
+	mrb.get_args(state, "i", &handle_id)
+
+	i := mrb.get_data_from_value(FontHandle, self)
+
+	if (i == nil) {
+		mrb.data_init(self, nil, &mrb_font_handle_type)
+		v := mrb.malloc(state, size_of(FontHandle))
+		i = cast(^FontHandle)v
+		mrb.data_init(self, i, &mrb_font_handle_type)
+	}
+	i^ = cast(FontHandle)handle_id
+	return self
 }
