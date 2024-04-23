@@ -166,7 +166,14 @@ class DeathState
     width, height = FrameInput.screen_size
     # ImUI.draw_rect(pos: Vector.new(width / 2, height / 2), size: Vector.new(300, 80),
     #                anchor_percentage: Vector.new(0.5, 0.5), color: Color.blue)
-    ImUI.draw_text(text: 'Game Over', pos: Vector.new(width / 2, height / 2))
+    ImUI.draw_text(
+      text: 'Game Over',
+      pos: Vector.new(width / 2, height / 2),
+      size: 96,
+      font: Fonts.kenney_future,
+      color: Color.red,
+      halign: :center
+    )
     nil unless @death_timer.finished?
 
     # raise 'Unimplmeneed Death State'
