@@ -116,7 +116,8 @@ asset_system_load_font :: proc(as: ^AssetSystem, path: string) -> (FontHandle, b
 	}
 
 	cpath := strings.clone_to_cstring(path, context.temp_allocator)
-	font := rl.LoadFont(cpath)
+
+	font := rl.LoadFontEx(cpath, 96, nil, 0)
 	if font == {} {
 		return {}, false
 	}

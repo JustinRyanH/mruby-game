@@ -162,9 +162,14 @@ class DeathState
     @death_timer.tick
 
     game.player.pos = @player_start.lerp(@player_end, @death_timer.percentage)
-    return unless @death_timer.finished?
 
-    raise 'Unimplmeneed Death State'
+    width, height = FrameInput.screen_size
+    # ImUI.draw_rect(pos: Vector.new(width / 2, height / 2), size: Vector.new(300, 80),
+    #                anchor_percentage: Vector.new(0.5, 0.5), color: Color.blue)
+    ImUI.draw_text(text: 'Game Over', pos: Vector.new(width / 2, height / 2))
+    nil unless @death_timer.finished?
+
+    # raise 'Unimplmeneed Death State'
   end
 
   def enter
