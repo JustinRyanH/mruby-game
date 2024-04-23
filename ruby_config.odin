@@ -811,6 +811,7 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		offset_percentage: mrb.Value,
 	}
 
+	// TODO: I can totally do this with generics and reflection
 	names: [NumOfArgs]mrb.Sym =  {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "pos"),
