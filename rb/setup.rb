@@ -327,14 +327,12 @@ class GameplayState
       @score_collisions[score_area.id] = FrameInput.id
     end
 
-    puts @score_collisions.inspect
-
-    @score_collisions.each do |k, v|
-      if v < FrameInput.id
+    @score_collisions
+      .select { |_k, v| v < FrameInput.id }
+      .each_key do |k|
         game.score += 1
         @score_collisions.delete(k)
       end
-    end
   end
 
   def obstacle_collision
