@@ -114,6 +114,10 @@ class SpawnObstacle
     bottom = Entity.create(pos: bottom_rect.pos, size: bottom_rect.size)
     top = Entity.create(pos: top_rect.pos, size: top_rect.size)
 
+    # score_area = Entity.create(pos:, size:, color: Color.red)
+    # Log.info "SpawnArea #{top.id}"
+    # game.add_score_area(score_area)
+
     Log.info "SpawnObstacle #{bottom.id}"
     Log.info "SpawnObstacle #{top.id}"
     game.add_obstacle(bottom)
@@ -415,6 +419,10 @@ class Game
     obstacles.clear
     score_areas.each_value(&:destroy)
     score_areas.clear
+  end
+
+  def add_score_area(entity)
+    @score_areas[entity.id] = entity
   end
 
   def add_obstacle(entity)
