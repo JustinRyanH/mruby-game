@@ -2,7 +2,6 @@
 
 ## Current
 
-[ ] Track Score
 [ ] Ruby ImUI
 
 ## Nice to
@@ -25,3 +24,4 @@
 [x] Do death animation on collision
 [x] Restart Game After Animation Finishes restart
 [x] Display "You Died Text"
+[x] Track Score
