@@ -162,12 +162,18 @@ class StartState
   def tick
     width, height = FrameInput.screen_size
 
-    ImUI.draw_rect(pos: Vector.new(width / 2, height / 2), size: Vector.new(700, 80),
+    text_args = {
+      text: 'PRESS `Space`',
+      font: Fonts.kenney_future,
+      size: 96
+    }
+
+    text_size = ImUI.measure_text(**text_args) + Vector.new(32, 0)
+    ImUI.draw_rect(pos: Vector.new(width / 2, height / 2), size: text_size,
                    anchor_percentage: Vector.new(0.5, 0.5), color: Color.blue)
     ImUI.draw_text(
-      text: 'PRESS `Space`',
+      **text_args,
       pos: Vector.new(width / 2, height / 2),
-      size: 96,
       font: Fonts.kenney_future,
       color: Color.white,
       halign: :center
