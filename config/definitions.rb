@@ -96,4 +96,22 @@ module ImUI
   # @param [Vector] anchor_percetnage - 0..1 values inside the
   # @param [Symbol] mode `:solid` or `:outline`
   def self.draw_rect(pos:, size:, anchor_percetnage: Vector.zero, mode: solid); end
+
+  # Draws Text
+  #
+  # @param [String] text
+  # @param [Vector] pos
+  # @param [Vector] size
+  # @param [Color] color
+  # @param [Font] font
+  # @param [Symbol] halign `:left`, `:right`, or `:ecente`
+  def self.draw_text(); end
+
+  # Measure out the Text
+  #
+  # @param [String] text
+  # @param [Vector] size
+  # @param [Font] font
+  # @return [Vector]
+  def self.measure_text(); end
 end
