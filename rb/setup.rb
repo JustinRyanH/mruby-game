@@ -196,7 +196,7 @@ class StartState
   end
 
   def enter
-    game.clear_obstacles
+    game.clear_map
     if game.player.nil?
       create_player
     else
@@ -294,7 +294,7 @@ class GameplayState
   end
 
   def enter
-    game.clear_obstacles
+    game.clear_map
     if game.player.nil?
       create_player
     else
@@ -403,7 +403,7 @@ class Game
     @events << event
   end
 
-  def clear_obstacles
+  def clear_map
     @obstacles.each(&:destroy)
     @obstacles.clear
   end
