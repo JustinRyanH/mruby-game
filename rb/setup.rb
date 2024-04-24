@@ -295,6 +295,7 @@ class GameplayState
 
     game.player_velocity = Vector.zero
     game.spawn_timer = Timer.new(0)
+    game.score = 0
   end
 
   def exit; end
@@ -346,7 +347,16 @@ class GameplayState
 end
 
 class Game
-  attr_accessor :player, :player_velocity, :spawn_timer
+  # @return [Game]
+  attr_accessor :player
+
+  # @return [Vector]
+  attr_accessor :player_velocity
+  # @return [Timer]
+  attr_accessor :spawn_timer
+  # @return [Number]
+  attr_accessor :score
+
   attr_reader :events, :scene, :obstacles
 
   @current = nil
