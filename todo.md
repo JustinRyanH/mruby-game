@@ -2,14 +2,14 @@
 
 ## Current
 
-[ ] Restart Game After Animation Finishes restart
+[x] Restart Game After Animation Finishes restart
 
 ## Nice to
 
 [ ] Custom "Game Engine" 'require' gem
 [ ] Come up with an algorithm to make sure the more challenging gaps are achieveable
 [ ] Introduce Better errors for assets
-[ ] Some sort of imgui I can communicate from ruby for debug
+[/] Some sort of imgui I can communicate from ruby for debug
 
 ## Done
 
