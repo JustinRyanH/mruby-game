@@ -288,7 +288,7 @@ class GameplayState
 
     return DeathState.new(game) if game.player.offscreen_top? || game.player.offscreen_bottom?
 
-    return nil if no_obstacle_collision
+    return nil unless obstacle_collision
 
     DeathState.new(game)
   end
@@ -310,8 +310,8 @@ class GameplayState
 
   private
 
-  def no_obstacle_collision
-    game.player.collisions.none?
+  def obstacle_collision
+    game.player.collisions.any?
   end
 
   def create_player
