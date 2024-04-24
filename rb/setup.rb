@@ -114,9 +114,10 @@ class SpawnObstacle
     bottom = Entity.create(pos: bottom_rect.pos, size: bottom_rect.size)
     top = Entity.create(pos: top_rect.pos, size: top_rect.size)
 
-    # score_area = Entity.create(pos:, size:, color: Color.red)
-    # Log.info "SpawnArea #{top.id}"
-    # game.add_score_area(score_area)
+    score_area = Entity.create(pos:, size:, color: Color.red)
+    score_area.visible = false
+    Log.info "SpawnArea #{top.id}"
+    game.add_score_area(score_area)
 
     Log.info "SpawnObstacle #{bottom.id}"
     Log.info "SpawnObstacle #{top.id}"
@@ -361,6 +362,10 @@ class GameplayState
       obstacle.pos += Vector.new(-WORLD_SPEED, 0) * dt
       game.add_event(DestroyObstacle.new(game, obstacle)) if obstacle.offscreen_left?
     end
+    game.score_areas.each_value do |area|
+      area.pos += Vector.new(-WORLD_SPEED, 0) * dt
+      game.add_event(DestroyObstacle.new(game, area)) if area.offscreen_left?
+    end
   end
 end
 
@@ -450,5 +455,6 @@ class Game
 
   def cleanup
     @obstacles.select! { |_, obstacle| obstacle.valid? }
+    @score_areas.select! { |_, obstacle| obstacle.valid? }
   end
 end
