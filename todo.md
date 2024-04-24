@@ -2,6 +2,7 @@
 
 ## Current
 
+[ ] Track Score
 [ ] Ruby ImUI
 
 ## Nice to

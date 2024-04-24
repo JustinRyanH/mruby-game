@@ -278,6 +278,14 @@ class GameplayState
     tick_wall_timer
     move_player
     move_obstacles
+
+    text_args = { text: "SCORE: #{game.score}", font: Fonts.kenney_future, size: 32 }
+
+    text_size = Draw.measure_text(**text_args) + Vector.new(32, 16)
+    Draw.rect(pos: Vector.new(16, 48), size: text_size,
+              anchor_percentage: Vector.new(0.0, 0.5), color: Color.blue)
+    Draw.text(**text_args, pos: Vector.new(32, 48), font: Fonts.kenney_future, color: Color.white, halign: :left)
+
     return DeathState.new(game) if game.player.offscreen_top? || game.player.offscreen_bottom?
 
     return nil if game.player.collisions.none?
