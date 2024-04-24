@@ -284,6 +284,8 @@ class GameplayState
     move_player
     move_world
 
+    check_for_score
+
     text_args = { text: "SCORE: #{game.score}", font: Fonts.kenney_future, size: 32 }
 
     text_size = Draw.measure_text(**text_args) + Vector.new(32, 16)
@@ -314,6 +316,26 @@ class GameplayState
   def exit; end
 
   private
+
+  def check_for_score
+    @score_collisions ||= {}
+    score_area_collisions = game.player.collisions.select do |collided_with|
+      game.score_areas.key?(collided_with.id)
+    end
+
+    score_area_collisions.each do |score_area|
+      @score_collisions[score_area.id] = FrameInput.id
+    end
+
+    puts @score_collisions.inspect
+
+    @score_collisions.each do |k, v|
+      if v < FrameInput.id
+        game.score += 1
+        @score_collisions.delete(k)
+      end
+    end
+  end
 
   def obstacle_collision
     game.player.collisions.any? do |collided_with|
