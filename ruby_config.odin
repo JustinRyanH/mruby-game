@@ -792,6 +792,8 @@ setup_imui :: proc(st: ^mrb.State) {
 	engine_classes.ui_module = ui_module
 	mrb.define_class_method(st, ui_module, "draw_text", imui_draw_text, mrb.args_key(5, 0))
 	mrb.define_class_method(st, ui_module, "draw_rect", imui_draw_rect, mrb.args_key(5, 0))
+	mrb.define_class_method(st, ui_module, "measure_text", imui_measure_text, mrb.args_key(4, 0))
+
 }
 
 @(private = "file")
@@ -927,6 +929,53 @@ imui_draw_rect :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	imui_add_cmd(&g.imui, cmd)
 
 	return mrb.nil_value()
+}
+
+@(private = "file")
+imui_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	NumOfArgs :: 3
+	kwargs: mrb.Kwargs
+	kwargs.num = NumOfArgs
+
+	KValues :: struct {
+		text: mrb.Value,
+		size: mrb.Value,
+		font: mrb.Value,
+	}
+
+	names: []mrb.Sym =  {
+		mrb.sym_from_string(state, "text"),
+		mrb.sym_from_string(state, "size"),
+		mrb.sym_from_string(state, "font"),
+	}
+	values: KValues
+	kwargs.table = raw_data(names[:])
+	kwargs.values = transmute([^]mrb.Value)&values
+
+	mrb.get_args(state, ":", &kwargs)
+	assert(mrb.string_p(values.text), "`:text` should be a String")
+	assert(mrb.float_p(values.size) || mrb.integer_p(values.size), "`:size` should be a Float")
+	assert(
+		mrb.obj_is_kind_of(state, values.font, engine_classes.font_asset_class),
+		"`:font` should be a Font",
+	)
+	text := mrb.string_cstr(state, values.text)
+	size := cast(f32)mrb.as_float(state, values.size)
+	// TODO: Handle nil
+	font_handle := mrb.get_data_from_value(FontHandle, values.font)^
+
+	font := asset_system_get_font(&g.assets, font_handle)
+
+	measurement := rl.MeasureTextEx(font.font, text, size, 2)
+
+	out_values := []mrb.Value {
+		mrb.float_value(state, cast(mrb.Float)measurement.x),
+		mrb.float_value(state, cast(mrb.Float)measurement.y),
+	}
+
+	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(out_values))
 }
 
 
