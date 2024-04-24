@@ -400,7 +400,7 @@ entity_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	entity, found := dp.get(&g.entities, handle^)
 	if !found {
-		mrb.raise_exception(state, "Failed to access Entity")
+		mrb.raise_exception(state, "Failed to access Entity: %d", handle^)
 	}
 
 	values := []mrb.Value {
@@ -427,7 +427,7 @@ entity_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	i := mrb.get_data_from_value(EntityHandle, self)
 	entity := dp.get_ptr(&g.entities, i^)
 	if entity == nil {
-		mrb.raise_exception(state, "Failed to access Entity")
+		mrb.raise_exception(state, "Failed to access Entity: %d", i^)
 	}
 	entity.pos = pos^
 
@@ -442,7 +442,7 @@ entity_visible_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 
 	entity, found := dp.get(&g.entities, handle^)
 	if !found {
-		mrb.raise_exception(state, "Failed to access Entity")
+		mrb.raise_exception(state, "Failed to access Entity: %d", handle^)
 	}
 
 	return mrb.bool_value(entity.visible)
@@ -458,7 +458,7 @@ entity_visible_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 	i := mrb.get_data_from_value(EntityHandle, self)
 	entity := dp.get_ptr(&g.entities, i^)
 	if entity == nil {
-		mrb.raise_exception(state, "Failed to access Entity")
+		mrb.raise_exception(state, "Failed to access Entity: %d", i^)
 	}
 	entity.visible = new_value
 
@@ -473,7 +473,7 @@ entity_size_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	entity, found := dp.get(&g.entities, handle^)
 	if !found {
-		mrb.raise_exception(state, "Failed to access Entity")
+		mrb.raise_exception(state, "Failed to access Entity: %d", handle)
 	}
 
 	values := []mrb.Value {
