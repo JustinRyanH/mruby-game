@@ -281,7 +281,7 @@ class GameplayState
   def tick
     tick_wall_timer
     move_player
-    move_obstacles
+    move_world
 
     text_args = { text: "SCORE: #{game.score}", font: Fonts.kenney_future, size: 32 }
 
@@ -356,7 +356,7 @@ class GameplayState
     @spawn_timer.reset(FrameInput.random_int(1..2))
   end
 
-  def move_obstacles
+  def move_world
     game.obstacles.each_value do |obstacle|
       obstacle.pos += Vector.new(-WORLD_SPEED, 0) * dt
       game.add_event(DestroyObstacle.new(game, obstacle)) if obstacle.offscreen_left?
