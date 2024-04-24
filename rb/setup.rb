@@ -31,6 +31,17 @@ Entity.class_eval do
     right = pos.x + (size.x * 0.5)
     right.negative?
   end
+
+  def offscreen_top?
+    top = pos.y - (size.y * 0.5)
+    top.negative?
+  end
+
+  def offscreen_bottom?
+    _, height = FrameInput.screen_size
+    bottom = height - (pos.y + (size.y * 0.5))
+    bottom.negative?
+  end
 end
 
 class Rectangle
@@ -267,6 +278,8 @@ class GameplayState
     tick_wall_timer
     move_player
     move_obstacles
+    return DeathState.new(game) if game.player.offscreen_top? || game.player.offscreen_bottom?
+
     return nil if game.player.collisions.none?
 
     DeathState.new(game)
