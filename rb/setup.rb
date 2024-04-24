@@ -364,6 +364,8 @@ class Game
   attr_accessor :spawn_timer
   # @return [Number]
   attr_accessor :score
+  # @return [Hash<Integer, Entity>]
+  attr_accessor :score_areas
 
   attr_reader :events, :scene, :obstacles
 
@@ -377,6 +379,7 @@ class Game
     @ready = false
     @events = []
     @obstacles = []
+    @score_areas = {}
   end
 
   def setup
@@ -404,8 +407,10 @@ class Game
   end
 
   def clear_map
-    @obstacles.each(&:destroy)
-    @obstacles.clear
+    obstacles.each(&:destroy)
+    obstacles.clear
+    score_areas.each_value(&:destroy)
+    score_areas.clear
   end
 
   def add_obstacle(entity)
