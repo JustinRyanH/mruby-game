@@ -3,3 +3,4 @@ mruby-game.exe
 *.pdb
 *.dSYM
 .vscode/
+.idea/
