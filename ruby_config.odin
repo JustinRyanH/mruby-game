@@ -44,7 +44,7 @@ EngineRClass :: struct {
 	vector_class:       ^mrb.RClass,
 	color_class:        ^mrb.RClass,
 	frame_class:        ^mrb.RClass,
-	ui_module:          ^mrb.RClass,
+	draw_module:        ^mrb.RClass,
 	asset_system_class: ^mrb.RClass,
 	font_asset_class:   ^mrb.RClass,
 }
@@ -55,7 +55,7 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	st := game.ruby
 
 	setup_assets(st)
-	setup_imui(st)
+	setup_draw(st)
 	setup_input(st)
 	setup_log_class(st)
 	setup_entity_class(st)
@@ -784,20 +784,20 @@ color_from_pallet :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 }
 
 //////////////////////////////
-//// ImUI
+//// Draw
 //////////////////////////////
 
-setup_imui :: proc(st: ^mrb.State) {
-	ui_module := mrb.define_module(st, "ImUI")
-	engine_classes.ui_module = ui_module
-	mrb.define_class_method(st, ui_module, "draw_text", imui_draw_text, mrb.args_key(5, 0))
-	mrb.define_class_method(st, ui_module, "draw_rect", imui_draw_rect, mrb.args_key(5, 0))
-	mrb.define_class_method(st, ui_module, "measure_text", imui_measure_text, mrb.args_key(4, 0))
+setup_draw :: proc(st: ^mrb.State) {
+	draw_module := mrb.define_module(st, "Draw")
+	engine_classes.draw_module = draw_module
+	mrb.define_class_method(st, draw_module, "text", draw_draw_text, mrb.args_key(5, 0))
+	mrb.define_class_method(st, draw_module, "rect", draw_draw_rect, mrb.args_key(5, 0))
+	mrb.define_class_method(st, draw_module, "measure_text", draw_measure_text, mrb.args_key(4, 0))
 
 }
 
 @(private = "file")
-imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+draw_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
 	NumOfArgs :: 6
@@ -866,7 +866,7 @@ imui_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 }
 
 @(private = "file")
-imui_draw_rect :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+draw_draw_rect :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
 	NumOfArgs :: 5
@@ -932,7 +932,7 @@ imui_draw_rect :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 }
 
 @(private = "file")
-imui_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
 	NumOfArgs :: 3
@@ -988,7 +988,7 @@ extract_color_from_value :: proc(
 	if !mrb.undef_p(value) {
 		assert(
 			mrb.obj_is_kind_of(state, value, engine_classes.color_class),
-			"ImUI.draw_text(color: ) should be a Color",
+			"Draw.text(color: ) should be a Color",
 		)
 		return mrb.get_data_from_value(rl.Color, value)^
 	}

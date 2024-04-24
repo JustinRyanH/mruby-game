@@ -88,14 +88,14 @@ class Vector
   def *(other); end
 end
 
-module ImUI
+module Draw
   # Draws a Rectangle
   #
   # @param [Vector] pos
   # @param [Vector] size
   # @param [Vector] anchor_percetnage - 0..1 values inside the
   # @param [Symbol] mode `:solid` or `:outline`
-  def self.draw_rect(pos:, size:, anchor_percetnage: Vector.zero, mode: solid); end
+  def self.rect(pos:, size:, anchor_percetnage: Vector.zero, mode: solid); end
 
   # Draws Text
   #
@@ -105,7 +105,7 @@ module ImUI
   # @param [Color] color
   # @param [Font] font
   # @param [Symbol] halign `:left`, `:right`, or `:ecente`
-  def self.draw_text(); end
+  def self.text(text:, pos:, font:, size: color, halign: :left); end
 
   # Measure out the Text
   #

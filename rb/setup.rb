@@ -179,10 +179,10 @@ class StartState
       size: 96
     }
 
-    text_size = ImUI.measure_text(**text_args) + Vector.new(32, 0)
-    ImUI.draw_rect(pos: Vector.new(width / 2, height / 2), size: text_size,
-                   anchor_percentage: Vector.new(0.5, 0.5), color: Color.blue)
-    ImUI.draw_text(
+    text_size = Draw.measure_text(**text_args) + Vector.new(32, 0)
+    Draw.rect(pos: Vector.new(width / 2, height / 2), size: text_size,
+              anchor_percentage: Vector.new(0.5, 0.5), color: Color.blue)
+    Draw.text(
       **text_args,
       pos: Vector.new(width / 2, height / 2),
       font: Fonts.kenney_future,
@@ -233,9 +233,9 @@ class DeathState
     game.player.pos = @player_start.lerp(@player_end, @death_timer.percentage)
 
     width, height = FrameInput.screen_size
-    ImUI.draw_rect(pos: Vector.new(width / 2, height / 2), size: Vector.new(700, 80),
-                   anchor_percentage: Vector.new(0.5, 0.5), color: Color.blue)
-    ImUI.draw_text(
+    Draw.rect(pos: Vector.new(width / 2, height / 2), size: Vector.new(700, 80),
+              anchor_percentage: Vector.new(0.5, 0.5), color: Color.blue)
+    Draw.text(
       text: 'Game Over',
       pos: Vector.new(width / 2, height / 2),
       size: 96,
