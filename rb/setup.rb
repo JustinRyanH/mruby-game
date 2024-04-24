@@ -315,7 +315,9 @@ class GameplayState
   private
 
   def obstacle_collision
-    game.player.collisions.any?
+    game.player.collisions.any? do |collided_with|
+      game.obstacles.key?(collided_with.id)
+    end
   end
 
   def create_player
@@ -355,7 +357,7 @@ class GameplayState
   end
 
   def move_obstacles
-    game.obstacles.each do |obstacle|
+    game.obstacles.each_value do |obstacle|
       obstacle.pos += Vector.new(-WORLD_SPEED, 0) * dt
       game.add_event(DestroyObstacle.new(game, obstacle)) if obstacle.offscreen_left?
     end
@@ -386,7 +388,7 @@ class Game
     @scene = GameplayState.new(self)
     @ready = false
     @events = []
-    @obstacles = []
+    @obstacles = {}
     @score_areas = {}
   end
 
@@ -415,7 +417,7 @@ class Game
   end
 
   def clear_map
-    obstacles.each(&:destroy)
+    obstacles.each_value(&:destroy)
     obstacles.clear
     score_areas.each_value(&:destroy)
     score_areas.clear
@@ -426,7 +428,7 @@ class Game
   end
 
   def add_obstacle(entity)
-    @obstacles << entity
+    @obstacles[entity.id] = entity
   end
 
   def obj_count
@@ -447,6 +449,6 @@ class Game
   end
 
   def cleanup
-    @obstacles.select!(&:valid?)
+    @obstacles.select! { |_, obstacle| obstacle.valid? }
   end
 end
