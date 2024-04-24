@@ -100,7 +100,7 @@ class SpawnObstacle
     width, height = FrameInput.screen_size
 
     gap_width = FrameInput.random_int(40...60)
-    gap_size = FrameInput.random_int(120...450)
+    gap_size = FrameInput.random_int(150...450)
     size = Vector.new(gap_width, gap_size)
     x = width + size.x + 20
 
