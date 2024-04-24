@@ -75,7 +75,7 @@ class Rectangle
 end
 
 GRAVITY_Y = 7
-WORLD_SPEED = 100
+WORLD_SPEED = 300
 
 class SpawnObstacle
   attr_reader :game
@@ -174,9 +174,11 @@ class DeathState
       color: Color.white,
       halign: :center
     )
-    nil unless @death_timer.finished?
+    return nil unless @death_timer.finished?
 
-    # raise 'Unimplmeneed Death State'
+    return unless FrameInput.key_just_pressed?(:space)
+
+    GameplayState.new(game)
   end
 
   def enter
@@ -210,13 +212,13 @@ class GameplayState
   end
 
   def enter
-    width, height = FrameInput.screen_size
+    game.clear_obstacles
+    if game.player.nil?
+      create_player
+    else
+      game.player.pos = starting_position
+    end
 
-    game.player = Entity.create(
-      pos: Vector.new(width * 0.2, height * 0.5),
-      size: Vector.new(45, 45),
-      color: Color.red
-    )
     game.player_velocity = Vector.zero
     game.spawn_timer = Timer.new(0)
   end
@@ -224,6 +226,21 @@ class GameplayState
   def exit; end
 
   private
+
+  def create_player
+    game.player = Entity.create(
+      pos: starting_position,
+      size: Vector.new(45, 45),
+      color: Color.red
+    )
+  end
+
+  def starting_position
+    @starting_position ||= begin
+      width, height = FrameInput.screen_size
+      Vector.new(width * 0.2, height * 0.5)
+    end
+  end
 
   def move_player
     game.player_velocity.y = game.player_velocity.y + (GRAVITY_Y * dt)
@@ -243,7 +260,7 @@ class GameplayState
 
     game.add_event(SpawnObstacle.new(game))
 
-    @spawn_timer.reset(FrameInput.random_int(2..4))
+    @spawn_timer.reset(FrameInput.random_int(1..2))
   end
 
   def move_obstacles
@@ -292,6 +309,11 @@ class Game
 
   def add_event(event)
     @events << event
+  end
+
+  def clear_obstacles
+    @obstacles.each(&:destroy)
+    @obstacles.clear
   end
 
   def add_obstacle(entity)
