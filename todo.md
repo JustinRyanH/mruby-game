@@ -2,7 +2,6 @@
 
 ## Current
 
-[ ] Restart Game After Animation Finishes restart
 
 ## Nice to
 
@@ -22,4 +21,5 @@
 [x] I picked the wrong size for mrb_int, it's actually 64 bit, I need to audit and fix it
 [x] Font Asset System
 [x] Do death animation on collision
+[x] Restart Game After Animation Finishes restart
 [x] Display "You Died Text"
