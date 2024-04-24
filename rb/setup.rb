@@ -127,17 +127,20 @@ end
 class Timer
   attr_reader :time
 
-  def initialize(time)
+  def initialize(time = 0)
     @time = time
     @total_time = time
   end
 
   def tick
+    return unless @time.positive?
+
     @time -= FrameInput.delta_time
   end
 
   def reset(time)
     @time = time
+    @total_time = time
   end
 
   def finished?
@@ -155,11 +158,13 @@ class DeathState
   # @param [Game] game
   def initialize(game)
     @game = game
-    @death_timer = Timer.new(0.5)
+    @death_timer = Timer.new
+    @restart_timer = Timer.new
   end
 
   def tick
     @death_timer.tick
+    @restart_timer.tick
 
     game.player.pos = @player_start.lerp(@player_end, @death_timer.percentage)
 
@@ -174,8 +179,8 @@ class DeathState
       color: Color.white,
       halign: :center
     )
-    return nil unless @death_timer.finished?
 
+    return unless @restart_timer.finished?
     return unless FrameInput.key_just_pressed?(:space)
 
     GameplayState.new(game)
@@ -187,6 +192,9 @@ class DeathState
     @player_start = game.player.pos
     @player_end = game.player.pos
     @player_end.y = height + 100
+
+    @death_timer.reset(0.5)
+    @restart_timer.reset(0.75)
   end
 
   def exit; end

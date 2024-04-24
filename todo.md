@@ -2,7 +2,7 @@
 
 ## Current
 
-[x] Restart Game After Animation Finishes restart
+[ ] Restart Game After Animation Finishes restart
 
 ## Nice to
 
