@@ -2,14 +2,16 @@
 
 ## Current
 
-[ ] Ruby ImUI
+[ ] Come up with an algorithm to make sure the more challenging gaps are achievable
+  - [ ] Add a Draw.line to draw debug lines
+[ ] Custom "Game Engine" 'require' gem
 
 ## Nice to
 
-[ ] Custom "Game Engine" 'require' gem
-[ ] Come up with an algorithm to make sure the more challenging gaps are achieveable
-[ ] Introduce Better errors for assets
-[/] Some sort of imgui I can communicate from ruby for debug
+* Start Menuy
+  * Ruby ImUI
+* Introduce Better errors for assets
+* Some sort of imgui I can communicate from ruby for debug
 
 ## Done
 
