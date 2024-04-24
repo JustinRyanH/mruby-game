@@ -178,6 +178,10 @@ class StartState
       color: Color.white,
       halign: :center
     )
+
+    return unless FrameInput.key_just_pressed?(:space)
+
+    GameplayState.new(game)
   end
 
   def enter
