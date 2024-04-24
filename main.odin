@@ -176,6 +176,9 @@ main :: proc() {
 
 		entity_iter := dp.new_iter(&g.entities)
 		for entity in dp.iter_next(&entity_iter) {
+			if !entity.visible {
+				continue
+			}
 			rect: rl.Rectangle = {entity.pos.x, entity.pos.y, entity.size.x, entity.size.y}
 			rl.DrawRectanglePro(rect, entity.size * 0.5, 0.0, entity.color)
 		}

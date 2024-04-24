@@ -330,6 +330,8 @@ setup_entity_class :: proc(st: ^mrb.State) {
 	mrb.define_method(st, entity_class, "valid?", entity_valid, mrb.args_none())
 	mrb.define_method(st, entity_class, "pos", entity_pos_get, mrb.args_none())
 	mrb.define_method(st, entity_class, "pos=", entity_pos_set, mrb.args_req(1))
+	mrb.define_method(st, entity_class, "visible", entity_visible_get, mrb.args_none())
+	mrb.define_method(st, entity_class, "visible=", entity_visible_set, mrb.args_req(1))
 	mrb.define_method(st, entity_class, "size", entity_size_get, mrb.args_none())
 	mrb.define_method(st, entity_class, "collisions", entity_collisions_get, mrb.args_none())
 	mrb.define_method(st, entity_class, "==", entity_eq, mrb.args_req(1))
@@ -432,6 +434,36 @@ entity_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return mrb.nil_value()
 }
 
+@(private = "file")
+entity_visible_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	handle := mrb.get_data_from_value(EntityHandle, self)
+
+	entity, found := dp.get(&g.entities, handle^)
+	if !found {
+		mrb.raise_exception(state, "Failed to access Entity")
+	}
+
+	return mrb.bool_value(entity.visible)
+}
+
+@(private = "file")
+entity_visible_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	new_value: bool
+	mrb.get_args(state, "b", &new_value)
+
+	i := mrb.get_data_from_value(EntityHandle, self)
+	entity := dp.get_ptr(&g.entities, i^)
+	if entity == nil {
+		mrb.raise_exception(state, "Failed to access Entity")
+	}
+	entity.visible = new_value
+
+	return mrb.nil_value()
+}
 
 @(private = "file")
 entity_size_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
@@ -524,6 +556,7 @@ entity_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	entity_ptr.pos = pos
 	entity_ptr.size = size
 	entity_ptr.color = color
+	entity_ptr.visible = true
 
 	id := mrb.int_value(state, cast(mrb.Int)handle)
 	collection: []mrb.Value = {id}

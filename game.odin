@@ -11,9 +11,10 @@ import "./input"
 import mrb "./mruby"
 
 Entity :: struct {
-	pos:   Vector2,
-	size:  Vector2,
-	color: Color,
+	pos:     Vector2,
+	size:    Vector2,
+	color:   Color,
+	visible: bool,
 }
 
 EntityHandle :: distinct dp.Handle
