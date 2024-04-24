@@ -152,6 +152,49 @@ class Timer
   end
 end
 
+class StartState
+  attr_reader :game
+
+  def initialize(game)
+    @game = game
+  end
+
+  def tick
+    width, height = FrameInput.screen_size
+
+    ImUI.draw_rect(pos: Vector.new(width / 2, height / 2), size: Vector.new(700, 80),
+                   anchor_percentage: Vector.new(0.5, 0.5), color: Color.blue)
+    ImUI.draw_text(
+      text: 'PRESS `Space`',
+      pos: Vector.new(width / 2, height / 2),
+      size: 96,
+      font: Fonts.kenney_future,
+      color: Color.white,
+      halign: :center
+    )
+  end
+
+  def enter
+    game.clear_obstacles
+    if game.player.nil?
+      create_player
+    else
+      game.player.pos = starting_position
+    end
+  end
+
+  def exit; end
+
+  private
+
+  def starting_position
+    @starting_position ||= begin
+      width, height = FrameInput.screen_size
+      Vector.new(width * 0.2, height * 0.5)
+    end
+  end
+end
+
 class DeathState
   attr_reader :game
 
@@ -183,7 +226,7 @@ class DeathState
     return unless @restart_timer.finished?
     return unless FrameInput.key_just_pressed?(:space)
 
-    GameplayState.new(game)
+    StartState.new(game)
   end
 
   def enter
