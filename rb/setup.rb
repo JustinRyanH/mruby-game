@@ -293,6 +293,13 @@ class GameplayState
               anchor_percentage: Vector.new(0.0, 0.5), color: Color.blue)
     Draw.text(**text_args, pos: Vector.new(32, 48), font: Fonts.kenney_future, color: Color.white, halign: :left)
 
+    areas = game.score_areas.keys
+    (1...areas.size).each do |i|
+      a = game.score_areas[areas[i]]
+      b = game.score_areas[areas[i - 1]]
+      Draw.line(start: a.pos, end: b.pos)
+    end
+
     return DeathState.new(game) if game.player.offscreen_top? || game.player.offscreen_bottom?
 
     return nil unless obstacle_collision
