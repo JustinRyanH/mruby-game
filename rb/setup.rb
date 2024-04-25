@@ -544,10 +544,9 @@ class Game
   end
 
   def clear_map
-    obstacles.each_value(&:destroy)
+    obstacles_two.each(&:destroy)
     obstacles.clear
     obstacles_two.clear
-    score_areas.each_value(&:destroy)
     score_areas.clear
   end
 
