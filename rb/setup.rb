@@ -21,6 +21,10 @@ class Obstacle
   # @return [Entity] area
   attr_reader :top, :bottom, :area
 
+  # @return [Obstacle, nil] before
+  # @return [Obstacle, nil] after
+  attr_accessor :before, :after
+
   def initialize(top:, bottom:, area:)
     @top = top
     @bottom = bottom
@@ -43,10 +47,28 @@ class Obstacle
   end
 
   def destroy
+    before.clear_after if !before.nil? && before.after == self
+    after.clear_before if !after.nil? && after.before == self
+
     Log.info("Destroy: #{id}")
     top.destroy
     bottom.destroy
     area.destroy
+  end
+
+  def clear_before
+    Log.info("Clear Before: #{before.id}")
+    @before = nil
+  end
+
+  def clear_after
+    Log.info("Clear After: #{after.id}")
+    @after = nil
+  end
+
+  def add_next_obstacle(obstacle)
+    @after = obstacle
+    obstacle.before = self
   end
 
   def offscreen_left?
@@ -543,6 +565,7 @@ class Game
     obstacles.each(&:destroy)
     obstacles.clear
     score_areas.clear
+    @last_added = nil
   end
 
   def add_score_area(entity)
@@ -555,6 +578,10 @@ class Game
     obstacle.entity_ids.each do |id|
       @entity_to_obstacle[id] = obstacle
     end
+
+    @last_added.add_next_obstacle(obstacle) unless @last_added.nil?
+
+    @last_added = obstacle
   end
 
   private
