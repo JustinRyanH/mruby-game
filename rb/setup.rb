@@ -1,6 +1,47 @@
 # frozen_string_literal: true
 
+GRAVITY_Y = 7
+WORLD_SPEED = 300
 DEG_PER_RAD = 360.0 / (Math::PI * 2)
+
+class Obstacle
+  # @return [Entity] top
+  # @return [Entity] bottom
+  # @return [Entity] area
+  attr_reader :top, :bottom, :area
+
+  def initialize(top:, bottom:, area:)
+    @top = top
+    @bottom = bottom
+    @area = area
+  end
+
+  def update
+    top.pos += Vector.new(-WORLD_SPEED, 0) * dt
+    bottom.pos += Vector.new(-WORLD_SPEED, 0) * dt
+    area.pos += Vector.new(-WORLD_SPEED, 0) * dt
+  end
+
+  def destroy
+    top.destroy
+    bottom.destroy
+    area.destroy
+  end
+
+  def offscreen_left?
+    entities.all?(:offscreen_left?)
+  end
+
+  def valid?
+    entities.all?(&:valid?)
+  end
+
+  private
+
+  def entities
+    @entities ||= [top, bottom, area]
+  end
+end
 
 class Fonts
   def self.kenney_future
@@ -87,9 +128,6 @@ class Rectangle
   end
 end
 
-GRAVITY_Y = 7
-WORLD_SPEED = 300
-
 class SpawnObstacle
   attr_reader :game
 
@@ -116,15 +154,18 @@ class SpawnObstacle
     bottom = Entity.create(pos: bottom_rect.pos, size: bottom_rect.size)
     top = Entity.create(pos: top_rect.pos, size: top_rect.size)
 
-    score_area = Entity.create(pos:, size:, color: Color.red)
-    score_area.visible = false
+    area = Entity.create(pos:, size:, color: Color.red)
+    area.visible = false
     Log.info "SpawnArea #{top.id}"
-    game.add_score_area(score_area)
+    game.add_score_area(area)
+
+    obs = Obstacle.new(top:, bottom:, area:)
 
     Log.info "SpawnObstacle #{bottom.id}"
     Log.info "SpawnObstacle #{top.id}"
     game.add_obstacle(bottom)
     game.add_obstacle(top)
+    game.add_obstacle_two(obs)
   end
 end
 
@@ -392,12 +433,11 @@ class GameplayState
   end
 
   def move_world
+    game.obstacles_two.each(&:update)
     game.obstacles.each_value do |obstacle|
-      obstacle.pos += Vector.new(-WORLD_SPEED, 0) * dt
       game.add_event(DestroyObstacle.new(game, obstacle)) if obstacle.offscreen_left?
     end
     game.score_areas.each_value do |area|
-      area.pos += Vector.new(-WORLD_SPEED, 0) * dt
       game.add_event(DestroyObstacle.new(game, area)) if area.offscreen_left?
     end
   end
@@ -416,7 +456,11 @@ class Game
   # @return [Hash<Integer, Entity>]
   attr_accessor :score_areas
 
-  attr_reader :events, :scene, :obstacles
+  # @param [Array] events
+  # @parma [Object] scene
+  # @parma [Array] obstacle
+  # @param [Array<Obstacle>] obstacles_two
+  attr_reader :events, :scene, :obstacles, :obstacles_two
 
   @current = nil
   def self.current
@@ -428,6 +472,7 @@ class Game
     @ready = false
     @events = []
     @obstacles = {}
+    @obstacles_two = []
     @score_areas = {}
   end
 
@@ -458,6 +503,7 @@ class Game
   def clear_map
     obstacles.each_value(&:destroy)
     obstacles.clear
+    obstacles_two.clear
     score_areas.each_value(&:destroy)
     score_areas.clear
   end
@@ -468,6 +514,11 @@ class Game
 
   def add_obstacle(entity)
     @obstacles[entity.id] = entity
+  end
+
+  # @param [Obstacle] obstacle
+  def add_obstacle_two(obstacle)
+    obstacles_two << obstacle
   end
 
   def obj_count
@@ -488,6 +539,7 @@ class Game
   end
 
   def cleanup
+    @obstacles_two.select!(&:valid?)
     @obstacles.select! { |_, obstacle| obstacle.valid? }
     @score_areas.select! { |_, obstacle| obstacle.valid? }
   end
