@@ -36,12 +36,24 @@ class Obstacle
     entities.all?(&:offscreen_left?)
   end
 
+  def obstacle?(entity)
+    top == entity || bottom == entity
+  end
+
+  def area?(entity)
+    area == entity
+  end
+
   def valid?
     entities.all?(&:valid?)
   end
 
   def entity_ids
     entities.map(&:id)
+  end
+
+  def eql?(other)
+    id == other.id
   end
 
   private
@@ -399,9 +411,8 @@ class GameplayState
   end
 
   def obstacle_collision
-    game.player.collisions.any? do |collided_with|
-      game.obstacles.key?(collided_with.id)
-    end
+    game.player.collisions
+        .any? { |e| game.entity_to_obstacle[e.id].obstacle?(e) }
   end
 
   def create_player
@@ -449,23 +460,23 @@ class GameplayState
 end
 
 class Game
-  # @return [Game]
-  attr_accessor :player
+  # @return [Entity] player
+  # @return [Number] score
+  attr_accessor :player, :score
 
-  # @return [Vector]
-  attr_accessor :player_velocity
-  # @return [Timer]
-  attr_accessor :spawn_timer
-  # @return [Number]
-  attr_accessor :score
-  # @return [Hash<Integer, Entity>]
-  attr_accessor :score_areas
+  # @return [Vector] player_velocity
+  # @return [Timer] spawn_timer
+  # @return [Hash<Integer, Entity>] score_areas
+  attr_accessor :score_areas, :player_velocity, :spawn_timer
 
-  # @param [Array] events
-  # @parma [Object] scene
-  # @parma [Array] obstacle
-  # @param [Array<Obstacle>] obstacles_two
+  # @return [Array] events
+  # @return [Object] scene
+  # @return [Array] obstacle
+  # @return [Array<Obstacle>] obstacles_two
   attr_reader :events, :scene, :obstacles, :obstacles_two
+
+  # @return [Hash<Integer, Obstacle>] events
+  attr_reader :entity_to_obstacle
 
   @current = nil
   def self.current
