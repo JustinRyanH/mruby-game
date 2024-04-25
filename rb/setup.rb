@@ -14,12 +14,19 @@ class Obstacle
     @top = top
     @bottom = bottom
     @area = area
+    @area_collisions = Set.new
   end
 
   def update
     top.pos += Vector.new(-WORLD_SPEED, 0) * dt
     bottom.pos += Vector.new(-WORLD_SPEED, 0) * dt
     area.pos += Vector.new(-WORLD_SPEED, 0) * dt
+
+    handle_collisions_area
+  end
+
+  def add_exit_event(evt)
+    @on_area_exit << evt
   end
 
   def id
@@ -57,6 +64,21 @@ class Obstacle
   end
 
   private
+
+  def handle_collisions_area
+    new_collisions = Set.new(area.collisions)
+    return unless @area_collisions.any? || new_collisions.any?
+
+    exited = @area_collisions - new_collisions
+    entered = new_collisions - @area_collisions
+    puts "Exited Area: #{exited.map(&:id).join(', ')}" if exited.any?
+    puts "Entered Area: #{entered.map(&:id).join(', ')}" if entered.any?
+
+    @area_collisions = new_collisions
+  end
+
+  # @return [Set<Entity]
+  attr_reader :area_collisions
 
   def entities
     @entities ||= [top, bottom, area]
@@ -184,7 +206,6 @@ class SpawnObstacle
 
     obs = Obstacle.new(top:, bottom:, area:)
 
-    Log.info "SpawnArea #{top.id}"
     Log.info "SpawnObstacle #{bottom.id}"
     Log.info "SpawnObstacle #{top.id}"
     game.add_obstacle(bottom)
