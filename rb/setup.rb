@@ -4,6 +4,17 @@ GRAVITY_Y = 7
 WORLD_SPEED = 300
 DEG_PER_RAD = 360.0 / (Math::PI * 2)
 
+class CollisionEvent
+  # @param [Array<Entity>] entities_leaving
+  # @param [Array<Entity>] entities_entering
+  attr_accessor :entities_leaving, :entities_entering
+
+  def initialize
+    @entities_leaving = Set.new
+    @entities_entering = Set.new
+  end
+end
+
 class Obstacle
   # @return [Entity] top
   # @return [Entity] bottom
@@ -21,8 +32,6 @@ class Obstacle
     top.pos += Vector.new(-WORLD_SPEED, 0) * dt
     bottom.pos += Vector.new(-WORLD_SPEED, 0) * dt
     area.pos += Vector.new(-WORLD_SPEED, 0) * dt
-
-    handle_collisions_area
   end
 
   def add_exit_event(evt)
@@ -63,19 +72,20 @@ class Obstacle
     id == other.id
   end
 
-  private
-
-  def handle_collisions_area
+  def check_area_collisions
+    evt = CollisionEvent.new
     new_collisions = Set.new(area.collisions)
-    return unless @area_collisions.any? || new_collisions.any?
+    return evt unless @area_collisions.any? || new_collisions.any?
 
-    exited = @area_collisions - new_collisions
-    entered = new_collisions - @area_collisions
-    puts "Exited Area: #{exited.map(&:id).join(', ')}" if exited.any?
-    puts "Entered Area: #{entered.map(&:id).join(', ')}" if entered.any?
+    evt.entities_leaving = @area_collisions - new_collisions
+    evt.entities_entering = new_collisions - @area_collisions
 
     @area_collisions = new_collisions
+
+    evt
   end
+
+  private
 
   # @return [Set<Entity]
   attr_reader :area_collisions
@@ -418,21 +428,12 @@ class GameplayState
   private
 
   def check_for_score
-    @score_collisions ||= {}
-    score_area_collisions = game.player.collisions.select do |e|
-      game.entity_to_obstacle[e.id].area?(e)
-    end
+    leave_score = game.obstacles_two
+                      .map(&:check_area_collisions)
+                      .any? { |evt| evt.entities_leaving.include?(game.player) }
+    return unless leave_score
 
-    score_area_collisions.each do |score_area|
-      @score_collisions[score_area.id] = FrameInput.id
-    end
-
-    @score_collisions
-      .select { |_k, v| v < FrameInput.id }
-      .each_key do |k|
-        game.score += 1
-        @score_collisions.delete(k)
-      end
+    game.score += 1
   end
 
   def obstacle_collision
