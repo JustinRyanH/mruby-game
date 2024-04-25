@@ -22,6 +22,10 @@ class Obstacle
     area.pos += Vector.new(-WORLD_SPEED, 0) * dt
   end
 
+  def id
+    entities.map(&:id).join(':')
+  end
+
   def destroy
     top.destroy
     bottom.destroy
@@ -29,7 +33,7 @@ class Obstacle
   end
 
   def offscreen_left?
-    entities.all?(:offscreen_left?)
+    entities.all?(&:offscreen_left?)
   end
 
   def valid?
@@ -434,11 +438,8 @@ class GameplayState
 
   def move_world
     game.obstacles_two.each(&:update)
-    game.obstacles.each_value do |obstacle|
-      game.add_event(DestroyObstacle.new(game, obstacle)) if obstacle.offscreen_left?
-    end
-    game.score_areas.each_value do |area|
-      game.add_event(DestroyObstacle.new(game, area)) if area.offscreen_left?
+    game.obstacles_two.select(&:offscreen_left?).each do |obs|
+      game.add_event(DestroyObstacle.new(game, obs))
     end
   end
 end
