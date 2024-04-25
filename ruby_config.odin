@@ -825,6 +825,7 @@ setup_draw :: proc(st: ^mrb.State) {
 	engine_classes.draw_module = draw_module
 	mrb.define_class_method(st, draw_module, "text", draw_draw_text, mrb.args_key(5, 0))
 	mrb.define_class_method(st, draw_module, "rect", draw_draw_rect, mrb.args_key(5, 0))
+	mrb.define_class_method(st, draw_module, "line", draw_draw_line, mrb.args_key(4, 0))
 	mrb.define_class_method(st, draw_module, "measure_text", draw_measure_text, mrb.args_key(4, 0))
 
 }
@@ -958,6 +959,51 @@ draw_draw_rect :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 		cmd.mode = mode
 	}
+
+	imui_add_cmd(&g.imui, cmd)
+
+	return mrb.nil_value()
+}
+
+@(private = "file")
+draw_draw_line :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	NumOfArgs :: 4
+	kwargs: mrb.Kwargs
+	kwargs.num = NumOfArgs
+
+	KValues :: struct {
+		start, end: mrb.Value,
+		thickness:  mrb.Value,
+		color:      mrb.Value,
+	}
+
+	names: [NumOfArgs]string = {"start", "end", "thickness", "color"}
+	syms: [NumOfArgs]mrb.Sym = {}
+
+	for n, idx in names {syms[idx] = mrb.sym_from_string(state, n)}
+
+	values: KValues
+
+	kwargs.table = raw_data(syms[:])
+	kwargs.values = transmute([^]mrb.Value)&values
+
+	mrb.get_args(state, ":", &kwargs)
+
+	assert(!mrb.undef_p(values.start), "`:start` is required")
+	assert(!mrb.undef_p(values.end), "`:end` is required")
+
+	cmd: ImuiDrawLineCmd
+	cmd.start = mrb.get_data_from_value(Vector2, values.start)^
+	cmd.end = mrb.get_data_from_value(Vector2, values.end)^
+	cmd.thickness = 2
+
+	if !mrb.undef_p(values.thickness) {
+		cmd.thickness = math.max(cast(f32)mrb.as_float(state, values.thickness), 0)
+	}
+
+	cmd.color = extract_color_from_value(state, values.color, rl.RED)
 
 	imui_add_cmd(&g.imui, cmd)
 

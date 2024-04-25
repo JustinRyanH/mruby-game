@@ -40,9 +40,17 @@ ImuiDrawRectCmd :: struct {
 	mode:     DrawMode,
 }
 
+ImuiDrawLineCmd :: struct {
+	start:     Vector2,
+	end:       Vector2,
+	thickness: f32,
+	color:     Color,
+}
+
 ImuiCommand :: union {
 	ImuiDrawTextCmd,
 	ImuiDrawRectCmd,
+	ImuiDrawLineCmd,
 }
 
 ImUiState :: struct {
@@ -80,8 +88,9 @@ imui_draw :: proc(imui: ^ImUiState) {
 			case .Outline:
 				rl.DrawRectangleLinesEx(rect, 2, c.color)
 			}
+		case ImuiDrawLineCmd:
+			rl.DrawLineEx(c.start, c.end, c.thickness, c.color)
 		}
-
 	}
 }
 
