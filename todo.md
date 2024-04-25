@@ -1,9 +1,15 @@
 # TODO
 
+
+## Discussions
+
+### The Difficulty algorithm
+45 is too extreme, so we're going to adjust the distance to be further out if the random angle is over 40 until it is around 35
+
+
 ## Current
 
 * Come up with an algorithm to make sure the more challenging gaps are achievable
-  * Add a Draw.line to draw debug lines
 * Custom "Game Engine" 'require' gem
 
 ## Nice to
@@ -27,3 +33,4 @@
 * Restart Game After Animation Finishes restart
 * Display "You Died Text"
 * Track Score
+  * Add a Draw.line to draw debug lines

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+DEG_PER_RAD = 360.0 / (Math::PI * 2)
+
 class Fonts
   def self.kenney_future
     @kenney_future ||= AssetSystem.add_font('assets/fonts/Kenney Future.ttf')
@@ -297,7 +299,12 @@ class GameplayState
     (1...areas.size).each do |i|
       a = game.score_areas[areas[i]]
       b = game.score_areas[areas[i - 1]]
+      c = a.pos - b.pos
+
+      angle = DEG_PER_RAD * c.normalize.angle
+
       Draw.line(start: a.pos, end: b.pos)
+      Draw.text(pos: b.pos + Vector.new(0, -40), text: "Angle: #{angle.round(2)}", size: 24)
     end
 
     return DeathState.new(game) if game.player.offscreen_top? || game.player.offscreen_bottom?
