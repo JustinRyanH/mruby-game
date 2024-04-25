@@ -515,7 +515,7 @@ entity_eq :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	)
 
 	entity := mrb.get_data_from_value(EntityHandle, self)^
-	other := mrb.get_data_from_value(EntityHandle, self)^
+	other := mrb.get_data_from_value(EntityHandle, other_v)^
 
 	return mrb.bool_value(entity == other)
 }
