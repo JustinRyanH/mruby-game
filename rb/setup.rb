@@ -398,8 +398,8 @@ class GameplayState
 
   def check_for_score
     @score_collisions ||= {}
-    score_area_collisions = game.player.collisions.select do |collided_with|
-      game.score_areas.key?(collided_with.id)
+    score_area_collisions = game.player.collisions.select do |e|
+      game.entity_to_obstacle[e.id].area?(e)
     end
 
     score_area_collisions.each do |score_area|
