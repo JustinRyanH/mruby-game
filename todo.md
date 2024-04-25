@@ -4,6 +4,7 @@
 ## Discussions
 
 ### The Difficulty algorithm
+
 45 is too extreme, so we're going to adjust the distance to be further out if the random angle is over 40 until it is around 35
 
 
