@@ -43,6 +43,7 @@ class Obstacle
   end
 
   def destroy
+    Log.info("Destroy: #{id}")
     top.destroy
     bottom.destroy
     area.destroy
@@ -233,7 +234,6 @@ class DestroyObstacle
   end
 
   def perform
-    Log.info("DestroyObstacle #{entity.id}")
     entity.destroy
   end
 end
