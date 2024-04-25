@@ -578,8 +578,11 @@ setup_vector_class :: proc(st: ^mrb.State) {
 	mrb.define_method(st, vector_class, "y=", vector_set_y, mrb.args_req(1))
 	mrb.define_method(st, vector_class, "*", vector_scale, mrb.args_req(1))
 	mrb.define_method(st, vector_class, "+", vector_add, mrb.args_req(1))
+	mrb.define_method(st, vector_class, "-", vector_minus, mrb.args_req(1))
 	mrb.define_method(st, vector_class, "==", vector_eq, mrb.args_req(1))
 	mrb.define_method(st, vector_class, "lerp", vector_lerp, mrb.args_req(2))
+	mrb.define_method(st, vector_class, "angle", vector_angle, mrb.args_none())
+	mrb.define_method(st, vector_class, "normalize", vector_normalize, mrb.args_none())
 	engine_classes.vector_class = vector_class
 }
 
@@ -721,6 +724,56 @@ vector_add :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(values))
+}
+
+@(private = "file")
+vector_minus :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	other: mrb.Value
+	mrb.get_args(state, "o", &other)
+	assert(
+		mrb.obj_is_kind_of(state, other, engine_classes.vector_class),
+		"can only add two Vectors together",
+	)
+	a := mrb.get_data_from_value(rl.Vector2, self)
+	b := mrb.get_data_from_value(Vector2, other)
+
+	c := a^ - b^
+	values := []mrb.Value {
+		mrb.float_value(state, cast(f64)c.x),
+		mrb.float_value(state, cast(f64)c.y),
+	}
+
+	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(values))
+}
+
+
+@(private = "file")
+vector_normalize :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	old := mrb.get_data_from_value(rl.Vector2, self)^
+	new := math.normalize(old)
+
+
+	values := []mrb.Value {
+		mrb.float_value(state, cast(f64)new.x),
+		mrb.float_value(state, cast(f64)new.y),
+	}
+
+	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(values))
+}
+
+@(private = "file")
+vector_angle :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	old := mrb.get_data_from_value(rl.Vector2, self)
+
+	angle := math.atan2(old.y, old.x)
+
+	return mrb.float_value(state, cast(mrb.Float)angle)
 }
 
 //////////////////////////////
