@@ -40,6 +40,10 @@ class Obstacle
     entities.all?(&:valid?)
   end
 
+  def entity_ids
+    entities.map(&:id)
+  end
+
   private
 
   def entities
@@ -160,11 +164,11 @@ class SpawnObstacle
 
     area = Entity.create(pos:, size:, color: Color.red)
     area.visible = false
-    Log.info "SpawnArea #{top.id}"
     game.add_score_area(area)
 
     obs = Obstacle.new(top:, bottom:, area:)
 
+    Log.info "SpawnArea #{top.id}"
     Log.info "SpawnObstacle #{bottom.id}"
     Log.info "SpawnObstacle #{top.id}"
     game.add_obstacle(bottom)
@@ -475,6 +479,7 @@ class Game
     @obstacles = {}
     @obstacles_two = []
     @score_areas = {}
+    @entity_to_obstacle = {}
   end
 
   def setup
@@ -520,6 +525,9 @@ class Game
   # @param [Obstacle] obstacle
   def add_obstacle_two(obstacle)
     obstacles_two << obstacle
+    obstacle.entity_ids.each do |id|
+      @entity_to_obstacle[id] = obstacle
+    end
   end
 
   def obj_count
