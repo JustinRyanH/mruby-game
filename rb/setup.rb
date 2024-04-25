@@ -218,7 +218,7 @@ class SpawnObstacle
 
     Log.info "SpawnObstacle #{bottom.id}"
     Log.info "SpawnObstacle #{top.id}"
-    game.add_obstacle_two(obs)
+    game.abb_obstacle(obs)
   end
 end
 
@@ -425,7 +425,7 @@ class GameplayState
   private
 
   def check_for_score
-    leave_score = game.obstacles_two
+    leave_score = game.obstacles
                       .map(&:check_area_collisions)
                       .any? { |evt| evt.entities_leaving.include?(game.player) }
     return unless leave_score
@@ -475,8 +475,8 @@ class GameplayState
   end
 
   def move_world
-    game.obstacles_two.each(&:update)
-    game.obstacles_two.select(&:offscreen_left?).each do |obs|
+    game.obstacles.each(&:update)
+    game.obstacles.select(&:offscreen_left?).each do |obs|
       game.add_event(DestroyObstacle.new(game, obs))
     end
   end
@@ -495,8 +495,8 @@ class Game
   # @return [Array] events
   # @return [Object] scene
   # @return [Array] obstacle
-  # @return [Array<Obstacle>] obstacles_two
-  attr_reader :events, :scene, :obstacles_two
+  # @return [Array<Obstacle>] obstacles
+  attr_reader :events, :scene, :obstacles
 
   # @return [Hash<Integer, Obstacle>] events
   attr_reader :entity_to_obstacle
@@ -510,7 +510,7 @@ class Game
     @scene = GameplayState.new(self)
     @ready = false
     @events = []
-    @obstacles_two = []
+    @obstacles = []
     @score_areas = {}
     @entity_to_obstacle = {}
   end
@@ -540,8 +540,8 @@ class Game
   end
 
   def clear_map
-    obstacles_two.each(&:destroy)
-    obstacles_two.clear
+    obstacles.each(&:destroy)
+    obstacles.clear
     score_areas.clear
   end
 
@@ -550,8 +550,8 @@ class Game
   end
   # @param [Obstacle] obstacle
 
-  def add_obstacle_two(obstacle)
-    obstacles_two << obstacle
+  def abb_obstacle(obstacle)
+    obstacles << obstacle
     obstacle.entity_ids.each do |id|
       @entity_to_obstacle[id] = obstacle
     end
@@ -571,7 +571,7 @@ class Game
   end
 
   def cleanup
-    @obstacles_two.select!(&:valid?)
+    @obstacles.select!(&:valid?)
     @score_areas.select! { |_, obstacle| obstacle.valid? }
   end
 end
