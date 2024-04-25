@@ -15,6 +15,7 @@
 
 ## Nice to
 
+* Collision maybe make Collision list always a set
 * Start Menuy
   * Ruby ImUI
 * Introduce Better errors for assets
