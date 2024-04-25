@@ -19,3 +19,6 @@ Metrics/MethodLength:
 
 Style/GlobalVars:
   Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
