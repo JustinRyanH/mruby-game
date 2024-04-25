@@ -105,6 +105,10 @@ Entity.class_eval do
     bottom = height - (pos.y + (size.y * 0.5))
     bottom.negative?
   end
+
+  def colliding_with?(entity)
+    collisions.include?(entity)
+  end
 end
 
 class Rectangle
