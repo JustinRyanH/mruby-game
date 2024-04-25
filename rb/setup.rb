@@ -74,16 +74,15 @@ class Obstacle
   end
 
   def check_area_collisions
-    evt = CollisionEvent.new
-    new_collisions = Set.new(area.collisions)
-    return evt unless @area_collisions.any? || new_collisions.any?
+    CollisionEvent.new.tap do |evt|
+      new_collisions = Set.new(area.collisions)
+      next evt unless @area_collisions.any? || new_collisions.any?
 
-    evt.entities_leaving = @area_collisions - new_collisions
-    evt.entities_entering = new_collisions - @area_collisions
+      evt.entities_leaving = @area_collisions - new_collisions
+      evt.entities_entering = new_collisions - @area_collisions
 
-    @area_collisions = new_collisions
-
-    evt
+      @area_collisions = new_collisions
+    end
   end
 
   private
@@ -219,8 +218,6 @@ class SpawnObstacle
 
     Log.info "SpawnObstacle #{bottom.id}"
     Log.info "SpawnObstacle #{top.id}"
-    game.add_obstacle(bottom)
-    game.add_obstacle(top)
     game.add_obstacle_two(obs)
   end
 end
@@ -499,7 +496,7 @@ class Game
   # @return [Object] scene
   # @return [Array] obstacle
   # @return [Array<Obstacle>] obstacles_two
-  attr_reader :events, :scene, :obstacles, :obstacles_two
+  attr_reader :events, :scene, :obstacles_two
 
   # @return [Hash<Integer, Obstacle>] events
   attr_reader :entity_to_obstacle
@@ -513,7 +510,6 @@ class Game
     @scene = GameplayState.new(self)
     @ready = false
     @events = []
-    @obstacles = {}
     @obstacles_two = []
     @score_areas = {}
     @entity_to_obstacle = {}
@@ -545,7 +541,6 @@ class Game
 
   def clear_map
     obstacles_two.each(&:destroy)
-    obstacles.clear
     obstacles_two.clear
     score_areas.clear
   end
@@ -553,21 +548,13 @@ class Game
   def add_score_area(entity)
     @score_areas[entity.id] = entity
   end
-
-  def add_obstacle(entity)
-    @obstacles[entity.id] = entity
-  end
-
   # @param [Obstacle] obstacle
+
   def add_obstacle_two(obstacle)
     obstacles_two << obstacle
     obstacle.entity_ids.each do |id|
       @entity_to_obstacle[id] = obstacle
     end
-  end
-
-  def obj_count
-    @obstacles.size
   end
 
   private
@@ -585,7 +572,6 @@ class Game
 
   def cleanup
     @obstacles_two.select!(&:valid?)
-    @obstacles.select! { |_, obstacle| obstacle.valid? }
     @score_areas.select! { |_, obstacle| obstacle.valid? }
   end
 end
