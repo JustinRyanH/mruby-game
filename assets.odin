@@ -3,6 +3,7 @@ package main
 import "core:fmt"
 import "core:os"
 import "core:strings"
+import "core:time"
 
 import rl "vendor:raylib"
 
@@ -30,6 +31,7 @@ RubyCode :: struct {
 	id:            RubyCodeHandle,
 	file_path:     string,
 	last_mod_time: u64,
+	last_run_time: u64,
 	code:          string,
 }
 
@@ -102,6 +104,18 @@ asset_system_load_ruby :: proc(as: ^AssetSystem, file: string) -> (RubyCodeHandl
 
 asset_system_find_ruby :: proc(as: ^AssetSystem, handle: RubyCodeHandle) -> (RubyCode, bool) {
 	return as.ruby[handle]
+}
+
+asset_system_update_runtume :: proc(as: ^AssetSystem, handle: RubyCodeHandle) -> bool {
+	rc, success := &as.ruby[handle]
+	if !success {
+		return false
+	}
+	fmt.println("before", rc.last_run_time, rc.last_mod_time)
+	rc.last_run_time = cast(u64)time.to_unix_nanoseconds(time.now())
+	fmt.println("after", rc.last_run_time, rc.last_mod_time)
+
+	return true
 }
 
 asset_system_check :: proc(as: ^AssetSystem) {
