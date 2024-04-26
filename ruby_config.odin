@@ -69,7 +69,7 @@ setup_log_class :: proc(st: ^mrb.State) {
 	mrb.define_class_method(st, logger, "info", logger_info, mrb.args_req(1))
 	mrb.define_class_method(st, logger, "error", logger_error, mrb.args_req(1))
 	mrb.define_class_method(st, logger, "fatal", logger_fatal, mrb.args_req(1))
-	mrb.define_class_method(st, logger, "warning", logger_warning, mrb.args_req(1))
+	mrb.define_class_method(st, logger, "warn", logger_warning, mrb.args_req(1))
 }
 
 setup_input :: proc(st: ^mrb.State) {
