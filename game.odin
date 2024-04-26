@@ -45,6 +45,8 @@ game_init :: proc(game: ^Game) {
 	game.rand = rand.create(1)
 	game.ruby = mrb.open_allocf(mruby_odin_allocf, &game.ctx)
 	asset_system_init(&game.assets)
+
+	setup_require(game.ruby)
 }
 
 game_setup_temp :: proc(game: ^Game) {

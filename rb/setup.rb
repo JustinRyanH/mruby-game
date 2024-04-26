@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require("assets/scripts/test")
+
 GRAVITY_Y = 7
 WORLD_SPEED = 300
 DEG_PER_RAD = 360.0 / (Math::PI * 2)
