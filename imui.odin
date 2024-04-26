@@ -24,8 +24,7 @@ DrawMode :: enum {
 
 ImuiDrawTextCmd :: struct {
 	font:    FontHandle,
-	txt:     string,
-	// TODO: Rename to valign
+	txt:     cstring,
 	halign:  HorizontalAlignment,
 	size:    f32,
 	spacing: f32,
@@ -71,7 +70,7 @@ imui_draw :: proc(imui: ^ImUiState) {
 	for cmd in imui.cmd_buffer_t {
 		switch c in cmd {
 		case ImuiDrawTextCmd:
-			txt := strings.clone_to_cstring(c.txt, context.temp_allocator)
+			txt := c.txt
 			ft := asset_system_get_font(assets, c.font)
 			measure := rl.MeasureTextEx(ft.font, txt, c.size, c.spacing)
 			offset := alignment_offset(c.halign, measure)

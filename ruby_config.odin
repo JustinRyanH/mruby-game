@@ -931,11 +931,9 @@ draw_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	assert(!mrb.undef_p(values.pos), "Entity Required for `pos:`")
 	cmd: ImuiDrawTextCmd
 
-	// TOOD: TWO copies.... I Hate this, i'll fix this later
-	cmd.txt = strings.clone_from_cstring(
-		mrb.str_to_cstr(state, values.text),
-		context.temp_allocator,
-	)
+	txt := string(mrb.str_to_cstr(state, values.text))
+
+	cmd.txt = strings.clone_to_cstring(txt, context.temp_allocator)
 	cmd.pos = mrb.get_data_from_value(Vector2, values.pos)^
 
 	cmd.size = 24
