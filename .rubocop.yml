@@ -25,3 +25,5 @@ Metrics/CyclomaticComplexity:
 
 Metrics/BlockLength:
   Enabled: false
+Metrics/ClassLength:
+  Enabled: false
