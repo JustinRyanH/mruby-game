@@ -591,8 +591,7 @@ class Game
       @entity_to_obstacle[id] = obstacle
     end
 
-    @last_added.add_next_obstacle(obstacle) unless @last_added.nil?
-
+    @last_added&.add_next_obstacle(obstacle)
     @last_added = obstacle
   end
 
