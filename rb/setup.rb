@@ -46,6 +46,16 @@ class Obstacle
     entities.map(&:id).join(':')
   end
 
+  def x
+    area.pos.x
+  end
+
+  def x=(new_x)
+    area.pos = Vector.new(new_x, area.pos.y)
+    top.pos = Vector.new(new_x, top.pos.y)
+    bottom.pos = Vector.new(new_x, bottom.pos.y)
+  end
+
   def destroy
     before.clear_after if !before.nil? && before.after == self
     after.clear_before if !after.nil? && after.before == self
@@ -77,6 +87,10 @@ class Obstacle
   def add_next_obstacle(obstacle)
     @after = obstacle
     obstacle.before = self
+  end
+
+  def onscreen?
+    area.onscreen?
   end
 
   def offscreen_left?
@@ -116,16 +130,16 @@ class Obstacle
   end
 
   def challenge_line
-    return nil unless after?
+    return nil unless before?
 
-    [area.pos, after.area.pos]
+    [area.pos, before.area.pos]
   end
 
   def challenge_angle
-    return nil unless after?
+    return nil unless before?
 
     a, b = challenge_line
-    c = b - a
+    c = a - b
 
     DEG_PER_RAD * c.normalize.angle
   end
@@ -167,8 +181,18 @@ Entity.class_eval do
     { name: 'Entity', id:, pos: pos.inspect, size: size.inspect }
   end
 
+  def onscreen?
+    !offscreen_bottom? && !offscreen_right? && !offscreen_left? && !offscreen_top?
+  end
+
   def offscreen_left?
     right = pos.x + (size.x * 0.5)
+    right.negative?
+  end
+
+  def offscreen_right?
+    width, = FrameInput.screen_size
+    right = width - (pos.x + (size.x * 0.5))
     right.negative?
   end
 
@@ -251,20 +275,6 @@ def random_obstcle(x)
   area.visible = false
 
   Obstacle.new(top:, bottom:, area:).tap { |obs| Log.info "SpawnObstacle: #{obs.id}" }
-end
-
-class SpawnObstacle
-  attr_reader :game
-
-  # @param [Game] game
-  def initialize(game)
-    @game = game
-  end
-
-  def perform
-    obs = random_obstcle(width)
-    game.abb_obstacle(obs)
-  end
 end
 
 class DestroyObstacle
@@ -436,17 +446,27 @@ class GameplayState
       while current.after?
         after = current.after
 
-        a_pos, b_pos = current.challenge_line
+        a_pos, b_pos = current.after.challenge_line
 
         a_lower = Vector.new(a_pos.x, 0)
         b_lower = Vector.new(b_pos.x, 0)
         length = (b_lower - a_lower).length
-        angle = current.challenge_angle
+        angle = current.after.challenge_angle
 
         Draw.line(start: a_pos, end: b_pos)
-        Draw.text(text: "Angle: #{angle.round(2)}", pos: a_pos + Vector.new(16, 32))
-        Draw.text(text: "Length: #{length.round(2)}", pos: a_pos + Vector.new(16, 64))
+        Draw.text(text: "Angle: #{angle.round(2)}", pos: b_pos + Vector.new(16, 32))
+        Draw.text(text: "Length: #{length.round(2)}", pos: b_pos + Vector.new(16, 64))
         current = after
+      end
+    end
+
+    all_on_screen = game.obstacles.all?(&:onscreen?)
+    if all_on_screen
+      5.times do
+        # last = game.obstacles.last
+        # random_offset = FrameInput.random_int(200..500)
+        # obs = random_obstcle(last.x + random_offset)
+        # game.add_obstacle(obs)
       end
     end
 
@@ -467,7 +487,15 @@ class GameplayState
 
     width, = FrameInput.screen_size
     obs = random_obstcle(width)
-    game.abb_obstacle(obs)
+    game.add_obstacle(obs)
+
+    5.times do
+      last = game.obstacles.last
+      random_offset = FrameInput.random_int(150..500)
+      obs = random_obstcle(last.x + random_offset)
+      game.add_obstacle(obs)
+      obs.x += FrameInput.random_int(75..150) if obs.challenge_angle.abs > 30
+    end
 
     game.player_velocity = Vector.zero
     game.score = 0
@@ -553,7 +581,6 @@ class Game
     @scene = GameplayState.new(self)
     @ready = false
     @events = []
-    @obstacles_queue = []
     @obstacles = []
     @score_areas = {}
     @entity_to_obstacle = {}
@@ -591,7 +618,7 @@ class Game
   end
 
   # @param [Obstacle] obstacle
-  def abb_obstacle(obstacle)
+  def add_obstacle(obstacle)
     obstacles << obstacle
     obstacle.entity_ids.each do |id|
       @entity_to_obstacle[id] = obstacle
