@@ -115,6 +115,21 @@ class Obstacle
     end
   end
 
+  def challenge_line
+    return nil unless after?
+
+    [area.pos, after.area.pos]
+  end
+
+  def challenge_angle
+    return nil unless after?
+
+    a, b = challenge_line
+    c = b - a
+
+    DEG_PER_RAD * c.normalize.angle
+  end
+
   private
 
   # @return [Set<Entity]
@@ -422,14 +437,13 @@ class GameplayState
       current = game.obstacles.first
       while current.after?
         after = current.after
-        a = current.area
-        b = after.area
 
-        c = b.pos - a.pos
-        angle = DEG_PER_RAD * c.normalize.angle
+        a_pos, b_pos = current.challenge_line
 
-        Draw.line(start: a.pos, end: b.pos)
-        Draw.text(text: "Angle: #{angle.round(2)}", pos: a.pos + Vector.new(16, 32))
+        angle = current.challenge_angle
+
+        Draw.line(start: a_pos, end: b_pos)
+        Draw.text(text: "Angle: #{angle.round(2)}", pos: a_pos + Vector.new(16, 32))
         current = after
       end
     end
