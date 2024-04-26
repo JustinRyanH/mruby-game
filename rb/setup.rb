@@ -229,13 +229,12 @@ class Rectangle
   end
 end
 
-def random_obstcle(game)
-  width, height = FrameInput.screen_size
+def random_obstcle(game:, x:)
+  _, height = FrameInput.screen_size
 
   gap_width = FrameInput.random_int(40...60)
   gap_size = FrameInput.random_int(150...450)
   size = Vector.new(gap_width, gap_size)
-  x = width + size.x + 20
 
   gap_center_y = FrameInput.random_int(((gap_size * 0.5) + 25)...(height - (gap_size * 0.5) - 25))
   pos = Vector.new(x, gap_center_y)
@@ -265,7 +264,9 @@ class SpawnObstacle
   end
 
   def perform
-    random_obstcle(game)
+    x = width + size.x + 20
+
+    random_obstcle(game:, x:)
   end
 end
 
