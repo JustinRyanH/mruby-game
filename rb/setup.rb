@@ -440,10 +440,12 @@ class GameplayState
 
         a_pos, b_pos = current.challenge_line
 
+        length = (b_pos - a_pos).length
         angle = current.challenge_angle
 
         Draw.line(start: a_pos, end: b_pos)
         Draw.text(text: "Angle: #{angle.round(2)}", pos: a_pos + Vector.new(16, 32))
+        Draw.text(text: "Length: #{length.round(2)}", pos: a_pos + Vector.new(16, 64))
         current = after
       end
     end
