@@ -447,28 +447,17 @@ class GameplayState
         after = current.after
 
         a_pos, b_pos = current.after.challenge_line
-
-        a_lower = Vector.new(a_pos.x, 0)
-        b_lower = Vector.new(b_pos.x, 0)
-        length = (b_lower - a_lower).length
-        angle = current.after.challenge_angle
+        angle = current.after.challenge_angle.abs
 
         Draw.line(start: a_pos, end: b_pos)
-        Draw.text(text: "Angle: #{angle.round(2)}", pos: b_pos + Vector.new(16, 32))
-        Draw.text(text: "Length: #{length.round(2)}", pos: b_pos + Vector.new(16, 64))
+        text = "Angle: #{angle.round(1)}"
+        Draw.text(text:, pos: b_pos + Vector.new(16, 32))
         current = after
       end
     end
 
     all_on_screen = game.obstacles.all?(&:onscreen?)
-    if all_on_screen
-      5.times do
-        # last = game.obstacles.last
-        # random_offset = FrameInput.random_int(200..500)
-        # obs = random_obstcle(last.x + random_offset)
-        # game.add_obstacle(obs)
-      end
-    end
+    generate_obstacles(5) if all_on_screen
 
     return DeathState.new(game) if game.player.offscreen_top? || game.player.offscreen_bottom?
 
@@ -489,13 +478,7 @@ class GameplayState
     obs = random_obstcle(width)
     game.add_obstacle(obs)
 
-    5.times do
-      last = game.obstacles.last
-      random_offset = FrameInput.random_int(150..500)
-      obs = random_obstcle(last.x + random_offset)
-      game.add_obstacle(obs)
-      obs.x += FrameInput.random_int(75..150) if obs.challenge_angle.abs > 30
-    end
+    generate_obstacles(5)
 
     game.player_velocity = Vector.zero
     game.score = 0
@@ -504,6 +487,32 @@ class GameplayState
   def exit; end
 
   private
+
+  def challenge_factor(angle)
+    case angle
+    when 30...35 then return 1
+    when 35..40 then return 2
+    when 40..180 then return 3
+    end
+    0
+  end
+
+  def generate_obstacles(count)
+    count.times do
+      last = game.obstacles.last
+      random_offset = FrameInput.random_int(150..500)
+      obs = random_obstcle(last.x + random_offset)
+      game.add_obstacle(obs)
+
+      og_challenge = obs.challenge_angle.abs
+
+      offset = challenge_factor(og_challenge) * FrameInput.random_int(75..150)
+
+      obs.x += offset
+      new = obs.challenge_angle.abs
+      Log.info("Likely Impossible Extend it: #{og_challenge.round(2)} -> #{new}") if offset.positive?
+    end
+  end
 
   def check_for_score
     leave_score = game.obstacles
