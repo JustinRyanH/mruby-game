@@ -1,11 +1,56 @@
-
 package mruby
+
+import "core:strings"
 
 when ODIN_OS == .Darwin {
 	foreign import lib "vendor/darwin/libmruby.a"
 } else when ODIN_OS == .Windows {
 	@(extra_linker_flags = "/NODEFAULTLIB:libcmt")
 	foreign import lib "vendor/windows/libmruby.lib"
+}
+
+string_from_value :: proc(
+	state: ^State,
+	value: Value,
+	allocator := context.allocator,
+	loc := #caller_location,
+) -> (
+	string,
+	bool,
+) {
+	if !string_p(value) {
+		check_type(state, value, .String)
+		return string{}, false
+	}
+	txt := string(str_to_cstr(state, value))
+	copy, alloc_err := strings.clone(txt, allocator, loc)
+	if alloc_err != nil {
+		return string{}, false
+	}
+
+	return copy, true
+}
+
+cstring_from_value :: proc(
+	state: ^State,
+	value: Value,
+	allocator := context.allocator,
+	loc := #caller_location,
+) -> (
+	cstring,
+	bool,
+) {
+	if !string_p(value) {
+		check_type(state, value, .String)
+		return nil, false
+	}
+	txt := string(str_to_cstr(state, value))
+	copy, alloc_err := strings.clone_to_cstring(txt, allocator, loc)
+	if alloc_err != nil {
+		return nil, false
+	}
+
+	return copy, true
 }
 
 
