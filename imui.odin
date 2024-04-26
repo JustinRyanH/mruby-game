@@ -2,6 +2,7 @@ package main
 
 import "core:fmt"
 import "core:math"
+import "core:strings"
 import rl "vendor:raylib"
 
 VerticalAlignment :: enum {
@@ -23,7 +24,7 @@ DrawMode :: enum {
 
 ImuiDrawTextCmd :: struct {
 	font:    FontHandle,
-	txt:     cstring,
+	txt:     string,
 	// TODO: Rename to valign
 	halign:  HorizontalAlignment,
 	size:    f32,
@@ -70,10 +71,11 @@ imui_draw :: proc(imui: ^ImUiState) {
 	for cmd in imui.cmd_buffer_t {
 		switch c in cmd {
 		case ImuiDrawTextCmd:
+			txt := strings.clone_to_cstring(c.txt, context.temp_allocator)
 			ft := asset_system_get_font(assets, c.font)
-			measure := rl.MeasureTextEx(ft.font, c.txt, c.size, c.spacing)
+			measure := rl.MeasureTextEx(ft.font, txt, c.size, c.spacing)
 			offset := alignment_offset(c.halign, measure)
-			rl.DrawTextPro(ft.font, c.txt, c.pos, offset, 0, c.size, c.spacing, c.color)
+			rl.DrawTextPro(ft.font, txt, c.pos, offset, 0, c.size, c.spacing, c.color)
 		case ImuiDrawRectCmd:
 			rect: rl.Rectangle
 			rect.width = c.size.x
