@@ -229,6 +229,33 @@ class Rectangle
   end
 end
 
+def random_obstcle(game)
+  width, height = FrameInput.screen_size
+
+  gap_width = FrameInput.random_int(40...60)
+  gap_size = FrameInput.random_int(150...450)
+  size = Vector.new(gap_width, gap_size)
+  x = width + size.x + 20
+
+  gap_center_y = FrameInput.random_int(((gap_size * 0.5) + 25)...(height - (gap_size * 0.5) - 25))
+  pos = Vector.new(x, gap_center_y)
+  gap = Rectangle.new(pos:, size:)
+
+  bottom_rect = Rectangle.from_bounds(left: gap.left, right: gap.right, top: gap.bottom, bottom: height)
+  top_rect = Rectangle.from_bounds(left: gap.left, right: gap.right, top: 0, bottom: gap.top)
+
+  bottom = Entity.create(pos: bottom_rect.pos, size: bottom_rect.size)
+  top = Entity.create(pos: top_rect.pos, size: top_rect.size)
+
+  area = Entity.create(pos:, size:, color: Color.red)
+  area.visible = false
+
+  obs = Obstacle.new(top:, bottom:, area:)
+
+  Log.info "SpawnObstacle: #{obs.id}"
+  game.abb_obstacle(obs)
+end
+
 class SpawnObstacle
   attr_reader :game
 
@@ -238,32 +265,7 @@ class SpawnObstacle
   end
 
   def perform
-    width, height = FrameInput.screen_size
-
-    gap_width = FrameInput.random_int(40...60)
-    gap_size = FrameInput.random_int(150...450)
-    size = Vector.new(gap_width, gap_size)
-    x = width + size.x + 20
-
-    gap_center_y = FrameInput.random_int(((gap_size * 0.5) + 25)...(height - (gap_size * 0.5) - 25))
-    pos = Vector.new(x, gap_center_y)
-    gap = Rectangle.new(pos:, size:)
-
-    bottom_rect = Rectangle.from_bounds(left: gap.left, right: gap.right, top: gap.bottom, bottom: height)
-    top_rect = Rectangle.from_bounds(left: gap.left, right: gap.right, top: 0, bottom: gap.top)
-
-    bottom = Entity.create(pos: bottom_rect.pos, size: bottom_rect.size)
-    top = Entity.create(pos: top_rect.pos, size: top_rect.size)
-
-    area = Entity.create(pos:, size:, color: Color.red)
-    area.visible = false
-    game.add_score_area(area)
-
-    obs = Obstacle.new(top:, bottom:, area:)
-
-    Log.info "SpawnObstacle #{bottom.id}"
-    Log.info "SpawnObstacle #{top.id}"
-    game.abb_obstacle(obs)
+    random_obstcle(game)
   end
 end
 
@@ -560,6 +562,7 @@ class Game
     @scene = GameplayState.new(self)
     @ready = false
     @events = []
+    @obstacles_queue = []
     @obstacles = []
     @score_areas = {}
     @entity_to_obstacle = {}
@@ -596,11 +599,7 @@ class Game
     @last_added = nil
   end
 
-  def add_score_area(entity)
-    @score_areas[entity.id] = entity
-  end
   # @param [Obstacle] obstacle
-
   def abb_obstacle(obstacle)
     obstacles << obstacle
     obstacle.entity_ids.each do |id|
