@@ -229,12 +229,13 @@ class Rectangle
   end
 end
 
-def random_obstcle(game:, x:)
+def random_obstcle(x)
   _, height = FrameInput.screen_size
 
   gap_width = FrameInput.random_int(40...60)
   gap_size = FrameInput.random_int(150...450)
   size = Vector.new(gap_width, gap_size)
+  x += (size.x * 0.5)
 
   gap_center_y = FrameInput.random_int(((gap_size * 0.5) + 25)...(height - (gap_size * 0.5) - 25))
   pos = Vector.new(x, gap_center_y)
@@ -249,10 +250,7 @@ def random_obstcle(game:, x:)
   area = Entity.create(pos:, size:, color: Color.red)
   area.visible = false
 
-  obs = Obstacle.new(top:, bottom:, area:)
-
-  Log.info "SpawnObstacle: #{obs.id}"
-  game.abb_obstacle(obs)
+  Obstacle.new(top:, bottom:, area:).tap { |obs| Log.info "SpawnObstacle: #{obs.id}" }
 end
 
 class SpawnObstacle
@@ -264,9 +262,8 @@ class SpawnObstacle
   end
 
   def perform
-    x = width + size.x + 20
-
-    random_obstcle(game:, x:)
+    obs = random_obstcle(width)
+    game.abb_obstacle(obs)
   end
 end
 
@@ -467,6 +464,10 @@ class GameplayState
     else
       game.player.pos = starting_position
     end
+
+    width, = FrameInput.screen_size
+    obs = random_obstcle(width)
+    game.abb_obstacle(obs)
 
     game.player_velocity = Vector.zero
     game.score = 0
