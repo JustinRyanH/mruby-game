@@ -56,6 +56,14 @@ class Obstacle
     area.destroy
   end
 
+  def after?
+    !after.nil?
+  end
+
+  def before?
+    !before.nil?
+  end
+
   def clear_before
     Log.info("Clear Before: #{before.id}")
     @before = nil
@@ -410,16 +418,20 @@ class GameplayState
               anchor_percentage: Vector.new(0.0, 0.5), color: Color.blue)
     Draw.text(**text_args, pos: Vector.new(32, 48), font: Fonts.kenney_future, color: Color.white, halign: :left)
 
-    areas = game.score_areas.keys
-    (1...areas.size).each do |i|
-      a = game.score_areas[areas[i]]
-      b = game.score_areas[areas[i - 1]]
-      c = a.pos - b.pos
+    if game.obstacles.first
+      current = game.obstacles.first
+      while current.after?
+        after = current.after
+        a = current.area
+        b = after.area
 
-      angle = DEG_PER_RAD * c.normalize.angle
+        c = b.pos - a.pos
+        angle = DEG_PER_RAD * c.normalize.angle
 
-      Draw.line(start: a.pos, end: b.pos)
-      Draw.text(pos: b.pos + Vector.new(0, -40), text: "Angle: #{angle.round(2)}", size: 24)
+        Draw.line(start: a.pos, end: b.pos)
+        Draw.text(text: "Angle: #{angle.round(2)}", pos: a.pos + Vector.new(16, 32))
+        current = after
+      end
     end
 
     return DeathState.new(game) if game.player.offscreen_top? || game.player.offscreen_bottom?
@@ -598,7 +610,7 @@ class Game
   end
 
   def cleanup
-    @obstacles.select!(&:valid?)
+    obstacles.select!(&:valid?)
     @score_areas.select! { |_, obstacle| obstacle.valid? }
   end
 end
