@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require("assets/scripts/test")
+require('assets/scripts/test')
 
 GRAVITY_Y = 7
 WORLD_SPEED = 300

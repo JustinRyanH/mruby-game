@@ -56,17 +56,20 @@ ruby_code_load :: proc(rc: ^RubyCode) -> bool {
 }
 
 ruby_code_deinit :: proc(rc: ^RubyCode) {
+	delete(rc.file_path)
 	delete(rc.code)
 }
 
 AssetSystem :: struct {
-	ruby:  map[RubyCodeHandle]RubyCode,
-	fonts: map[FontHandle]FontAsset,
+	asset_dir: string,
+	ruby:      map[RubyCodeHandle]RubyCode,
+	fonts:     map[FontHandle]FontAsset,
 }
 
-asset_system_init :: proc(as: ^AssetSystem) {
+asset_system_init :: proc(as: ^AssetSystem, asset_dir: string) {
 	as.ruby = make(map[RubyCodeHandle]RubyCode, 32)
 	as.fonts = make(map[FontHandle]FontAsset, 32)
+	as.asset_dir = asset_dir
 }
 
 asset_system_deinit :: proc(as: ^AssetSystem) {
@@ -76,6 +79,7 @@ asset_system_deinit :: proc(as: ^AssetSystem) {
 	}
 	delete(as.ruby)
 	delete(as.fonts)
+	delete(as.asset_dir)
 }
 
 asset_system_load_ruby :: proc(as: ^AssetSystem, file: string) -> (RubyCodeHandle, bool) {
@@ -88,7 +92,7 @@ asset_system_load_ruby :: proc(as: ^AssetSystem, file: string) -> (RubyCodeHandl
 
 	rc: RubyCode
 	rc.id = handle
-	rc.file_path = file
+	rc.file_path = strings.clone(file)
 
 	ruby_code_load(&rc)
 

@@ -2,6 +2,8 @@ package main
 
 import "core:fmt"
 import "core:math/rand"
+import "core:os"
+import "core:path/filepath"
 import "core:runtime"
 
 import rl "vendor:raylib"
@@ -44,7 +46,13 @@ game_init :: proc(game: ^Game) {
 	game.ctx = context
 	game.rand = rand.create(1)
 	game.ruby = mrb.open_allocf(mruby_odin_allocf, &game.ctx)
-	asset_system_init(&game.assets)
+
+
+	default_asset_dir := filepath.join(
+		{os.get_current_directory(context.temp_allocator), "assets"},
+	)
+
+	asset_system_init(&game.assets, default_asset_dir)
 
 	setup_require(game.ruby)
 }
