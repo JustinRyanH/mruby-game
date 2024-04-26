@@ -611,14 +611,13 @@ class Game
 
   def tick
     setup unless ready?
-
     toggle_debug if FrameInput.key_was_down?(:f1)
-
-    process_events
-    cleanup
 
     next_scene = scene.tick
     change_scene(next_scene) unless next_scene.nil?
+
+    process_events
+    cleanup
   end
 
   def add_event(event)
