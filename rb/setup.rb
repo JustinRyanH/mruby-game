@@ -25,11 +25,12 @@ class Obstacle
   # @return [Obstacle, nil] after
   attr_accessor :before, :after
 
-  def initialize(top:, bottom:, area:)
+  def initialize(top:, bottom:, area:, game: nil)
     @top = top
     @bottom = bottom
     @area = area
     @area_collisions = Set.new
+    @game = game || Game.current
   end
 
   def update
@@ -146,8 +147,10 @@ class Obstacle
 
   private
 
-  # @return [Set<Entity]
+  # @return [Set<Entity] area_collisions
+  # @return [Game] game
   attr_reader :area_collisions
+  attr_reader :game
 
   def entities
     @entities ||= [top, bottom, area]
@@ -441,7 +444,7 @@ class GameplayState
               anchor_percentage: Vector.new(0.0, 0.5), color: Color.blue)
     Draw.text(**text_args, pos: Vector.new(32, 48), font: Fonts.kenney_future, color: Color.white, halign: :left)
 
-    if game.obstacles.first
+    if game.debug? && game.obstacles.first
       current = game.obstacles.first
       while current.after?
         after = current.after
@@ -593,6 +596,7 @@ class Game
     @obstacles = []
     @score_areas = {}
     @entity_to_obstacle = {}
+    @debug = false
   end
 
   def setup
@@ -607,6 +611,8 @@ class Game
 
   def tick
     setup unless ready?
+
+    toggle_debug if FrameInput.key_was_down?(:f1)
 
     process_events
     cleanup
@@ -637,7 +643,17 @@ class Game
     @last_added = obstacle
   end
 
+  def debug?
+    @debug
+  end
+
   private
+
+  def toggle_debug
+    @debug = !@debug
+    Log.info('Debug Turned Off') unless @debug
+    Log.info('Debug Turned On') unless @debug
+  end
 
   def change_scene(new_scene)
     scene.exit

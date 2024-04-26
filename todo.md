@@ -6,7 +6,6 @@
 
 ## Current
 * Custom "Game Engine" 'require' gem
-* Debug Mode
 
 ## Nice to
 
@@ -33,3 +32,4 @@
 * Add a Draw.line to draw debug lines
 * 45 is too extreme, so we're going to adjust the distance to be further out if the random angle is over 40 until it is around 35
 * Come up with an algorithm to make sure the more challenging gaps are achievable
+* Debug Mode
