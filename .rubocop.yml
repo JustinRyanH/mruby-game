@@ -22,3 +22,6 @@ Style/GlobalVars:
 
 Metrics/CyclomaticComplexity:
   Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false
