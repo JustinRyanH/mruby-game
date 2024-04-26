@@ -418,11 +418,9 @@ class GameplayState
   # @param [Game] game
   def initialize(game)
     @game = game
-    @spawn_timer = Timer.new(0)
   end
 
   def tick
-    tick_wall_timer
     move_player
     move_world
 
@@ -442,7 +440,9 @@ class GameplayState
 
         a_pos, b_pos = current.challenge_line
 
-        length = (b_pos - a_pos).length
+        a_lower = Vector.new(a_pos.x, 0)
+        b_lower = Vector.new(b_pos.x, 0)
+        length = (b_lower - a_lower).length
         angle = current.challenge_angle
 
         Draw.line(start: a_pos, end: b_pos)
@@ -468,7 +468,6 @@ class GameplayState
     end
 
     game.player_velocity = Vector.zero
-    game.spawn_timer = Timer.new(0)
     game.score = 0
   end
 
@@ -517,15 +516,6 @@ class GameplayState
     game.player_velocity.y -= 4.5
   end
 
-  def tick_wall_timer
-    @spawn_timer.tick
-    return unless @spawn_timer.finished?
-
-    game.add_event(SpawnObstacle.new(game))
-
-    @spawn_timer.reset(FrameInput.random_int(1..2))
-  end
-
   def move_world
     game.obstacles.each(&:update)
     game.obstacles.select(&:offscreen_left?).each do |obs|
@@ -540,9 +530,8 @@ class Game
   attr_accessor :player, :score
 
   # @return [Vector] player_velocity
-  # @return [Timer] spawn_timer
   # @return [Hash<Integer, Entity>] score_areas
-  attr_accessor :score_areas, :player_velocity, :spawn_timer
+  attr_accessor :score_areas, :player_velocity
 
   # @return [Array] events
   # @return [Object] scene
