@@ -9,11 +9,11 @@
 
 ## Nice to
 
-* Collision maybe make Collision list always a set
-* Start Menuy
+* Start Menu
   * Ruby ImUI
 * Introduce Better errors for assets
-* Some sort of imgui I can communicate from ruby for debug
+* Debug ImUI
+* Collision maybe make Collision list always a set
 
 ## Done
 
