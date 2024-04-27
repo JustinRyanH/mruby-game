@@ -187,7 +187,7 @@ class DeathState
 
     width, height = FrameInput.screen_size
     Draw.rect(pos: Vector.new(width / 2, height / 2), size: Vector.new(700, 80),
-              anchor_percentage: Vector.new(0.5, 0.5), color: Color.blue)
+              anchor_percentage: Vector.new(0.5, 0.5), color: Color.blunt_violet)
     Draw.text(
       text: 'Game Over',
       pos: Vector.new(width / 2, height / 2),
