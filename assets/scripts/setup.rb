@@ -5,12 +5,6 @@ require 'assets/scripts/constants'
 require 'assets/scripts/obstacle'
 require 'assets/scripts/assets'
 
-class Fonts
-  def self.kenney_future
-    @kenney_future ||= AssetSystem.add_font('assets/fonts/Kenney Future.ttf')
-  end
-end
-
 def dt
   FrameInput.delta_time
 end
