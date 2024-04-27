@@ -39,6 +39,7 @@ Game :: struct {
 	collision_evts_t: map[EntityHandle]CollisionTargets,
 
 	// Game Data
+	bg_color:         rl.Color,
 	entities:         EntityPool,
 }
 
@@ -47,6 +48,7 @@ game_init :: proc(game: ^Game) {
 	game.rand = rand.create(1)
 	game.ruby = mrb.open_allocf(mruby_odin_allocf, &game.ctx)
 
+	game.bg_color = rl.BLACK
 
 	cwd := os.get_current_directory()
 	defer delete(cwd)

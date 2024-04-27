@@ -165,7 +165,7 @@ main :: proc() {
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
 
-		rl.ClearBackground(rl.BLACK)
+		rl.ClearBackground(g.bg_color)
 
 		game_check_collisions(g)
 		game_run_code(g, tick_handle)
