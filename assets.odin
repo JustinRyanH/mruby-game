@@ -27,7 +27,7 @@ ruby_code_handle :: proc(str: string) -> RubyCodeHandle {
 	return cast(RubyCodeHandle)utils.generate_u64_from_string(str)
 }
 
-RubyCode :: struct {
+RubyCodeAsset :: struct {
 	id:              RubyCodeHandle,
 	file_path:       string,
 	system_mod_time: u64,
@@ -37,7 +37,7 @@ RubyCode :: struct {
 }
 
 // @return true if successful
-ruby_code_load :: proc(rc: ^RubyCode) -> bool {
+ruby_code_load :: proc(rc: ^RubyCodeAsset) -> bool {
 	write_time, write_time_err := os.last_write_time_by_name(rc.file_path)
 	if write_time_err != os.ERROR_NONE {
 		panic(fmt.tprintf("Filed to access %s with err %v", rc.file_path, write_time_err))
@@ -59,19 +59,19 @@ ruby_code_load :: proc(rc: ^RubyCode) -> bool {
 	return true
 }
 
-ruby_code_deinit :: proc(rc: ^RubyCode) {
+ruby_code_deinit :: proc(rc: ^RubyCodeAsset) {
 	delete(rc.file_path)
 	delete(rc.code)
 }
 
 AssetSystem :: struct {
 	asset_dir: string,
-	ruby:      map[RubyCodeHandle]RubyCode,
+	ruby:      map[RubyCodeHandle]RubyCodeAsset,
 	fonts:     map[FontHandle]FontAsset,
 }
 
 as_init :: proc(as: ^AssetSystem, asset_dir: string) {
-	as.ruby = make(map[RubyCodeHandle]RubyCode, 32)
+	as.ruby = make(map[RubyCodeHandle]RubyCodeAsset, 32)
 	as.fonts = make(map[FontHandle]FontAsset, 32)
 	as.asset_dir = asset_dir
 }
@@ -89,7 +89,7 @@ as_deinit :: proc(as: ^AssetSystem) {
 as_load_ruby :: proc(as: ^AssetSystem, file: string) -> (RubyCodeHandle, bool) {
 	handle := ruby_code_handle(file)
 	if !(handle in as.ruby) {
-		rc: RubyCode
+		rc: RubyCodeAsset
 		rc.id = handle
 		rc.file_path = strings.clone(file)
 		as.ruby[handle] = rc
@@ -102,7 +102,7 @@ as_load_ruby :: proc(as: ^AssetSystem, file: string) -> (RubyCodeHandle, bool) {
 	return handle, true
 }
 
-as_find_ruby :: proc(as: ^AssetSystem, handle: RubyCodeHandle) -> (RubyCode, bool) {
+as_find_ruby :: proc(as: ^AssetSystem, handle: RubyCodeHandle) -> (RubyCodeAsset, bool) {
 	return as.ruby[handle]
 }
 
