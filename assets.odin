@@ -9,6 +9,17 @@ import rl "vendor:raylib"
 
 import "./utils"
 
+TextureHandle :: distinct u64
+
+texture_handle :: proc(str: string) -> TextureHandle {
+	return cast(TextureHandle)utils.generate_u64_from_string(str)
+}
+
+TextureAsset :: struct {
+	handle:  TextureHandle,
+	texture: rl.Texture,
+}
+
 
 FontHandle :: distinct u64
 
@@ -68,6 +79,7 @@ AssetSystem :: struct {
 	asset_dir: string,
 	ruby:      map[RubyCodeHandle]RubyCodeAsset,
 	fonts:     map[FontHandle]FontAsset,
+	textures:  map[TextureHandle]TextureAsset,
 }
 
 as_init :: proc(as: ^AssetSystem, asset_dir: string) {
@@ -160,4 +172,19 @@ as_get_font :: proc(as: ^AssetSystem, fh: FontHandle) -> FontAsset {
 		return FontAsset{0, rl.GetFontDefault()}
 	}
 	return fa
+}
+
+as_load_texture :: proc(as: ^AssetSystem, path: string) -> (TextureHandle, bool) {
+	th := texture_handle(path)
+	if th in as.textures {
+		return th, true
+	}
+
+	cpath := strings.clone_to_cstring(path, context.temp_allocator)
+
+	texture := rl.LoadTexture(cpath)
+	assert(texture != {})
+	as.textures[th] = TextureAsset{th, texture}
+
+	return th, true
 }
