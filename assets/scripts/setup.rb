@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
 require 'assets/scripts/engine_override'
-
-GRAVITY_Y = 7
-WORLD_SPEED = 300
-DEG_PER_RAD = 360.0 / (Math::PI * 2)
+require 'assets/scripts/constants'
 
 class CollisionEvent
   # @param [Array<Entity>] entities_leaving
@@ -169,6 +166,7 @@ def dt
   FrameInput.delta_time
 end
 
+# TODO: Make this map from RL Rectangle
 class Rectangle
   attr_reader :pos, :size
 
