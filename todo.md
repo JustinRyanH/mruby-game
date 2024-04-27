@@ -15,8 +15,9 @@
 * Loading `.mrb` code
 * Asset Packaging
 * WASM build
-* Imput Recording/Playback
+* Input Recording/Playback
 * Particle Emission
+* Swap out to use Odin log context
 
 ## Done
 
