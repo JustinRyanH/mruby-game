@@ -16,7 +16,7 @@ setup_require :: proc(state: ^mrb.State) {
 }
 
 
-load_ruby_file :: proc(as: ^AssetSystem, path: string) -> (string, bool) {
+find_ruby_file :: proc(as: ^AssetSystem, path: string) -> (string, bool) {
 	rel_path, err := filepath.rel("assets/", path, context.temp_allocator)
 	assert(err == .None)
 	ruby_path := strings.concatenate({rel_path, ".rb"}, context.temp_allocator)
@@ -44,7 +44,7 @@ require_fn :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		mrb.raise_exception(state, "%s is not a valid asset directory", as.asset_dir)
 	}
 
-	rbf, rbf_found := load_ruby_file(as, path)
+	rbf, rbf_found := find_ruby_file(as, path)
 
 	if rbf_found {
 		handle, rbf_loaded := as_load_ruby(as, rbf)
