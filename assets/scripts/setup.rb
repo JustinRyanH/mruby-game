@@ -66,10 +66,10 @@ def random_obstcle(x)
   bottom_rect = Rectangle.from_bounds(left: gap.left, right: gap.right, top: gap.bottom, bottom: height)
   top_rect = Rectangle.from_bounds(left: gap.left, right: gap.right, top: 0, bottom: gap.top)
 
-  bottom = Entity.create(pos: bottom_rect.pos, size: bottom_rect.size, color: Color.white)
-  top = Entity.create(pos: top_rect.pos, size: top_rect.size, color: Color.white)
+  bottom = Entity.create(pos: bottom_rect.pos, size: bottom_rect.size, color: Color.affinity)
+  top = Entity.create(pos: top_rect.pos, size: top_rect.size, color: Color.affinity)
 
-  area = Entity.create(pos:, size:, color: Color.red)
+  area = Entity.create(pos:, size:, color: Color.blank)
   area.visible = false
 
   Obstacle.new(top:, bottom:, area:).tap { |obs| Log.info "SpawnObstacle: #{obs.id}" }
@@ -265,8 +265,7 @@ class GameplayState
   end
 
   def enter
-    puts Engine.background_color.inspect
-    Engine.background_color = Color.yellow
+    Engine.background_color = Color.regal_blue
     game.clear_map
     if game.player.nil?
       create_player
@@ -332,7 +331,7 @@ class GameplayState
     game.player = Entity.create(
       pos: starting_position,
       size: Vector.new(45, 45),
-      color: Color.red
+      color: Color.blunt_violet
     )
   end
 
