@@ -55,6 +55,7 @@ engine_classes: EngineRClass
 game_load_mruby_raylib :: proc(game: ^Game) {
 	st := game.ruby
 
+	setup_engine(st)
 	setup_assets(st)
 	setup_draw(st)
 	setup_input(st)
@@ -1206,6 +1207,43 @@ font_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 //////////////////////////////
 
 setup_engine :: proc(st: ^mrb.State) {
-	engine_class := mrb.define_class(st, "Engine", mrb.state_get_object_class(st))
-	engine_classes.engine = engine_class
+	engine_module := mrb.define_module(st, "Engine")
+	mrb.define_class_method(
+		st,
+		engine_module,
+		"background_color=",
+		engine_set_bg_color,
+		mrb.args_req(1),
+	)
+	mrb.define_class_method(
+		st,
+		engine_module,
+		"background_color",
+		engine_get_bg_color,
+		mrb.args_none(),
+	)
+	engine_classes.engine = engine_module
+}
+
+
+@(private = "file")
+engine_set_bg_color :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	color_v: mrb.Value
+	mrb.get_args(state, "o", &color_v)
+	assert(
+		mrb.obj_is_kind_of(state, color_v, engine_classes.color),
+		"Expected argument should be a instance of `Color`",
+	)
+
+	color := mrb.get_data_from_value(rl.Color, color_v)
+	g.bg_color = color^
+
+	return mrb.nil_value()
+}
+
+@(private = "file")
+engine_get_bg_color :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return mrb.nil_value()
 }
