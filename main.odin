@@ -138,8 +138,6 @@ main :: proc() {
 
 	tick_handle, tick_loaded := as_load_ruby(&g.assets, "rb/tick.rb")
 	assert(tick_loaded, "`tick.rb` is required")
-	setup_handle, setup_loaded := as_load_ruby(&g.assets, "rb/setup.rb")
-	assert(tick_loaded, "`setup.rb` is required")
 
 	rl.InitWindow(1280, 800, "Odin-Ruby Game Demo")
 	defer rl.CloseWindow()
@@ -150,9 +148,6 @@ main :: proc() {
 	entity.pos = Vector2{100, 300}
 	entity.size = Vector2{45, 45}
 	entity.color = rl.GREEN
-
-	game_run_code(g, setup_handle)
-
 
 	for !rl.WindowShouldClose() {
 		defer {
