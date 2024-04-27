@@ -2,6 +2,7 @@
 
 ## Current
 
+* Loading Texture Assets
 * Start Menu
   * Ruby ImUI
 * Sounds
