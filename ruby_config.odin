@@ -40,13 +40,13 @@ mrb_color_type: mrb.DataType = {"Color", mrb.free}
 mrb_collision_evt_handle_type: mrb.DataType = {"CollisionEvent", mrb.free}
 
 EngineRClass :: struct {
-	entity_class:       ^mrb.RClass,
-	vector_class:       ^mrb.RClass,
-	color_class:        ^mrb.RClass,
-	frame_class:        ^mrb.RClass,
-	draw_module:        ^mrb.RClass,
-	as_class: ^mrb.RClass,
-	font_asset_class:   ^mrb.RClass,
+	entity_class:     ^mrb.RClass,
+	vector_class:     ^mrb.RClass,
+	color_class:      ^mrb.RClass,
+	frame_class:      ^mrb.RClass,
+	draw_module:      ^mrb.RClass,
+	as_class:         ^mrb.RClass,
+	font_asset_class: ^mrb.RClass,
 }
 
 engine_classes: EngineRClass
