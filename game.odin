@@ -48,7 +48,9 @@ game_init :: proc(game: ^Game) {
 	game.ruby = mrb.open_allocf(mruby_odin_allocf, &game.ctx)
 
 
-	default_asset_dir := filepath.join({os.get_current_directory(), "assets"})
+	cwd := os.get_current_directory()
+	defer delete(cwd)
+	default_asset_dir := filepath.join({cwd, "assets"})
 
 	as_init(&game.assets, default_asset_dir)
 
