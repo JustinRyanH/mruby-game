@@ -40,13 +40,14 @@ mrb_color_type: mrb.DataType = {"Color", mrb.free}
 mrb_collision_evt_handle_type: mrb.DataType = {"CollisionEvent", mrb.free}
 
 EngineRClass :: struct {
-	as_class:         ^mrb.RClass,
-	color_class:      ^mrb.RClass,
-	draw_module:      ^mrb.RClass,
-	entity_class:     ^mrb.RClass,
-	font_asset_class: ^mrb.RClass,
-	frame_class:      ^mrb.RClass,
-	vector_class:     ^mrb.RClass,
+	as:          ^mrb.RClass,
+	color:       ^mrb.RClass,
+	draw_module: ^mrb.RClass,
+	engine:      ^mrb.RClass,
+	entity:      ^mrb.RClass,
+	font_asset:  ^mrb.RClass,
+	frame:       ^mrb.RClass,
+	vector:      ^mrb.RClass,
 }
 
 engine_classes: EngineRClass
@@ -108,7 +109,7 @@ setup_input :: proc(st: ^mrb.State) {
 	mrb.define_class_method(st, frame_class, "random_int", frame_input_random_int, mrb.args_req(1))
 
 
-	engine_classes.frame_class = frame_class
+	engine_classes.frame = frame_class
 }
 
 
@@ -339,7 +340,7 @@ setup_entity_class :: proc(st: ^mrb.State) {
 
 	mrb.define_alias(st, entity_class, "eql?", "==")
 	mrb.define_alias(st, entity_class, "hash", "id")
-	engine_classes.entity_class = entity_class
+	engine_classes.entity = entity_class
 }
 
 @(private = "file")
@@ -411,7 +412,7 @@ entity_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		mrb.float_value(state, cast(f64)entity.pos.y),
 	}
 
-	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(values))
+	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(values))
 }
 
 @(private = "file")
@@ -421,7 +422,7 @@ entity_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	new_pos: mrb.Value
 	mrb.get_args(state, "o", &new_pos)
 	assert(
-		mrb.obj_is_kind_of(state, new_pos, engine_classes.vector_class),
+		mrb.obj_is_kind_of(state, new_pos, engine_classes.vector),
 		"Can only assign Vector to position",
 	)
 
@@ -484,7 +485,7 @@ entity_size_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		mrb.float_value(state, cast(f64)entity.size.y),
 	}
 
-	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(values))
+	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(values))
 }
 
 @(private = "file")
@@ -498,7 +499,7 @@ entity_collisions_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Va
 	out := make([]mrb.Value, len(collided_with), context.temp_allocator)
 	for e, idx in collided_with {
 		mrb_v := mrb.int_value(state, cast(mrb.Int)e)
-		mrb_e := mrb.obj_new(state, engine_classes.entity_class, 1, &mrb_v)
+		mrb_e := mrb.obj_new(state, engine_classes.entity, 1, &mrb_v)
 		out[idx] = mrb_e
 	}
 
@@ -513,7 +514,7 @@ entity_eq :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	other_v: mrb.Value
 	mrb.get_args(state, "o", &other_v)
 	assert(
-		mrb.obj_is_kind_of(state, other_v, engine_classes.entity_class),
+		mrb.obj_is_kind_of(state, other_v, engine_classes.entity),
 		"Entity can only equal another entity",
 	)
 
@@ -563,7 +564,7 @@ entity_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	id := mrb.int_value(state, cast(mrb.Int)handle)
 	collection: []mrb.Value = {id}
-	return mrb.obj_new(state, engine_classes.entity_class, 1, raw_data(collection[:]))
+	return mrb.obj_new(state, engine_classes.entity, 1, raw_data(collection[:]))
 }
 
 //////////////////////////////
@@ -587,7 +588,7 @@ setup_vector_class :: proc(st: ^mrb.State) {
 	mrb.define_method(st, vector_class, "angle", vector_angle, mrb.args_none())
 	mrb.define_method(st, vector_class, "length", vector_length, mrb.args_none())
 	mrb.define_method(st, vector_class, "normalize", vector_normalize, mrb.args_none())
-	engine_classes.vector_class = vector_class
+	engine_classes.vector = vector_class
 }
 
 @(private = "file")
@@ -595,7 +596,7 @@ vector_zero :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	x := mrb.float_value(state, 0)
 	y := mrb.float_value(state, 0)
 	values := []mrb.Value{x, y}
-	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(values[:]))
+	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(values[:]))
 }
 
 @(private = "file")
@@ -664,7 +665,7 @@ vector_scale :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 
-	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(new_v[:]))
+	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(new_v[:]))
 }
 
 @(private = "file")
@@ -675,7 +676,7 @@ vector_lerp :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	t: mrb.Float
 	mrb.get_args(state, "of", &other, &t)
 	assert(
-		mrb.obj_is_kind_of(state, other, engine_classes.vector_class),
+		mrb.obj_is_kind_of(state, other, engine_classes.vector),
 		"can only add two Vectors together",
 	)
 	a := mrb.get_data_from_value(Vector2, self)^
@@ -687,7 +688,7 @@ vector_lerp :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		mrb.float_value(state, cast(f64)c.y),
 	}
 
-	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(values))
+	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(values))
 }
 
 @(private = "file")
@@ -697,7 +698,7 @@ vector_eq :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	other_v: mrb.Value
 	mrb.get_args(state, "o", &other_v)
 	assert(
-		mrb.obj_is_kind_of(state, other_v, engine_classes.vector_class),
+		mrb.obj_is_kind_of(state, other_v, engine_classes.vector),
 		"Vector can only equal another Vector",
 	)
 
@@ -715,7 +716,7 @@ vector_add :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	other: mrb.Value
 	mrb.get_args(state, "o", &other)
 	assert(
-		mrb.obj_is_kind_of(state, other, engine_classes.vector_class),
+		mrb.obj_is_kind_of(state, other, engine_classes.vector),
 		"can only add two Vectors together",
 	)
 	a := mrb.get_data_from_value(rl.Vector2, self)
@@ -727,7 +728,7 @@ vector_add :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		mrb.float_value(state, cast(f64)c.y),
 	}
 
-	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(values))
+	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(values))
 }
 
 @(private = "file")
@@ -737,7 +738,7 @@ vector_minus :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	other: mrb.Value
 	mrb.get_args(state, "o", &other)
 	assert(
-		mrb.obj_is_kind_of(state, other, engine_classes.vector_class),
+		mrb.obj_is_kind_of(state, other, engine_classes.vector),
 		"can only add two Vectors together",
 	)
 	a := mrb.get_data_from_value(rl.Vector2, self)
@@ -749,7 +750,7 @@ vector_minus :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		mrb.float_value(state, cast(f64)c.y),
 	}
 
-	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(values))
+	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(values))
 }
 
 
@@ -766,7 +767,7 @@ vector_normalize :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		mrb.float_value(state, cast(f64)new.y),
 	}
 
-	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(values))
+	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(values))
 }
 
 @(private = "file")
@@ -819,7 +820,7 @@ setup_color_class :: proc(st: ^mrb.State) {
 			mrb.args_none(),
 		)
 	}
-	engine_classes.color_class = color_class
+	engine_classes.color = color_class
 }
 
 @(private = "file")
@@ -879,7 +880,7 @@ color_from_pallet :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 
 	for val, idx in color {colors[idx] = mrb.int_value(state, cast(mrb.Int)val)}
 
-	return mrb.obj_new(state, engine_classes.color_class, len(colors), raw_data(colors[:]))
+	return mrb.obj_new(state, engine_classes.color, len(colors), raw_data(colors[:]))
 }
 
 //////////////////////////////
@@ -946,7 +947,7 @@ draw_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	cmd.color = extract_color_from_value(state, values.color, rl.WHITE)
 	if !mrb.undef_p(values.font) && !mrb.nil_p(values.font) {
 		assert(
-			mrb.obj_is_kind_of(state, values.font, engine_classes.font_asset_class),
+			mrb.obj_is_kind_of(state, values.font, engine_classes.font_asset),
 			"`:font` must be a Font",
 		)
 
@@ -1105,7 +1106,7 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 	assert(mrb.string_p(values.text), "`:text` should be a String")
 	assert(mrb.float_p(values.size) || mrb.integer_p(values.size), "`:size` should be a Float")
 	assert(
-		mrb.obj_is_kind_of(state, values.font, engine_classes.font_asset_class),
+		mrb.obj_is_kind_of(state, values.font, engine_classes.font_asset),
 		"`:font` should be a Font",
 	)
 	text := mrb.string_cstr(state, values.text)
@@ -1122,7 +1123,7 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 		mrb.float_value(state, cast(mrb.Float)measurement.y),
 	}
 
-	return mrb.obj_new(state, engine_classes.vector_class, 2, raw_data(out_values))
+	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(out_values))
 }
 
 
@@ -1134,7 +1135,7 @@ extract_color_from_value :: proc(
 ) -> rl.Color {
 	if !mrb.undef_p(value) {
 		assert(
-			mrb.obj_is_kind_of(state, value, engine_classes.color_class),
+			mrb.obj_is_kind_of(state, value, engine_classes.color),
 			"Draw.text(color: ) should be a Color",
 		)
 		return mrb.get_data_from_value(rl.Color, value)^
@@ -1151,7 +1152,7 @@ setup_assets :: proc(st: ^mrb.State) {
 
 	as_class := mrb.define_class(st, "AssetSystem", mrb.state_get_object_class(st))
 	mrb.define_class_method(st, as_class, "add_font", assets_add_font, mrb.args_req(1))
-	engine_classes.as_class = as_class
+	engine_classes.as = as_class
 }
 
 @(private = "file")
@@ -1169,19 +1170,18 @@ assets_add_font :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	handle_v := mrb.int_value(state, cast(mrb.Int)handle)
 
-	return mrb.obj_new(state, engine_classes.font_asset_class, 1, &handle_v)
+	return mrb.obj_new(state, engine_classes.font_asset, 1, &handle_v)
 }
 
 //////////////////////////////
 //// Fonts
 //////////////////////////////
 
-
 setup_fonts :: proc(st: ^mrb.State) {
 	font_asset_class := mrb.define_class(st, "Font", mrb.state_get_object_class(st))
 	mrb.set_data_type(font_asset_class, .CData)
 	mrb.define_method(st, font_asset_class, "initialize", font_init, mrb.args_req(1))
-	engine_classes.font_asset_class = font_asset_class
+	engine_classes.font_asset = font_asset_class
 }
 
 @(private = "file")
@@ -1198,4 +1198,14 @@ font_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 	i^ = cast(FontHandle)handle_id
 	return self
+}
+
+
+//////////////////////////////
+//// Engine
+//////////////////////////////
+
+setup_engine :: proc(st: ^mrb.State) {
+	engine_class := mrb.define_class(st, "Engine", mrb.state_get_object_class(st))
+	engine_classes.engine = engine_class
 }
