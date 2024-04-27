@@ -6,6 +6,7 @@ import "core:path/filepath"
 import "core:strings"
 
 import mrb "./mruby"
+import rl "vendor:raylib"
 
 
 setup_require :: proc(state: ^mrb.State) {
@@ -50,6 +51,7 @@ require_fn :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		handle, rbf_loaded := as_load_ruby(as, rbf)
 		if !success {mrb.raise_exception(state, "Could not load Ruby Script: %s", rbf)}
 		if (as_should_rerun_ruby(as, handle)) {
+			rl.TraceLog(.INFO, fmt.ctprintf("Loaded Script Code: %s", rbf))
 			game_run_code(g, handle)
 		}
 	}
