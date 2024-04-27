@@ -88,19 +88,17 @@ as_deinit :: proc(as: ^AssetSystem) {
 
 as_load_ruby :: proc(as: ^AssetSystem, file: string) -> (RubyCodeHandle, bool) {
 	handle := ruby_code_handle(file)
-	if handle in as.ruby {
+	if !(handle in as.ruby) {
 		rc: RubyCode
-		ruby_code_load(&rc)
-		return handle, true
+		rc.id = handle
+		rc.file_path = strings.clone(file)
+		as.ruby[handle] = rc
 	}
 
-	rc: RubyCode
-	rc.id = handle
-	rc.file_path = strings.clone(file)
+	rc, success := &as.ruby[handle]
+	assert(success)
+	ruby_code_load(rc)
 
-	ruby_code_load(&rc)
-
-	as.ruby[handle] = rc
 	return handle, true
 }
 
