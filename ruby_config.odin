@@ -1245,5 +1245,13 @@ engine_set_bg_color :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Valu
 
 @(private = "file")
 engine_get_bg_color :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	return mrb.nil_value()
+	color := g.bg_color
+	colors := []mrb.Value {
+		mrb.int_value(state, cast(mrb.Int)color.r),
+		mrb.int_value(state, cast(mrb.Int)color.b),
+		mrb.int_value(state, cast(mrb.Int)color.g),
+		mrb.int_value(state, cast(mrb.Int)color.a),
+	}
+
+	return mrb.obj_new(state, engine_classes.color, 4, raw_data(colors))
 }

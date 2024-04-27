@@ -265,6 +265,7 @@ class GameplayState
   end
 
   def enter
+    puts Engine.background_color.inspect
     Engine.background_color = Color.yellow
     game.clear_map
     if game.player.nil?
