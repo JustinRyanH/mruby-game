@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'assets/scripts/engine_override'
+
 GRAVITY_Y = 7
 WORLD_SPEED = 300
 DEG_PER_RAD = 360.0 / (Math::PI * 2)
@@ -167,54 +169,6 @@ def dt
   FrameInput.delta_time
 end
 
-Vector.class_eval do
-  def inspect
-    { name: 'Vector', x:, y: }
-  end
-end
-
-Color.class_eval do
-  def inspect
-    { name: 'Color', red:, blue:, green:, alpha: }
-  end
-end
-
-Entity.class_eval do
-  def inspect
-    { name: 'Entity', id:, pos: pos.inspect, size: size.inspect }
-  end
-
-  def onscreen?
-    !offscreen_bottom? && !offscreen_right? && !offscreen_left? && !offscreen_top?
-  end
-
-  def offscreen_left?
-    right = pos.x + (size.x * 0.5)
-    right.negative?
-  end
-
-  def offscreen_right?
-    width, = FrameInput.screen_size
-    right = width - (pos.x + (size.x * 0.5))
-    right.negative?
-  end
-
-  def offscreen_top?
-    top = pos.y - (size.y * 0.5)
-    top.negative?
-  end
-
-  def offscreen_bottom?
-    _, height = FrameInput.screen_size
-    bottom = height - (pos.y + (size.y * 0.5))
-    bottom.negative?
-  end
-
-  def colliding_with?(entity)
-    collisions.include?(entity)
-  end
-end
-
 class Rectangle
   attr_reader :pos, :size
 
@@ -271,8 +225,8 @@ def random_obstcle(x)
   bottom_rect = Rectangle.from_bounds(left: gap.left, right: gap.right, top: gap.bottom, bottom: height)
   top_rect = Rectangle.from_bounds(left: gap.left, right: gap.right, top: 0, bottom: gap.top)
 
-  bottom = Entity.create(pos: bottom_rect.pos, size: bottom_rect.size)
-  top = Entity.create(pos: top_rect.pos, size: top_rect.size)
+  bottom = Entity.create(pos: bottom_rect.pos, size: bottom_rect.size, color: Color.white)
+  top = Entity.create(pos: top_rect.pos, size: top_rect.size, color: Color.white)
 
   area = Entity.create(pos:, size:, color: Color.red)
   area.visible = false
