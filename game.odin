@@ -48,11 +48,9 @@ game_init :: proc(game: ^Game) {
 	game.ruby = mrb.open_allocf(mruby_odin_allocf, &game.ctx)
 
 
-	default_asset_dir := filepath.join(
-		{os.get_current_directory(context.temp_allocator), "assets"},
-	)
+	default_asset_dir := filepath.join({os.get_current_directory(), "assets"})
 
-	asset_system_init(&game.assets, default_asset_dir)
+	as_init(&game.assets, default_asset_dir)
 
 	setup_require(game.ruby)
 }
@@ -85,6 +83,6 @@ game_add_collision :: proc(game: ^Game, a, b: EntityHandle) {
 }
 
 game_deinit :: proc(game: ^Game) {
-	asset_system_deinit(&game.assets)
+	as_deinit(&game.assets)
 	mrb.close(game.ruby)
 }

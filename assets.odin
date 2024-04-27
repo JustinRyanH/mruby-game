@@ -28,11 +28,12 @@ ruby_code_handle :: proc(str: string) -> RubyCodeHandle {
 }
 
 RubyCode :: struct {
-	id:            RubyCodeHandle,
-	file_path:     string,
-	last_mod_time: u64,
-	last_run_time: u64,
-	code:          string,
+	id:              RubyCodeHandle,
+	file_path:       string,
+	system_mod_time: u64,
+	last_load_time:  i64,
+	last_run_time:   i64,
+	code:            string,
 }
 
 // @return true if successful
@@ -41,10 +42,11 @@ ruby_code_load :: proc(rc: ^RubyCode) -> bool {
 	if write_time_err != os.ERROR_NONE {
 		panic(fmt.tprintf("Filed to access %s with err %v", rc.file_path, write_time_err))
 	}
-	if cast(u64)write_time <= rc.last_mod_time {
+	if cast(u64)write_time <= rc.system_mod_time {
 		return false
 	}
-	rc.last_mod_time = cast(u64)write_time
+	rc.system_mod_time = cast(u64)write_time
+	rc.last_load_time = time.to_unix_nanoseconds(time.now())
 
 	if len(rc.code) > 0 {
 		delete(rc.code)
@@ -68,13 +70,13 @@ AssetSystem :: struct {
 	fonts:     map[FontHandle]FontAsset,
 }
 
-asset_system_init :: proc(as: ^AssetSystem, asset_dir: string) {
+as_init :: proc(as: ^AssetSystem, asset_dir: string) {
 	as.ruby = make(map[RubyCodeHandle]RubyCode, 32)
 	as.fonts = make(map[FontHandle]FontAsset, 32)
 	as.asset_dir = asset_dir
 }
 
-asset_system_deinit :: proc(as: ^AssetSystem) {
+as_deinit :: proc(as: ^AssetSystem) {
 	for i in as.ruby {
 		rc := &as.ruby[i]
 		ruby_code_deinit(rc)
@@ -84,7 +86,7 @@ asset_system_deinit :: proc(as: ^AssetSystem) {
 	delete(as.asset_dir)
 }
 
-asset_system_load_ruby :: proc(as: ^AssetSystem, file: string) -> (RubyCodeHandle, bool) {
+as_load_ruby :: proc(as: ^AssetSystem, file: string) -> (RubyCodeHandle, bool) {
 	handle := ruby_code_handle(file)
 	if handle in as.ruby {
 		rc: RubyCode
@@ -102,23 +104,21 @@ asset_system_load_ruby :: proc(as: ^AssetSystem, file: string) -> (RubyCodeHandl
 	return handle, true
 }
 
-asset_system_find_ruby :: proc(as: ^AssetSystem, handle: RubyCodeHandle) -> (RubyCode, bool) {
+as_find_ruby :: proc(as: ^AssetSystem, handle: RubyCodeHandle) -> (RubyCode, bool) {
 	return as.ruby[handle]
 }
 
-asset_system_update_runtume :: proc(as: ^AssetSystem, handle: RubyCodeHandle) -> bool {
+as_update_ruby_runtume :: proc(as: ^AssetSystem, handle: RubyCodeHandle) -> bool {
 	rc, success := &as.ruby[handle]
 	if !success {
 		return false
 	}
-	fmt.println("before", rc.last_run_time, rc.last_mod_time)
-	rc.last_run_time = cast(u64)time.to_unix_nanoseconds(time.now())
-	fmt.println("after", rc.last_run_time, rc.last_mod_time)
+	rc.last_run_time = time.to_unix_nanoseconds(time.now())
 
 	return true
 }
 
-asset_system_check :: proc(as: ^AssetSystem) {
+as_check :: proc(as: ^AssetSystem) {
 	for i in as.ruby {
 		rc := &as.ruby[i]
 		ruby_code_load(rc)
@@ -126,7 +126,7 @@ asset_system_check :: proc(as: ^AssetSystem) {
 }
 
 // TODO: Replace with proper error
-asset_system_load_font :: proc(as: ^AssetSystem, path: string) -> (FontHandle, bool) {
+as_load_font :: proc(as: ^AssetSystem, path: string) -> (FontHandle, bool) {
 	handle := font_handle(path)
 	if handle in as.fonts {
 		// TODO: Check if the file has change and reload
@@ -145,7 +145,7 @@ asset_system_load_font :: proc(as: ^AssetSystem, path: string) -> (FontHandle, b
 	return handle, true
 }
 
-asset_system_get_font :: proc(as: ^AssetSystem, fh: FontHandle) -> FontAsset {
+as_get_font :: proc(as: ^AssetSystem, fh: FontHandle) -> FontAsset {
 	if fh == 0 {
 		return FontAsset{0, rl.GetFontDefault()}
 	}

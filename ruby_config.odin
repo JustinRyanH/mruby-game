@@ -45,7 +45,7 @@ EngineRClass :: struct {
 	color_class:        ^mrb.RClass,
 	frame_class:        ^mrb.RClass,
 	draw_module:        ^mrb.RClass,
-	asset_system_class: ^mrb.RClass,
+	as_class: ^mrb.RClass,
 	font_asset_class:   ^mrb.RClass,
 }
 
@@ -1113,7 +1113,7 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 	// TODO: Handle nil
 	font_handle := mrb.get_data_from_value(FontHandle, values.font)^
 
-	font := asset_system_get_font(&g.assets, font_handle)
+	font := as_get_font(&g.assets, font_handle)
 
 	measurement := rl.MeasureTextEx(font.font, text, size, 2)
 
@@ -1149,9 +1149,9 @@ extract_color_from_value :: proc(
 setup_assets :: proc(st: ^mrb.State) {
 	setup_fonts(st)
 
-	asset_system_class := mrb.define_class(st, "AssetSystem", mrb.state_get_object_class(st))
-	mrb.define_class_method(st, asset_system_class, "add_font", assets_add_font, mrb.args_req(1))
-	engine_classes.asset_system_class = asset_system_class
+	as_class := mrb.define_class(st, "AssetSystem", mrb.state_get_object_class(st))
+	mrb.define_class_method(st, as_class, "add_font", assets_add_font, mrb.args_req(1))
+	engine_classes.as_class = as_class
 }
 
 @(private = "file")
@@ -1164,7 +1164,7 @@ assets_add_font :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	name := strings.string_from_ptr(name_data, name_len)
 
 	// TOOD: Replace with proper raised exception
-	handle, success := asset_system_load_font(&g.assets, name)
+	handle, success := as_load_font(&g.assets, name)
 	assert(success, fmt.tprintf("Failed to load %s for some reason", name))
 
 	handle_v := mrb.int_value(state, cast(mrb.Int)handle)

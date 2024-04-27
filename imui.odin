@@ -71,7 +71,7 @@ imui_draw :: proc(imui: ^ImUiState) {
 		switch c in cmd {
 		case ImuiDrawTextCmd:
 			txt := c.txt
-			ft := asset_system_get_font(assets, c.font)
+			ft := as_get_font(assets, c.font)
 			measure := rl.MeasureTextEx(ft.font, txt, c.size, c.spacing)
 			offset := alignment_offset(c.halign, measure)
 			rl.DrawTextPro(ft.font, txt, c.pos, offset, 0, c.size, c.spacing, c.color)

@@ -83,10 +83,10 @@ track_bad_free_tracking_allocator :: proc(a: ^mem.Tracking_Allocator) -> (err: b
 TargetFPS :: 90
 
 game_run_code :: proc(game: ^Game, handle: RubyCodeHandle, loc := #caller_location) {
-	code, found := asset_system_find_ruby(&game.assets, handle)
+	code, found := as_find_ruby(&game.assets, handle)
 	assert(found, "Ruby Code not found")
 	v := mrb.load_string(g.ruby, code.code)
-	asset_system_update_runtume(&game.assets, handle)
+	as_update_ruby_runtume(&game.assets, handle)
 
 	if mrb.state_get_exc(g.ruby) != nil {
 		mrb.print_error(g.ruby)
@@ -136,9 +136,9 @@ main :: proc() {
 
 	game_load_mruby_raylib(g)
 
-	tick_handle, tick_loaded := asset_system_load_ruby(&g.assets, "rb/tick.rb")
+	tick_handle, tick_loaded := as_load_ruby(&g.assets, "rb/tick.rb")
 	assert(tick_loaded, "`tick.rb` is required")
-	setup_handle, setup_loaded := asset_system_load_ruby(&g.assets, "rb/setup.rb")
+	setup_handle, setup_loaded := as_load_ruby(&g.assets, "rb/setup.rb")
 	assert(tick_loaded, "`setup.rb` is required")
 
 	rl.InitWindow(1280, 800, "Odin-Ruby Game Demo")
@@ -188,7 +188,7 @@ main :: proc() {
 
 		// Check for asset change every second or so
 		if input.frame_query_id(g.input) % TargetFPS == 0 {
-			asset_system_check(&g.assets)
+			as_check(&g.assets)
 		}
 	}
 }
