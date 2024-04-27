@@ -529,7 +529,7 @@ entity_eq :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 entity_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
-	NumOfArgs :: 3
+	NumOfArgs :: 4
 	kwargs: mrb.Kwargs
 	kwargs.num = NumOfArgs
 
@@ -537,6 +537,7 @@ entity_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "color"),
+		mrb.sym_from_string(state, "texture"),
 	}
 	values := [NumOfArgs]mrb.Value{}
 	kwargs.table = raw_data(names[:])
@@ -1153,7 +1154,15 @@ setup_assets :: proc(st: ^mrb.State) {
 
 	as_class := mrb.define_class(st, "AssetSystem", mrb.state_get_object_class(st))
 	mrb.define_class_method(st, as_class, "add_font", assets_add_font, mrb.args_req(1))
+	mrb.define_class_method(st, as_class, "load_texture", assets_load_texture, mrb.args_req(1))
 	engine_classes.as = as_class
+}
+
+@(private = "file")
+assets_load_texture :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	return mrb.nil_value()
 }
 
 @(private = "file")

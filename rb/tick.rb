@@ -1,9 +1,37 @@
 # frozen_string_literal: true
 
-require 'assets/scripts/setup'
+# require 'assets/scripts/setup'
+require 'assets/scripts/assets'
 # h = {}
 # ObjectSpace.count_objects(h)
 # puts h
+class DemoGame
+  def initialize
+    @ready = false
+  end
 
-$game ||= Game.new
+  def tick
+    setup unless ready?
+    # Do Some sort of basic debug here
+  end
+
+  def ready?
+    @ready
+  end
+
+  def setup
+    texture = Textures.copter
+    width, height = FrameInput.screen_size
+    pos = Vector.new(width / 2, height / 2)
+    size = Vector.new(32, 32)
+
+    Entity.create(pos:, size:, texture:)
+    @ready = true
+  end
+end
+
+# $game ||= Game.new
+# $game.tick
+
+$game ||= DemoGame.new
 $game.tick

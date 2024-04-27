@@ -5,3 +5,9 @@ class Fonts
     @kenney_future ||= AssetSystem.add_font('assets/fonts/Kenney Future.ttf')
   end
 end
+
+class Textures
+  def self.copter
+    @copter ||= AssetSystem.load_texture('assets/textures/copter_1.png')
+  end
+end
