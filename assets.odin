@@ -116,6 +116,14 @@ as_update_ruby_runtume :: proc(as: ^AssetSystem, handle: RubyCodeHandle) -> bool
 	return true
 }
 
+as_should_rerun_ruby :: proc(as: ^AssetSystem, handle: RubyCodeHandle) -> bool {
+	rc, success := as.ruby[handle]
+	if !success {
+		return false
+	}
+	return rc.last_load_time > rc.last_run_time
+}
+
 as_check :: proc(as: ^AssetSystem) {
 	for i in as.ruby {
 		rc := &as.ruby[i]
