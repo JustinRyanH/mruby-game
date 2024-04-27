@@ -17,6 +17,7 @@ Entity :: struct {
 	size:    Vector2,
 	color:   Color,
 	visible: bool,
+	texture: rl.Texture2D,
 }
 
 EntityHandle :: distinct dp.Handle
