@@ -1,19 +1,21 @@
 # TODO
 
-
-## Discussions
-
-
 ## Current
-* Custom "Game Engine" 'require' gem
-
-## Nice to
 
 * Start Menu
   * Ruby ImUI
+* Sounds
+
+## Nice to
+
 * Introduce Better errors for assets
 * Debug ImUI
 * Collision maybe make Collision list always a set
+* Loading `.mrb` code
+* Asset Packaging
+* WASM build
+* Imput Recording/Playback
+* Particle Emission
 
 ## Done
 
@@ -33,3 +35,13 @@
 * 45 is too extreme, so we're going to adjust the distance to be further out if the random angle is over 40 until it is around 35
 * Come up with an algorithm to make sure the more challenging gaps are achievable
 * Debug Mode
+* Custom "Game Engine" 'require' gem
+
+## AOR
+
+### Hot Reload
+
+So the hot reload ended up being cleaner than I thought. That said we will see if I can have the asset
+
+I do wonder if I actually want/need hot reloading for Odin or no. I also wonder if my asset system is going
+to pollute my Package/Prod build
