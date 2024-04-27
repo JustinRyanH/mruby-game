@@ -3,6 +3,7 @@
 require 'assets/scripts/engine_override'
 require 'assets/scripts/constants'
 require 'assets/scripts/obstacle'
+require 'assets/scripts/assets'
 
 class Fonts
   def self.kenney_future
