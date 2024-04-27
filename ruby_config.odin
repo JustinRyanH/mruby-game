@@ -1162,6 +1162,17 @@ setup_assets :: proc(st: ^mrb.State) {
 assets_load_texture :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
+	path: mrb.Value
+	mrb.get_args(state, "o", &path)
+
+	if !mrb.string_p(path) {
+		mrb.raise_exception(state, "Expected the Texture pth to be a string")
+	}
+	path_str := mrb.string_cstr(state, path)
+	text := rl.LoadTexture(path_str)
+	defer rl.UnloadTexture(text)
+
+
 	return mrb.nil_value()
 }
 
