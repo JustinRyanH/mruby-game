@@ -188,3 +188,11 @@ as_load_texture :: proc(as: ^AssetSystem, path: string) -> (TextureHandle, bool)
 
 	return th, true
 }
+
+as_get_texture :: proc(as: ^AssetSystem, th: TextureHandle) -> (TextureAsset, bool) {
+	if !(th in as.textures) {
+		return {}, false
+	}
+
+	return as.textures[th]
+}
