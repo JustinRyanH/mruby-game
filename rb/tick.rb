@@ -29,7 +29,7 @@ class DemoGame
     c = Entity.create(pos: pos + Vector.new(-100, 75), size:, texture: Textures.copter3)
 
     puts a.texture
-    puts b.texture
+    b.texture = a.texture
     puts c.texture
 
     @ready = true

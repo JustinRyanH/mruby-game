@@ -490,6 +490,21 @@ entity_texture_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 
 @(private = "file")
 entity_texture_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	texture_value: mrb.Value
+	mrb.get_args(state, "o", &texture_value)
+
+	eh := mrb.get_data_from_value(EntityHandle, self)^
+	entity := dp.get_ptr(&g.entities, eh)
+	if entity == nil {mrb.raise_exception(state, "Failed to access Entity: %d", eh)}
+
+	if !mrb.obj_is_kind_of(state, texture_value, engine_classes.texture_asset) {
+		mrb.raise_exception(state, "`texture=` argument needs to be a `Texture`")
+	}
+	th := mrb.get_data_from_value(TextureHandle, texture_value)^
+
+	entity.texture = th
 	return mrb.nil_value()
 }
 
