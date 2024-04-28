@@ -24,9 +24,13 @@ class DemoGame
     pos = Vector.new(width / 2, height / 2)
     size = Vector.new(64, 64)
 
-    Entity.create(pos:, size:, texture: Textures.copter)
-    Entity.create(pos: pos + Vector.new(100, -50), size:, texture: Textures.copter2)
-    Entity.create(pos: pos + Vector.new(-100, 75), size:, texture: Textures.copter3)
+    a = Entity.create(pos:, size:, texture: Textures.copter)
+    b = Entity.create(pos: pos + Vector.new(100, -50), size:, texture: Textures.copter2)
+    c = Entity.create(pos: pos + Vector.new(-100, 75), size:, texture: Textures.copter3)
+
+    puts a.texture
+    puts b.texture
+    puts c.texture
 
     @ready = true
   end

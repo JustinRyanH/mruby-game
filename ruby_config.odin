@@ -335,6 +335,8 @@ setup_entity_class :: proc(st: ^mrb.State) {
 	mrb.define_method(st, entity_class, "pos=", entity_pos_set, mrb.args_req(1))
 	mrb.define_method(st, entity_class, "visible", entity_visible_get, mrb.args_none())
 	mrb.define_method(st, entity_class, "visible=", entity_visible_set, mrb.args_req(1))
+	mrb.define_method(st, entity_class, "texture", entity_texture_get, mrb.args_none())
+	mrb.define_method(st, entity_class, "texture=", entity_texture_set, mrb.args_req(1))
 	mrb.define_method(st, entity_class, "size", entity_size_get, mrb.args_none())
 	mrb.define_method(st, entity_class, "collisions", entity_collisions_get, mrb.args_none())
 	mrb.define_method(st, entity_class, "==", entity_eq, mrb.args_req(1))
@@ -468,6 +470,26 @@ entity_visible_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 	}
 	entity.visible = new_value
 
+	return mrb.nil_value()
+}
+
+@(private = "file")
+entity_texture_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	eh := mrb.get_data_from_value(EntityHandle, self)^
+	entity, found := dp.get(&g.entities, eh)
+	if !found {mrb.raise_exception(state, "Failed to access Entity: %d", eh)}
+
+	th := entity.texture
+
+	th_value := mrb.int_value(state, cast(mrb.Int)th)
+
+	return mrb.obj_new(state, engine_classes.texture_asset, 1, &th_value)
+}
+
+@(private = "file")
+entity_texture_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return mrb.nil_value()
 }
 
