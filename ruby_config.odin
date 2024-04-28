@@ -557,12 +557,22 @@ entity_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		color = mrb.get_data_from_value(Color, values[2])^
 	}
 
+	th: TextureHandle
+	texture_value := values[3]
+	if !mrb.undef_p(texture_value) &&
+	   mrb.obj_is_kind_of(state, texture_value, engine_classes.texture_asset) {
+		th = mrb.get_data_from_value(TextureHandle, texture_value)^
+	}
+
 	entity_ptr, handle, success := dp.add_empty(&g.entities)
 	assert(success, "Failed to Create Entity")
 
 	entity_ptr.pos = pos
 	entity_ptr.size = size
 	entity_ptr.color = color
+	if th != 0 {
+		entity_ptr.texture = th
+	}
 	entity_ptr.visible = true
 
 	id := mrb.int_value(state, cast(mrb.Int)handle)
