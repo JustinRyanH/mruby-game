@@ -20,12 +20,14 @@ class DemoGame
   end
 
   def setup
-    texture = Textures.copter
     width, height = FrameInput.screen_size
     pos = Vector.new(width / 2, height / 2)
-    size = Vector.new(32, 32)
+    size = Vector.new(64, 64)
 
-    Entity.create(pos:, size:, texture:)
+    Entity.create(pos:, size:, texture: Textures.copter)
+    Entity.create(pos: pos + Vector.new(100, -50), size:, texture: Textures.copter2)
+    Entity.create(pos: pos + Vector.new(-100, 75), size:, texture: Textures.copter3)
+
     @ready = true
   end
 end
