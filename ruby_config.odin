@@ -40,14 +40,15 @@ mrb_color_type: mrb.DataType = {"Color", mrb.free}
 mrb_collision_evt_handle_type: mrb.DataType = {"CollisionEvent", mrb.free}
 
 EngineRClass :: struct {
-	as:          ^mrb.RClass,
-	color:       ^mrb.RClass,
-	draw_module: ^mrb.RClass,
-	engine:      ^mrb.RClass,
-	entity:      ^mrb.RClass,
-	font_asset:  ^mrb.RClass,
-	frame:       ^mrb.RClass,
-	vector:      ^mrb.RClass,
+	as:            ^mrb.RClass,
+	color:         ^mrb.RClass,
+	draw_module:   ^mrb.RClass,
+	engine:        ^mrb.RClass,
+	entity:        ^mrb.RClass,
+	font_asset:    ^mrb.RClass,
+	frame:         ^mrb.RClass,
+	vector:        ^mrb.RClass,
+	texture_asset: ^mrb.RClass,
 }
 
 engine_classes: EngineRClass
@@ -1151,6 +1152,7 @@ extract_color_from_value :: proc(
 
 setup_assets :: proc(st: ^mrb.State) {
 	setup_fonts(st)
+	setup_textures(st)
 
 	as_class := mrb.define_class(st, "AssetSystem", mrb.state_get_object_class(st))
 	mrb.define_class_method(st, as_class, "add_font", assets_add_font, mrb.args_req(1))
@@ -1162,18 +1164,27 @@ setup_assets :: proc(st: ^mrb.State) {
 assets_load_texture :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
+	asset_system := &g.assets
+
 	path: mrb.Value
 	mrb.get_args(state, "o", &path)
 
 	if !mrb.string_p(path) {
 		mrb.raise_exception(state, "Expected the Texture pth to be a string")
+		return mrb.nil_value()
 	}
-	path_str := mrb.string_cstr(state, path)
-	text := rl.LoadTexture(path_str)
-	defer rl.UnloadTexture(text)
+	path_str, success := mrb.string_from_value(state, path, context.temp_allocator)
+	assert(success, "We should be able to always create a new string value")
 
+	handle, texture_loaded := as_load_texture(&g.assets, path_str)
+	if !texture_loaded {
+		mrb.raise_exception(state, "Failed to Load Texture: %s", path_str)
+		return mrb.nil_value()
+	}
 
-	return mrb.nil_value()
+	handle_value := mrb.int_value(state, cast(mrb.Int)handle)
+
+	return mrb.obj_new(state, engine_classes.texture_asset, 1, &handle_value)
 }
 
 @(private = "file")
@@ -1192,6 +1203,33 @@ assets_add_font :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	handle_v := mrb.int_value(state, cast(mrb.Int)handle)
 
 	return mrb.obj_new(state, engine_classes.font_asset, 1, &handle_v)
+}
+
+//////////////////////////////
+//// Textures
+//////////////////////////////
+
+setup_textures :: proc(st: ^mrb.State) {
+	texture_asset_class := mrb.define_class(st, "Texture", mrb.state_get_object_class(st))
+	mrb.set_data_type(texture_asset_class, .CData)
+	mrb.define_method(st, texture_asset_class, "initialize", texture_init, mrb.args_req(1))
+	engine_classes.texture_asset = texture_asset_class
+}
+
+@(private = "file")
+texture_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	handle_id: int
+	mrb.get_args(state, "i", &handle_id)
+
+	i := mrb.get_data_from_value(TextureHandle, self)
+
+	if (i == nil) {
+		mrb.data_init(self, nil, &mrb_font_handle_type)
+		i = cast(^TextureHandle)mrb.malloc(state, size_of(TextureHandle))
+		mrb.data_init(self, i, &mrb_font_handle_type)
+	}
+	i^ = cast(TextureHandle)handle_id
+	return self
 }
 
 //////////////////////////////
