@@ -2,16 +2,15 @@
 
 ## Current
 
-* Loading Texture Assets
-* Texture Assets
+* Animation
 * Start Menu
   * Ruby ImUI
 * Sounds
 ## Nice to
 
+* Collision maybe make Collision list always a set
 * Introduce Better errors for assets
 * Debug ImUI
-* Collision maybe make Collision list always a set
 * Loading `.mrb` code
 * Asset Packaging
 * WASM build
@@ -38,6 +37,8 @@
 * Come up with an algorithm to make sure the more challenging gaps are achievable
 * Debug Mode
 * Custom "Game Engine" 'require' gem
+* Loading Texture Assets
+* Texture Assets
 
 ## AOR
 
