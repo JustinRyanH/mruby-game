@@ -20,6 +20,9 @@ TextureAsset :: struct {
 	texture: rl.Texture,
 }
 
+texture_asset_deinit :: proc(ta: ^TextureAsset) {
+	rl.UnloadTexture(ta.texture)
+}
 
 FontHandle :: distinct u64
 
@@ -89,6 +92,10 @@ as_init :: proc(as: ^AssetSystem, asset_dir: string) {
 }
 
 as_deinit :: proc(as: ^AssetSystem) {
+	for i in as.textures {
+		tx := &as.textures[i]
+		texture_asset_deinit(tx)
+	}
 	for i in as.ruby {
 		rc := &as.ruby[i]
 		ruby_code_deinit(rc)
@@ -96,6 +103,7 @@ as_deinit :: proc(as: ^AssetSystem) {
 	delete(as.ruby)
 	delete(as.fonts)
 	delete(as.asset_dir)
+	delete(as.textures)
 }
 
 as_load_ruby :: proc(as: ^AssetSystem, file: string) -> (RubyCodeHandle, bool) {
