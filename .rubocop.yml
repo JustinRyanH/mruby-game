@@ -2,9 +2,11 @@ AllCops:
   TargetRubyVersion: 3.3.0
   NewCops: enable
 Layout/EndOfLine:
-  Enabled: false
+  Enabled: true
   EnforcedStyle: lf
 
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: comma
 Style/Documentation:
   Enabled: false
 
