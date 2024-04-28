@@ -175,10 +175,12 @@ main :: proc() {
 			if !entity.visible {
 				continue
 			}
-			if entity.texture != {} {
+			if entity.texture != 0 {
 				rect: rl.Rectangle = {entity.pos.x, entity.pos.y, entity.size.x, entity.size.y}
+				asset, success := as_get_texture(&g.assets, entity.texture)
+				assert(success, "We should always have a texture here")
 				rl.DrawTexturePro(
-					entity.texture,
+					asset.texture,
 					{0, 0, 16, 16},
 					{entity.pos.x, entity.pos.y, entity.size.x, entity.size.y},
 					entity.size * 0.5,
