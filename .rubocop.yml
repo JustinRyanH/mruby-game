@@ -2,7 +2,7 @@ AllCops:
   TargetRubyVersion: 3.3.0
   NewCops: enable
 Layout/EndOfLine:
-  Enabled: true
+  Enabled: false
   EnforcedStyle: lf
 
 Style/Documentation:
@@ -26,4 +26,6 @@ Metrics/CyclomaticComplexity:
 Metrics/BlockLength:
   Enabled: false
 Metrics/ClassLength:
+  Enabled: false
+Metrics/PerceivedComplexity:
   Enabled: false
