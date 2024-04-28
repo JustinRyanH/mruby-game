@@ -3,13 +3,12 @@
 ## Current
 
 * Loading Texture Assets
+* Texture Assets
 * Start Menu
   * Ruby ImUI
 * Sounds
-
 ## Nice to
 
-* Texture Asssets
 * Introduce Better errors for assets
 * Debug ImUI
 * Collision maybe make Collision list always a set
