@@ -5,6 +5,21 @@ require 'assets/scripts/assets'
 # h = {}
 # ObjectSpace.count_objects(h)
 # puts h
+#
+class AnimatedEntity
+  # @return [Animation] animation
+  # @return [Entity] entity
+  attr_reader :animation, :entity
+
+  def initialize(animation:, entity:)
+    @entity = entity
+    @animation = animation
+  end
+
+  def tick
+    animation.update(entity)
+  end
+end
 
 class Animation
   attr_reader :textures
@@ -41,7 +56,8 @@ class DemoGame
   def tick
     setup unless ready?
 
-    @animation.update(@ent)
+    # @animation.update(@ent)
+    @animation_ent.tick
   end
 
   def ready?
@@ -58,10 +74,12 @@ class DemoGame
       Textures.copter3,
     ]
 
-    @animation = Animation.new(text)
+    animation = Animation.new(text)
+    @animation = animation
 
     @ent = Entity.create(pos:, size:)
     @animation.update(@ent)
+    @animation_ent = AnimatedEntity.new(animation:, entity: @ent)
 
     @ready = true
   end
