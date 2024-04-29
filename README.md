@@ -29,7 +29,7 @@ build system.
   conf.gem core: 'mruby-kernel-ext'
   conf.gem core: 'mruby-class-ext'
   conf.gem core: 'mruby-set'
-  conf.gem :github => 'takahashim/mruby-forwardable'
+  conf.gem :github => 'JustinRyanH/mruby-forwardable'
 ```
 
 ## How to build
