@@ -2,11 +2,13 @@
 
 # require 'assets/scripts/setup'
 require 'assets/scripts/assets'
+require 'assets/scripts/forwardable'
 # h = {}
 # ObjectSpace.count_objects(h)
 # puts h
 #
 class AnimatedEntity
+  extend ::Forwardable
   # @return [Animation] animation
   # @return [Entity] entity
   attr_reader :animation, :entity
@@ -19,6 +21,8 @@ class AnimatedEntity
   def tick
     animation.update(entity)
   end
+
+  def_delegators :@entity, :pos, :pos=
 end
 
 class Animation
@@ -56,6 +60,7 @@ class DemoGame
   def tick
     setup unless ready?
 
+    @animation_ent.pos += Vector.new(1, 0)
     @animation_ent.tick
   end
 
