@@ -56,7 +56,6 @@ class DemoGame
   def tick
     setup unless ready?
 
-    # @animation.update(@ent)
     @animation_ent.tick
   end
 
@@ -75,11 +74,9 @@ class DemoGame
     ]
 
     animation = Animation.new(text)
-    @animation = animation
 
-    @ent = Entity.create(pos:, size:)
-    @animation.update(@ent)
-    @animation_ent = AnimatedEntity.new(animation:, entity: @ent)
+    entity = Entity.create(pos:, size:)
+    @animation_ent = AnimatedEntity.new(animation:, entity:)
 
     @ready = true
   end
