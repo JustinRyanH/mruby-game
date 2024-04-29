@@ -2,7 +2,6 @@
 
 # require 'assets/scripts/setup'
 require 'assets/scripts/assets'
-require 'assets/scripts/forwardable'
 # h = {}
 # ObjectSpace.count_objects(h)
 # puts h
