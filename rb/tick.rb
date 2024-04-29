@@ -15,6 +15,7 @@ class Animation
   end
 
   def update(entity)
+    entity.texture = current_frame if entity.texture.nil?
     return false unless should_update?
 
     @current = (@current + 1) % textures.size
@@ -59,7 +60,8 @@ class DemoGame
 
     @animation = Animation.new(text)
 
-    @ent = Entity.create(pos:, size:, texture: Textures.copter)
+    @ent = Entity.create(pos:, size:)
+    @animation.update(@ent)
 
     @ready = true
   end
