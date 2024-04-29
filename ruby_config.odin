@@ -482,6 +482,9 @@ entity_texture_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 	if !found {mrb.raise_exception(state, "Failed to access Entity: %d", eh)}
 
 	th := entity.texture
+	if th == 0 {
+		return mrb.nil_value()
+	}
 
 	th_value := mrb.int_value(state, cast(mrb.Int)th)
 
