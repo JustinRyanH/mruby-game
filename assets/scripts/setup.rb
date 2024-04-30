@@ -45,7 +45,6 @@ class Animation
     return false unless should_update?
 
     @current = (@current + 1) % textures.size
-    puts "#{current_frame.inspect}, #{entity.texture.inspect}"
     entity.texture = current_frame
   end
 
