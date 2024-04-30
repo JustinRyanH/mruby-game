@@ -9,6 +9,51 @@ def dt
   FrameInput.delta_time
 end
 
+class AnimatedEntity
+  extend ::Forwardable
+  # @return [Animation] animation
+  # @return [Entity] entity
+  attr_reader :animation, :entity
+
+  def initialize(animation:, entity:)
+    @entity = entity
+    @animation = animation
+  end
+
+  def tick
+    animation.update(entity)
+  end
+
+  def_delegators :@entity, :pos, :pos=, :offscreen_top?, :offscreen_bottom?, :collisions
+end
+
+class Animation
+  attr_reader :textures
+
+  def initialize(textures)
+    @textures = textures
+    @current = 0
+  end
+
+  def update(entity)
+    entity.texture = current_frame if entity.texture.nil?
+    return false unless should_update?
+
+    @current = (@current + 1) % textures.size
+    entity.texture = current_frame
+  end
+
+  private
+
+  def current_frame
+    textures[@current]
+  end
+
+  def should_update?
+    (FrameInput.id % 20).zero?
+  end
+end
+
 # TODO: Make this map from RL Rectangle
 class Rectangle
   attr_reader :pos, :size
@@ -140,7 +185,7 @@ class StartState
       pos: Vector.new(width / 2, height / 2),
       font: Fonts.kenney_future,
       color: Color.white,
-      halign: :center
+      halign: :center,
     )
 
     return unless FrameInput.key_just_pressed?(:space)
@@ -194,7 +239,7 @@ class DeathState
       size: 96,
       font: Fonts.kenney_future,
       color: Color.white,
-      halign: :center
+      halign: :center,
     )
 
     return unless @restart_timer.finished?
@@ -328,11 +373,14 @@ class GameplayState
   end
 
   def create_player
-    game.player = Entity.create(
+    entity = Entity.create(
       pos: starting_position,
       size: Vector.new(45, 45),
-      color: Color.blunt_violet
+      color: Color.blunt_violet,
     )
+    animation = Animation.new([Textures.copter, Textures.copter3])
+
+    game.player = AnimatedEntity.new(animation:, entity:)
   end
 
   def starting_position
@@ -343,6 +391,7 @@ class GameplayState
   end
 
   def move_player
+    game.player.tick
     game.player_velocity.y = game.player_velocity.y + (GRAVITY_Y * dt)
 
     flap_player if FrameInput.key_just_pressed?(:space)
