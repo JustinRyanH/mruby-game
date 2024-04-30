@@ -24,6 +24,11 @@ class AnimatedEntity
     animation.update(entity)
   end
 
+  def animation=(new_animation)
+    @animation = new_animation
+    @animation.force_update(entity)
+  end
+
   def_delegators :@entity, :pos, :pos=, :offscreen_top?, :offscreen_bottom?, :collisions
 end
 
@@ -40,6 +45,11 @@ class Animation
     return false unless should_update?
 
     @current = (@current + 1) % textures.size
+    puts "#{current_frame.inspect}, #{entity.texture.inspect}"
+    entity.texture = current_frame
+  end
+
+  def force_update(entity)
     entity.texture = current_frame
   end
 
@@ -251,12 +261,15 @@ class DeathState
   def enter
     _, height = FrameInput.screen_size
 
+    puts 'UPDATE TO DEATH ANIMATION'
+    game.player.animation = Animation.new([Textures.copter2])
+
     @player_start = game.player.pos
     @player_end = game.player.pos
     @player_end.y = height + 100
 
-    @death_timer.reset(0.5)
-    @restart_timer.reset(0.75)
+    @death_timer.reset(3)
+    @restart_timer.reset(4)
   end
 
   def exit; end
