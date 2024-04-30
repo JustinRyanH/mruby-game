@@ -1263,7 +1263,15 @@ setup_textures :: proc(st: ^mrb.State) {
 	texture_asset_class := mrb.define_class(st, "Texture", mrb.state_get_object_class(st))
 	mrb.set_data_type(texture_asset_class, .CData)
 	mrb.define_method(st, texture_asset_class, "initialize", texture_init, mrb.args_req(1))
+	mrb.define_method(st, texture_asset_class, "id", texture_get_id, mrb.args_none())
 	engine_classes.texture_asset = texture_asset_class
+}
+
+
+@(private = "file")
+texture_get_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	id := mrb.get_data_from_value(TextureHandle, self)^
+	return mrb.int_value(state, cast(mrb.Int)id)
 }
 
 @(private = "file")

@@ -47,3 +47,9 @@ Entity.class_eval do
     collisions.include?(entity)
   end
 end
+
+Texture.class_eval do
+  def inspect
+    { name: 'Texture', id: }
+  end
+end
