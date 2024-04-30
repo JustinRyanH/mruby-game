@@ -2,13 +2,13 @@
 
 ## Current
 
-* Animation
 * Start Menu
   * Ruby ImUI
+* Seperate Sprites and Collisions
+* Collision maybe make Collision list always a set
 * Sounds
 ## Nice to
 
-* Collision maybe make Collision list always a set
 * Introduce Better errors for assets
 * Debug ImUI
 * Loading `.mrb` code
@@ -39,6 +39,7 @@
 * Custom "Game Engine" 'require' gem
 * Loading Texture Assets
 * Texture Assets
+* Animation
 
 ## AOR
 
