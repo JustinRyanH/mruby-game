@@ -261,15 +261,14 @@ class DeathState
   def enter
     _, height = FrameInput.screen_size
 
-    puts 'UPDATE TO DEATH ANIMATION'
     game.player.animation = Animation.new([Textures.copter2])
 
     @player_start = game.player.pos
     @player_end = game.player.pos
     @player_end.y = height + 100
 
-    @death_timer.reset(3)
-    @restart_timer.reset(4)
+    @death_timer.reset(1)
+    @restart_timer.reset(1.2)
   end
 
   def exit; end
@@ -339,6 +338,7 @@ class GameplayState
 
     game.player_velocity = Vector.zero
     game.score = 0
+    game.player.animation = Animation.new([Textures.copter, Textures.copter3])
   end
 
   def exit; end
