@@ -1464,6 +1464,7 @@ setup_sprite_class :: proc(state: ^mrb.State) {
 	mrb.define_method(state, sprite_class, "tint", sprite_tint_get, mrb.args_none())
 	mrb.define_method(state, sprite_class, "visible=", sprite_visible_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "visible?", sprite_visible_get, mrb.args_none())
+	mrb.define_method(state, sprite_class, "destroy", sprite_destroy, mrb.args_none())
 }
 
 sprite_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
@@ -1626,4 +1627,17 @@ sprite_visible_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 	spr, found := dp.get(&g.sprites, hnd)
 	assert(found, fmt.tprintf("Sprite should exist: %s", hnd))
 	return mrb.bool_value(spr.visible)
+}
+
+sprite_destroy :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	hnd := mrb.get_data_from_value(SpriteHandle, self)^
+	assert(hnd != 0, "SpriteHandle should not be 0")
+
+	if !dp.valid(&g.sprites, hnd) {
+		mrb.bool_value(false)
+	}
+	success := dp.remove(&g.sprites, hnd)
+	return mrb.bool_value(success)
 }
