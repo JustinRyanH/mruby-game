@@ -18,4 +18,8 @@ class Textures
   def self.copter3
     @copter3 ||= AssetSystem.load_texture('assets/textures/copter_3.png')
   end
+
+  def self.square
+    @square ||= AssetSystem.load_texture('assets/textures/square.png')
+  end
 end
