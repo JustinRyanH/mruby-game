@@ -18,6 +18,7 @@ load_context :: proc "contextless" (state: ^mrb.State) -> runtime.Context {
 	return ctx^
 }
 
+
 // This uses reflects to load in the kwargs.
 load_kwargs :: proc($T: typeid, state: ^mrb.State, args: ^T) {
 	names := reflect.struct_field_names(T)
@@ -681,6 +682,12 @@ setup_vector_class :: proc(st: ^mrb.State) {
 	engine_classes.vector = vector_class
 }
 
+
+vector_from_object :: proc(state: ^mrb.State, v: mrb.Value) -> Vector2 {
+	assert(mrb.obj_is_kind_of(state, v, engine_classes.vector))
+	return mrb.get_data_from_value(Vector2, v)^
+}
+
 @(private = "file")
 vector_zero :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	x := mrb.float_value(state, 0)
@@ -1304,6 +1311,10 @@ setup_textures :: proc(st: ^mrb.State) {
 	engine_classes.texture_asset = texture_asset_class
 }
 
+texture_from_object :: proc(state: ^mrb.State, v: mrb.Value) -> TextureHandle {
+	assert(mrb.obj_is_kind_of(state, v, engine_classes.texture_asset))
+	return mrb.get_data_from_value(TextureHandle, v)^
+}
 
 @(private = "file")
 texture_get_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
@@ -1424,7 +1435,6 @@ setup_sprite_class :: proc(state: ^mrb.State) {
 	mrb.define_method(state, sprite_class, "pos", sprite_pos_get, mrb.args_none())
 	mrb.define_method(state, sprite_class, "texture=", sprite_texture_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "texture", sprite_texture_get, mrb.args_none())
-
 }
 
 sprite_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
@@ -1486,9 +1496,7 @@ sprite_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	vec_v: mrb.Value
 	mrb.get_args(state, "o", &vec_v)
-	assert(mrb.obj_is_kind_of(state, vec_v, engine_classes.vector), "pos= should receive a vector")
-
-	vec := mrb.get_data_from_value(rl.Vector2, vec_v)^
+	vec := vector_from_object(state, vec_v)
 	hnd := mrb.get_data_from_value(SpriteHandle, self)^
 
 	spr := dp.get_ptr(&g.sprites, hnd)
@@ -1519,12 +1527,8 @@ sprite_texture_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 
 	texture_v: mrb.Value
 	mrb.get_args(state, "o", &texture_v)
-	assert(
-		mrb.obj_is_kind_of(state, texture_v, engine_classes.texture_asset),
-		"texture= should receive a Texture",
-	)
 
-	texture := mrb.get_data_from_value(TextureHandle, texture_v)^
+	texture := texture_from_object(state, texture_v)
 	hnd := mrb.get_data_from_value(SpriteHandle, self)^
 
 	spr := dp.get_ptr(&g.sprites, hnd)
