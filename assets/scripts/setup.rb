@@ -9,6 +9,37 @@ def dt
   FrameInput.delta_time
 end
 
+class GameObject
+  extend ::Forwardable
+
+  attr_reader :entity, :sprite
+
+  def initialize(entity, sprite)
+    @entity = entity
+    @sprite = sprite
+  end
+
+  def pos
+    @entity.pos
+  end
+
+  def pos=(value)
+    @entity.pos = value
+    @sprite.pos = value
+  end
+
+  def tick; end
+
+  def animation=(value); end
+
+  def destory
+    entity.destroy
+    sprite.destroy
+  end
+
+  def_delegators :@entity, :offscreen_top?, :offscreen_bottom?, :collisions
+end
+
 class AnimatedEntity
   extend ::Forwardable
   # @return [Animation] animation
@@ -390,9 +421,14 @@ class GameplayState
       size: Vector.new(45, 45),
       color: Color.blunt_violet,
     )
-    animation = Animation.new([Textures.copter, Textures.copter3])
+    sprite = Sprite.create(
+      pos: starting_position,
+      size: Vector.new(45, 45),
+      tint: Color.blunt_violet,
+      texture: Textures.copter,
+    )
 
-    game.player = AnimatedEntity.new(animation:, entity:)
+    game.player = GameObject.new(entity, sprite)
   end
 
   def starting_position
