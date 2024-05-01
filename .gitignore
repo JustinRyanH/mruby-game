@@ -5,3 +5,4 @@ mruby-game.exe
 *.dSYM
 .vscode/
 .idea/
+*.raddbg
