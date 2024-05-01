@@ -47,8 +47,8 @@ EngineRClass :: struct {
 	entity:        ^mrb.RClass,
 	font_asset:    ^mrb.RClass,
 	frame:         ^mrb.RClass,
-	vector:        ^mrb.RClass,
 	texture_asset: ^mrb.RClass,
+	vector:        ^mrb.RClass,
 }
 
 engine_classes: EngineRClass
