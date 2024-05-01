@@ -1483,6 +1483,7 @@ sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		texture: mrb.Value,
 		pos:     mrb.Value,
 		size:    mrb.Value,
+		tint:    mrb.Value,
 	}
 
 	values: KValues
@@ -1514,6 +1515,15 @@ sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 			"Expect `pos:` to be a Vector",
 		)
 		spr.pos = mrb.get_data_from_value(Vector2, values.pos)^
+	}
+
+
+	if !mrb.undef_p(values.tint) {
+		assert(
+			mrb.obj_is_kind_of(state, values.tint, engine_classes.color),
+			"Expect `tint:` to be a Color",
+		)
+		spr.tint = mrb.get_data_from_value(rl.Color, values.tint)^
 	}
 
 
