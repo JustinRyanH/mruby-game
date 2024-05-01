@@ -1420,6 +1420,8 @@ setup_sprite_class :: proc(state: ^mrb.State) {
 
 	mrb.define_method(state, sprite_class, "initialize", sprite_new, mrb.args_req(1))
 	mrb.define_class_method(state, sprite_class, "create", sprite_create, mrb.args_key(2, 0))
+	mrb.define_method(state, sprite_class, "pos=", sprite_pos_set, mrb.args_req(1))
+	mrb.define_method(state, sprite_class, "pos", sprite_pos_get, mrb.args_none())
 
 }
 
@@ -1456,7 +1458,6 @@ sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		"`size:` should be a `Size`",
 	)
 
-	game := g
 	spr, handle, success := dp.add_empty(&g.sprites)
 	assert(success)
 
@@ -1476,4 +1477,36 @@ sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	v := mrb.int_value(state, cast(mrb.Int)handle)
 	return mrb.obj_new(state, engine_classes.sprite, 1, &v)
+}
+
+sprite_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	vec_v: mrb.Value
+	mrb.get_args(state, "o", &vec_v)
+	assert(mrb.obj_is_kind_of(state, vec_v, engine_classes.vector), "pos= should receive a vector")
+
+	vec := mrb.get_data_from_value(rl.Vector2, vec_v)^
+	hnd := mrb.get_data_from_value(SpriteHandle, self)^
+
+	spr := dp.get_ptr(&g.sprites, hnd)
+	assert(spr != nil, fmt.tprintf("Sprite should exist: %s", hnd))
+	spr.pos = vec
+
+	return mrb.nil_value()
+}
+
+sprite_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	hnd := mrb.get_data_from_value(SpriteHandle, self)^
+	spr, found := dp.get(&g.sprites, hnd)
+	assert(found, fmt.tprintf("Sprite should exist: %s", hnd))
+
+	values := []mrb.Value {
+		mrb.float_value(state, cast(mrb.Float)spr.pos.x),
+		mrb.float_value(state, cast(mrb.Float)spr.pos.y),
+	}
+
+	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(values))
 }
