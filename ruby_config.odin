@@ -18,6 +18,22 @@ load_context :: proc "contextless" (state: ^mrb.State) -> runtime.Context {
 	return ctx^
 }
 
+// This uses reflects to load in the kwargs.
+load_kwargs :: proc($T: typeid, state: ^mrb.State, args: ^T) {
+	names := reflect.struct_field_names(T)
+	num_of_args := len(names)
+	syms := make([]mrb.Sym, len(names), context.temp_allocator)
+	for name, i in names {
+		syms[i] = mrb.sym_from_string(state, name)
+	}
+
+	kwargs: mrb.Kwargs
+	kwargs.num = num_of_args
+	kwargs.table = raw_data(syms[:])
+	kwargs.values = transmute([^]mrb.Value)args
+
+	mrb.get_args(state, ":", &kwargs)
+}
 
 init_cdata :: proc "contextless" (
 	$T: typeid,
@@ -1416,22 +1432,6 @@ sprite_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return self
 }
 
-load_kwargs :: proc($T: typeid, state: ^mrb.State, args: ^T) {
-	names := reflect.struct_field_names(T)
-	num_of_args := len(names)
-	syms := make([]mrb.Sym, len(names), context.temp_allocator)
-	for name, i in names {
-		syms[i] = mrb.sym_from_string(state, name)
-	}
-
-	kwargs: mrb.Kwargs
-	kwargs.num = num_of_args
-	kwargs.table = raw_data(syms[:])
-	kwargs.values = transmute([^]mrb.Value)args
-
-	mrb.get_args(state, ":", &kwargs)
-}
-
 sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
@@ -1444,6 +1444,7 @@ sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	values: KValues
 
 	load_kwargs(KValues, state, &values)
+
 	assert(!mrb.undef_p(values.texture), "Sprite Required for `texture:`")
 	assert(!mrb.undef_p(values.size), "Vector Required for `size:`")
 	assert(
