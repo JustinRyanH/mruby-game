@@ -1465,6 +1465,15 @@ sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	spr.tint = rl.WHITE
 	spr.visible = true
 
+	if !mrb.undef_p(values.pos) {
+		assert(
+			mrb.obj_is_kind_of(state, values.pos, engine_classes.vector),
+			"Expect `pos:` to be a Vector",
+		)
+		spr.pos = mrb.get_data_from_value(Vector2, values.pos)^
+	}
+
+
 	v := mrb.int_value(state, cast(mrb.Int)handle)
 	return mrb.obj_new(state, engine_classes.sprite, 1, &v)
 }
