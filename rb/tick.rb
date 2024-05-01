@@ -11,7 +11,7 @@ end
 $spr.pos = Vector.new(400, 600)
 $spr.texture = (FrameInput.id % 2).zero? ? Textures.copter : Textures.copter3
 
-$spr.visisble = false if FrameInput.key_just_pressed?(:t)
+$spr.visible = !$spr.visible? if FrameInput.key_just_pressed?(:t)
 
 # $game ||= Game.new
 # $game.tick
