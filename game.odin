@@ -19,7 +19,7 @@ Sprite :: struct {
 	texture:   TextureHandle,
 	tint:      Color,
 	visible:   bool,
-	zIndex:    f32,
+	z_index:   f32,
 }
 
 Entity :: struct {
