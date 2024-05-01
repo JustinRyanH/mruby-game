@@ -1416,12 +1416,24 @@ sprite_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return self
 }
 
+load_kwargs :: proc($T: typeid, state: ^mrb.State, args: ^T) {
+	names := reflect.struct_field_names(T)
+	num_of_args := len(names)
+	syms := make([]mrb.Sym, len(names), context.temp_allocator)
+	for name, i in names {
+		syms[i] = mrb.sym_from_string(state, name)
+	}
+
+	kwargs: mrb.Kwargs
+	kwargs.num = num_of_args
+	kwargs.table = raw_data(syms[:])
+	kwargs.values = transmute([^]mrb.Value)args
+
+	mrb.get_args(state, ":", &kwargs)
+}
+
 sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
-
-	NumOfArgs :: 3
-	kwargs: mrb.Kwargs
-	kwargs.num = NumOfArgs
 
 	KValues :: struct {
 		texture: mrb.Value,
@@ -1429,18 +1441,9 @@ sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		size:    mrb.Value,
 	}
 
-	// TODO: I can totally do this with generics and reflection
-	names: []mrb.Sym =  {
-		mrb.sym_from_string(state, "texture"),
-		mrb.sym_from_string(state, "pos"),
-		mrb.sym_from_string(state, "size"),
-	}
-
 	values: KValues
-	kwargs.table = raw_data(names[:])
-	kwargs.values = transmute([^]mrb.Value)&values
 
-	mrb.get_args(state, ":", &kwargs)
+	load_kwargs(KValues, state, &values)
 	assert(!mrb.undef_p(values.texture), "Sprite Required for `texture:`")
 	assert(!mrb.undef_p(values.size), "Vector Required for `size:`")
 	assert(
