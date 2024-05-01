@@ -1462,6 +1462,8 @@ setup_sprite_class :: proc(state: ^mrb.State) {
 	mrb.define_method(state, sprite_class, "texture", sprite_texture_get, mrb.args_none())
 	mrb.define_method(state, sprite_class, "tint=", sprite_tint_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "tint", sprite_tint_get, mrb.args_none())
+	mrb.define_method(state, sprite_class, "visisble=", sprite_visible_set, mrb.args_req(1))
+	mrb.define_method(state, sprite_class, "visisble?", sprite_visible_get, mrb.args_none())
 }
 
 sprite_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
@@ -1601,4 +1603,28 @@ sprite_tint_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	spr, found := dp.get(&g.sprites, hnd)
 	assert(found, fmt.tprintf("Sprite should exist: %s", hnd))
 	return color_object_new(state, spr.tint)
+}
+
+
+sprite_visible_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	visible: bool
+	mrb.get_args(state, "b", &visible)
+
+	hnd := mrb.get_data_from_value(SpriteHandle, self)^
+	spr: ^Sprite = dp.get_ptr(&g.sprites, hnd)
+	spr.visible = visible
+
+	return mrb.nil_value()
+}
+
+sprite_visible_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return mrb.nil_value()
+	// context = load_context(state)
+	//
+	// hnd := mrb.get_data_from_value(SpriteHandle, self)^
+	// spr, found := dp.get(&g.sprites, hnd)
+	// assert(found, fmt.tprintf("Sprite should exist: %s", hnd))
+	// return color_object_new(state, spr.tint)
 }
