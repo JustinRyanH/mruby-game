@@ -18,6 +18,24 @@ load_context :: proc "contextless" (state: ^mrb.State) -> runtime.Context {
 	return ctx^
 }
 
+
+init_cdata :: proc "contextless" (
+	$T: typeid,
+	state: ^mrb.State,
+	value: mrb.Value,
+	dt: ^mrb.DataType,
+) -> ^T {
+	v_data := mrb.get_data_from_value(T, value)
+
+
+	if (v_data == nil) {
+		mrb.data_init(value, nil, dt)
+		v_data = cast(^T)mrb.malloc(state, size_of(T))
+		mrb.data_init(value, v_data, dt)
+	}
+	return v_data
+}
+
 get_curent_game :: proc "contextless" (state: ^mrb.State) -> mrb.Value {
 	context = load_context(state)
 
@@ -37,6 +55,7 @@ mrb_entity_handle_type: mrb.DataType = {"Entity", mrb.free}
 mrb_font_handle_type: mrb.DataType = {"Font", mrb.free}
 mrb_vector_type: mrb.DataType = {"Vector", mrb.free}
 mrb_color_type: mrb.DataType = {"Color", mrb.free}
+mrb_sprite_type: mrb.DataType = {"Sprite", mrb.free}
 mrb_collision_evt_handle_type: mrb.DataType = {"CollisionEvent", mrb.free}
 
 EngineRClass :: struct {
@@ -48,6 +67,7 @@ EngineRClass :: struct {
 	font_asset:    ^mrb.RClass,
 	frame:         ^mrb.RClass,
 	texture_asset: ^mrb.RClass,
+	sprite:        ^mrb.RClass,
 	vector:        ^mrb.RClass,
 }
 
@@ -62,6 +82,7 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	setup_input(st)
 	setup_log_class(st)
 	setup_entity_class(st)
+	setup_sprite_class(st)
 	setup_vector_class(st)
 	setup_color_class(st)
 }
@@ -1370,4 +1391,25 @@ engine_get_bg_color :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Valu
 	}
 
 	return mrb.obj_new(state, engine_classes.color, 4, raw_data(colors))
+}
+
+//////////////////////////////
+//// Sprite
+//////////////////////////////
+
+setup_sprite_class :: proc(state: ^mrb.State) {
+	sprite_class := mrb.define_class(state, "Sprite", mrb.state_get_object_class(state))
+	mrb.set_data_type(sprite_class, .CData)
+	engine_classes.sprite = sprite_class
+
+	mrb.define_method(state, sprite_class, "initialize", sprite_new, mrb.args_req(1))
+}
+
+sprite_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	handle_id: int
+	mrb.get_args(state, "i", &handle_id)
+
+	sprite_handle := init_cdata(SpriteHandle, state, self, &mrb_sprite_type)
+	sprite_handle^ = cast(SpriteHandle)handle_id
+	return self
 }

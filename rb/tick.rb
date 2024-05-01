@@ -5,6 +5,7 @@ require 'assets/scripts/setup'
 # ObjectSpace.count_objects(h)
 # puts h
 #
+$spr ||= Sprite.new(0)
 
 $game ||= Game.new
 $game.tick
