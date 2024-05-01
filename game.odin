@@ -12,6 +12,14 @@ import dp "./data_pool"
 import "./input"
 import mrb "./mruby"
 
+SpriteHandle :: distinct dp.Handle
+
+Sprite :: struct {
+	pos:     Vector2,
+	tex:     TextureHandle,
+	visible: bool,
+}
+
 Entity :: struct {
 	pos:     Vector2,
 	size:    Vector2,
@@ -23,6 +31,8 @@ Entity :: struct {
 EntityHandle :: distinct dp.Handle
 
 EntityPool :: dp.DataPool(128, Entity, EntityHandle)
+
+SpritePool :: dp.DataPool(1024, Sprite, SpriteHandle)
 
 CollisionTargets :: [dynamic]EntityHandle
 
@@ -42,6 +52,7 @@ Game :: struct {
 	// Game Data
 	bg_color:         rl.Color,
 	entities:         EntityPool,
+	sprites:          SpritePool,
 }
 
 game_init :: proc(game: ^Game) {
