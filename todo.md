@@ -2,6 +2,7 @@
 
 ## Current
 
+* Refactor - Extract a sprite system
 * Start Menu
   * Ruby ImUI
 * Seperate Sprites and Collisions
