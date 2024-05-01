@@ -1422,6 +1422,8 @@ setup_sprite_class :: proc(state: ^mrb.State) {
 	mrb.define_class_method(state, sprite_class, "create", sprite_create, mrb.args_key(2, 0))
 	mrb.define_method(state, sprite_class, "pos=", sprite_pos_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "pos", sprite_pos_get, mrb.args_none())
+	mrb.define_method(state, sprite_class, "texture=", sprite_texture_set, mrb.args_req(1))
+	mrb.define_method(state, sprite_class, "texture", sprite_texture_get, mrb.args_none())
 
 }
 
@@ -1496,7 +1498,7 @@ sprite_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return mrb.nil_value()
 }
 
-sprite_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+sprite_texture_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
 	hnd := mrb.get_data_from_value(SpriteHandle, self)^
@@ -1509,4 +1511,37 @@ sprite_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(values))
+}
+
+
+sprite_texture_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	texture_v: mrb.Value
+	mrb.get_args(state, "o", &texture_v)
+	assert(
+		mrb.obj_is_kind_of(state, texture_v, engine_classes.texture_asset),
+		"texture= should receive a Texture",
+	)
+
+	texture := mrb.get_data_from_value(TextureHandle, texture_v)^
+	hnd := mrb.get_data_from_value(SpriteHandle, self)^
+
+	spr := dp.get_ptr(&g.sprites, hnd)
+	assert(spr != nil, fmt.tprintf("Sprite should exist: %s", hnd))
+	spr.texture = texture
+
+	return mrb.nil_value()
+}
+
+sprite_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	hnd := mrb.get_data_from_value(SpriteHandle, self)^
+	spr, found := dp.get(&g.sprites, hnd)
+	assert(found, fmt.tprintf("Sprite should exist: %s", hnd))
+
+	texture_hnd := mrb.int_value(state, cast(mrb.Int)spr.texture)
+
+	return mrb.obj_new(state, engine_classes.texture_asset, 1, &texture_hnd)
 }
