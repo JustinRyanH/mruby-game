@@ -18,6 +18,7 @@ texture_handle :: proc(str: string) -> TextureHandle {
 TextureAsset :: struct {
 	handle:  TextureHandle,
 	texture: rl.Texture,
+	src:     rl.Rectangle,
 }
 
 texture_asset_deinit :: proc(ta: ^TextureAsset) {
@@ -191,8 +192,9 @@ as_load_texture :: proc(as: ^AssetSystem, path: string) -> (TextureHandle, bool)
 	cpath := strings.clone_to_cstring(path, context.temp_allocator)
 
 	texture := rl.LoadTexture(cpath)
+	src := rl.Rectangle{0, 0, cast(f32)texture.width, cast(f32)texture.height}
 	assert(texture != {})
-	as.textures[th] = TextureAsset{th, texture}
+	as.textures[th] = TextureAsset{th, texture, src}
 
 	return th, true
 }

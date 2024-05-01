@@ -16,7 +16,6 @@ SpriteHandle :: distinct dp.Handle
 
 Sprite :: struct {
 	pos, size: Vector2,
-	src:       rl.Rectangle,
 	texture:   TextureHandle,
 	tint:      Color,
 	visible:   bool,
