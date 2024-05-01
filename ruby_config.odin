@@ -683,8 +683,11 @@ setup_vector_class :: proc(st: ^mrb.State) {
 }
 
 
-vector_from_object :: proc(state: ^mrb.State, v: mrb.Value) -> Vector2 {
-	assert(mrb.obj_is_kind_of(state, v, engine_classes.vector))
+vector_from_object :: proc(state: ^mrb.State, v: mrb.Value, loc := #caller_location) -> Vector2 {
+	assert(
+		mrb.obj_is_kind_of(state, v, engine_classes.vector),
+		fmt.tprintf("Expected Object to be a Vector @ %v", loc),
+	)
 	return mrb.get_data_from_value(Vector2, v)^
 }
 
@@ -918,6 +921,21 @@ setup_color_class :: proc(st: ^mrb.State) {
 		)
 	}
 	engine_classes.color = color_class
+}
+
+color_object_new :: proc "contextless" (state: ^mrb.State, color: rl.Color) -> mrb.Value {
+	colors: [4]mrb.Value
+	for val, idx in color {colors[idx] = mrb.int_value(state, cast(mrb.Int)val)}
+
+	return mrb.obj_new(state, engine_classes.color, len(colors), raw_data(colors[:]))
+}
+
+color_from_object :: proc(state: ^mrb.State, v: mrb.Value, loc := #caller_location) -> rl.Color {
+	assert(
+		mrb.obj_is_kind_of(state, v, engine_classes.color),
+		fmt.tprintf("Expected Object to be a Color @ %v", loc),
+	)
+	return mrb.get_data_from_value(rl.Color, v)^
 }
 
 @(private = "file")
@@ -1311,8 +1329,15 @@ setup_textures :: proc(st: ^mrb.State) {
 	engine_classes.texture_asset = texture_asset_class
 }
 
-texture_from_object :: proc(state: ^mrb.State, v: mrb.Value) -> TextureHandle {
-	assert(mrb.obj_is_kind_of(state, v, engine_classes.texture_asset))
+texture_from_object :: proc(
+	state: ^mrb.State,
+	v: mrb.Value,
+	loc := #caller_location,
+) -> TextureHandle {
+	assert(
+		mrb.obj_is_kind_of(state, v, engine_classes.texture_asset),
+		fmt.tprintf("Expected Object to be a Texture @ %v", loc),
+	)
 	return mrb.get_data_from_value(TextureHandle, v)^
 }
 
@@ -1435,6 +1460,8 @@ setup_sprite_class :: proc(state: ^mrb.State) {
 	mrb.define_method(state, sprite_class, "pos", sprite_pos_get, mrb.args_none())
 	mrb.define_method(state, sprite_class, "texture=", sprite_texture_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "texture", sprite_texture_get, mrb.args_none())
+	mrb.define_method(state, sprite_class, "tint=", sprite_tint_set, mrb.args_req(1))
+	mrb.define_method(state, sprite_class, "tint", sprite_tint_get, mrb.args_none())
 }
 
 sprite_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
@@ -1548,4 +1575,30 @@ sprite_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	texture_hnd := mrb.int_value(state, cast(mrb.Int)spr.texture)
 
 	return mrb.obj_new(state, engine_classes.texture_asset, 1, &texture_hnd)
+}
+
+
+sprite_tint_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	color_v: mrb.Value
+	mrb.get_args(state, "o", &color_v)
+
+	color := color_from_object(state, color_v)
+	hnd := mrb.get_data_from_value(SpriteHandle, self)^
+
+	spr := dp.get_ptr(&g.sprites, hnd)
+	assert(spr != nil, fmt.tprintf("Sprite should exist: %s", hnd))
+	spr.tint = color
+
+	return mrb.nil_value()
+}
+
+sprite_tint_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	hnd := mrb.get_data_from_value(SpriteHandle, self)^
+	spr, found := dp.get(&g.sprites, hnd)
+	assert(found, fmt.tprintf("Sprite should exist: %s", hnd))
+	return color_object_new(state, spr.tint)
 }
