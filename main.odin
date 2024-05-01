@@ -89,7 +89,7 @@ game_run_code :: proc(game: ^Game, handle: RubyCodeHandle, loc := #caller_locati
 	as_update_ruby_runtume(&game.assets, handle)
 
 	if mrb.state_get_exc(g.ruby) != nil {
-		mrb.print_error(g.ruby)
+		mrb.print_backtrace(g.ruby)
 	}
 	assert(mrb.state_get_exc(g.ruby) == nil, "There should be no exceptions")
 }
