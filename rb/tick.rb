@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require 'assets/scripts/setup'
+require 'assets/scripts/assets'
 # h = {}
 # ObjectSpace.count_objects(h)
 # puts h
 #
-$spr ||= Sprite.new(0)
+$spr ||= Sprite.create(texture: Textures.copter, size: Vector.new(64, 64))
 
-$game ||= Game.new
-$game.tick
+# $game ||= Game.new
+# $game.tick

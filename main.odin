@@ -196,14 +196,12 @@ main :: proc() {
 
 		sprt_iter := dp.new_iter(&g.sprites)
 		for spr in dp.iter_next(&sprt_iter) {
-			if !spr.visible || spr.tex != 0 {
-				continue
-			}
-			dest: rl.Rectangle = {entity.pos.x, entity.pos.y, entity.size.x, entity.size.y}
+			if !spr.visible {continue}
+			dest: rl.Rectangle = {spr.pos.x, spr.pos.y, spr.size.x, spr.size.y}
 			src: rl.Rectangle = {0, 0, 16, 16}
-			asset, success := as_get_texture(&g.assets, entity.texture)
+			asset, success := as_get_texture(&g.assets, spr.texture)
 			assert(success, "We should always have a texture here")
-			rl.DrawTexturePro(asset.texture, src, dest, entity.size * 0.5, 0, entity.color)
+			rl.DrawTexturePro(asset.texture, src, dest, spr.size * 0.5, 0, spr.tint)
 		}
 
 

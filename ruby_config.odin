@@ -1403,6 +1403,8 @@ setup_sprite_class :: proc(state: ^mrb.State) {
 	engine_classes.sprite = sprite_class
 
 	mrb.define_method(state, sprite_class, "initialize", sprite_new, mrb.args_req(1))
+	mrb.define_class_method(state, sprite_class, "create", sprite_create, mrb.args_key(2, 0))
+
 }
 
 sprite_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
@@ -1412,4 +1414,53 @@ sprite_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	sprite_handle := init_cdata(SpriteHandle, state, self, &mrb_sprite_type)
 	sprite_handle^ = cast(SpriteHandle)handle_id
 	return self
+}
+
+sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	NumOfArgs :: 3
+	kwargs: mrb.Kwargs
+	kwargs.num = NumOfArgs
+
+	KValues :: struct {
+		texture: mrb.Value,
+		pos:     mrb.Value,
+		size:    mrb.Value,
+	}
+
+	// TODO: I can totally do this with generics and reflection
+	names: []mrb.Sym =  {
+		mrb.sym_from_string(state, "texture"),
+		mrb.sym_from_string(state, "pos"),
+		mrb.sym_from_string(state, "size"),
+	}
+
+	values: KValues
+	kwargs.table = raw_data(names[:])
+	kwargs.values = transmute([^]mrb.Value)&values
+
+	mrb.get_args(state, ":", &kwargs)
+	assert(!mrb.undef_p(values.texture), "Sprite Required for `texture:`")
+	assert(!mrb.undef_p(values.size), "Vector Required for `size:`")
+	assert(
+		mrb.obj_is_kind_of(state, values.texture, engine_classes.texture_asset),
+		"`texture:` should be a `Texture`",
+	)
+	assert(
+		mrb.obj_is_kind_of(state, values.texture, engine_classes.texture_asset),
+		"`size:` should be a `Size`",
+	)
+
+	game := g
+	spr, handle, success := dp.add_empty(&g.sprites)
+	assert(success)
+
+	spr.texture = mrb.get_data_from_value(TextureHandle, values.texture)^
+	spr.size = mrb.get_data_from_value(Vector2, values.size)^
+	spr.tint = rl.WHITE
+	spr.visible = true
+
+	v := mrb.int_value(state, cast(mrb.Int)handle)
+	return mrb.obj_new(state, engine_classes.sprite, 1, &v)
 }
