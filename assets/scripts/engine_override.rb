@@ -95,3 +95,31 @@ class Rectangle
     { name: 'Rectangle', top:, right:, bottom:, left: }
   end
 end
+
+class Timer
+  attr_reader :time
+
+  def initialize(time = 0)
+    @time = time
+    @total_time = time
+  end
+
+  def tick
+    return unless @time.positive?
+
+    @time -= FrameInput.delta_time
+  end
+
+  def reset(time)
+    @time = time
+    @total_time = time
+  end
+
+  def finished?
+    @time <= 0
+  end
+
+  def percentage
+    [1 - (@time / @total_time), 1].min
+  end
+end
