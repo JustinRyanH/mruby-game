@@ -87,7 +87,7 @@ class Obstacle
   end
 
   def onscreen?
-    area.onscreen?
+    area.collider.onscreen?
   end
 
   def offscreen_left?
@@ -108,10 +108,6 @@ class Obstacle
 
   def entity_ids
     entities.map(&:id)
-  end
-
-  def eql?(other)
-    id == other.id
   end
 
   def check_area_collisions

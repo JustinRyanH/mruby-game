@@ -14,7 +14,7 @@ class GameObject
 
   attr_reader :collider, :sprite
 
-  def initialize(collider, sprite)
+  def initialize(collider: nil, sprite: nil)
     @collider = collider
     @sprite = sprite
   end
@@ -24,8 +24,8 @@ class GameObject
   end
 
   def pos=(value)
-    @collider.pos = value
-    @sprite.pos = value
+    @collider&.pos = value
+    @sprite&.pos = value
   end
 
   def tick; end
@@ -33,15 +33,23 @@ class GameObject
   def animation=(value); end
 
   def destroy
-    collider.destroy
-    sprite.destroy
+    [sprite, collider].compact.each(&:destroy)
   end
 
   def valid?
-    sprite.valid? && collider.valid?
+    [sprite, collider].compact.all?(&:valid?)
   end
 
-  def_delegators :@collider, :id, :offscreen_top?, :offscreen_left?, :offscreen_bottom?, :collisions, :==, :eql?
+  def id
+    collider&.id
+    @id ||= [collider, sprite].compact.join(', ')
+  end
+
+  def collider_id
+    collider&.id
+  end
+
+  def_delegators :@collider, :offscreen_top?, :offscreen_left?, :offscreen_bottom?, :collisions
 end
 
 class AnimatedEntity
@@ -158,13 +166,14 @@ def random_obstcle(x)
   bottom_sprite = Sprite.create(pos: bottom_rect.pos, size: bottom_rect.size, tint: Color.affinity,
                                 texture: Textures.square)
   bottom_entity = Collider.create(pos: bottom_rect.pos, size: bottom_rect.size)
-  bottom = GameObject.new(bottom_entity, bottom_sprite)
+  bottom = GameObject.new(collider: bottom_entity, sprite: bottom_sprite)
 
   top_entity = Collider.create(pos: top_rect.pos, size: top_rect.size)
   top_sprite = Sprite.create(pos: top_rect.pos, size: top_rect.size, tint: Color.affinity, texture: Textures.square)
-  top = GameObject.new(top_entity, top_sprite)
+  top = GameObject.new(collider: top_entity, sprite: top_sprite)
 
-  area = Collider.create(pos:, size:)
+  area_collider = Collider.create(pos:, size:)
+  area = GameObject.new(collider: area_collider)
 
   Obstacle.new(top:, bottom:, area:).tap { |obs| Log.info "SpawnObstacle: #{obs.id}" }
 end
@@ -411,19 +420,20 @@ class GameplayState
   end
 
   def check_for_score
-    leave_score = game.obstacles
-                      .map(&:check_area_collisions)
-                      .any? do |evt|
-                        evt.entities_leaving.map(&:id).include?(game.player.id)
-                      end
-    return unless leave_score
-
-    game.score += 1
+    # leave_score = game.obstacles
+    #                   .map(&:check_area_collisions)
+    #                   .any? do |evt|
+    #                     evt.entities_leaving.map(&:id).include?(game.player.id)
+    #                   end
+    # return unless leave_score
+    #
+    # game.score += 1
   end
 
   def obstacle_collision
-    game.player.collisions
-        .any? { |e| game.entity_to_obstacle[e.id].obstacle?(e) }
+    # game.player.collisions
+    #     .any? { |e| game.entity_to_obstacle[e.id].obstacle?(e) }
+    false
   end
 
   def create_player
@@ -438,7 +448,7 @@ class GameplayState
       texture: Textures.copter,
     )
 
-    game.player = GameObject.new(collider, sprite)
+    game.player = GameObject.new(collider:, sprite:)
   end
 
   def starting_position
