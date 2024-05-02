@@ -431,9 +431,7 @@ class GameplayState
   end
 
   def obstacle_collision
-    # game.player.collisions
-    #     .any? { |e| game.entity_to_obstacle[e.id].obstacle?(e) }
-    false
+    game.player.collisions.any? { |c| game.collider_to_obstacle[c.id].obstacle?(c) }
   end
 
   def create_player
@@ -495,7 +493,7 @@ class Game
   attr_reader :events, :scene, :obstacles
 
   # @return [Hash<Integer, Obstacle>] events
-  attr_reader :entity_to_obstacle
+  attr_reader :collider_to_obstacle
 
   @current = nil
   def self.current
@@ -508,7 +506,7 @@ class Game
     @events = []
     @obstacles = []
     @score_areas = {}
-    @entity_to_obstacle = {}
+    @collider_to_obstacle = {}
     @debug = false
   end
 
@@ -547,8 +545,8 @@ class Game
   # @param [Obstacle] obstacle
   def add_obstacle(obstacle)
     obstacles << obstacle
-    obstacle.entity_ids.each do |id|
-      @entity_to_obstacle[id] = obstacle
+    obstacle.collider_ids.each do |id|
+      @collider_to_obstacle[id] = obstacle
     end
 
     @last_added&.add_next_obstacle(obstacle)

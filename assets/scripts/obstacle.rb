@@ -94,8 +94,8 @@ class Obstacle
     entities.all?(&:offscreen_left?)
   end
 
-  def obstacle?(entity)
-    top == entity || bottom == entity
+  def obstacle?(collider)
+    top.collider_id == collider.id || bottom.collider_id == collider.id
   end
 
   def area?(entity)
@@ -104,6 +104,10 @@ class Obstacle
 
   def valid?
     entities.all?(&:valid?)
+  end
+
+  def collider_ids
+    entities.map(&:collider_id).compact
   end
 
   def entity_ids
