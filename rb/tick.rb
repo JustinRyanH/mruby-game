@@ -17,7 +17,30 @@ SQUARE_MAP = {
   bottom_left: Textures.platform_lower_left,
   bottom_middle: Textures.platform_lower_middle,
   bottom_right: Textures.platform_lower_right
-}
+}.freeze
+
+class TileMapRect
+  attr_reader :pos, :width, :height, :size
+
+  def initialize(pos:, width: 3, right: 3, size: 64)
+    @pos = pos
+    @width = width
+    @height = height
+    @size = Vector.all(size)
+  end
+
+  def build
+    [].tap do |out|
+      (-1..1).each do |x|
+        (-1..1).each do |y|
+          offset = Vector.new(x * size.x, y * size.y)
+          offset_pos = pos + offset
+          out << Sprite.create(pos: offset_pos, size:, texture: SQUARE_MAP[:center])
+        end
+      end
+    end
+  end
+end
 
 # This
 class StaticObject
@@ -49,21 +72,13 @@ class Demo
 
   def tick
     setup unless ready?
-    return unless FrameInput.key_was_down?(:space)
-
-    @position_index = (@position_index + 1) % @positions.size
-    texture = SQUARE_MAP[current_section]
-
-    @sprite.texture = texture
   end
 
   def setup
     width, height = FrameInput.screen_size
 
     pos = Vector.new(width / 2, height / 2)
-    size = Vector.all(64)
-    texture = SQUARE_MAP[current_section]
-    @sprite = Sprite.create(pos:, size:, texture:)
+    TileMapRect.new(pos:).build
     @ready = true
   end
 
