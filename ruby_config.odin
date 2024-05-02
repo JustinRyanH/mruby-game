@@ -1338,6 +1338,7 @@ setup_sprite_class :: proc(state: ^mrb.State) {
 
 	mrb.define_method(state, sprite_class, "initialize", sprite_new, mrb.args_req(1))
 	mrb.define_class_method(state, sprite_class, "create", sprite_create, mrb.args_key(2, 0))
+	mrb.define_method(state, sprite_class, "id", sprite_get_id, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "pos=", sprite_pos_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "pos", sprite_pos_get, mrb.args_none())
 	mrb.define_method(state, sprite_class, "texture=", sprite_texture_set, mrb.args_req(1))
@@ -1350,6 +1351,7 @@ setup_sprite_class :: proc(state: ^mrb.State) {
 	mrb.define_method(state, sprite_class, "destroy", sprite_destroy, mrb.args_none())
 }
 
+@(private = "file")
 sprite_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	handle_id: int
 	mrb.get_args(state, "i", &handle_id)
@@ -1359,6 +1361,7 @@ sprite_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return self
 }
 
+@(private = "file")
 sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
@@ -1414,6 +1417,14 @@ sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return mrb.obj_new(state, engine_classes.sprite, 1, &v)
 }
 
+@(private = "file")
+sprite_get_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	hnd := mrb.get_data_from_value(SpriteHandle, self)^
+	return mrb.int_value(state, cast(mrb.Int)hnd)
+}
+
+
+@(private = "file")
 sprite_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
@@ -1429,12 +1440,13 @@ sprite_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return mrb.nil_value()
 }
 
+@(private = "file")
 sprite_is_valid :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-
 	hnd := mrb.get_data_from_value(SpriteHandle, self)^
 	return mrb.bool_value(dp.valid(&g.sprites, hnd))
 }
 
+@(private = "file")
 sprite_texture_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
@@ -1451,6 +1463,7 @@ sprite_texture_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 }
 
 
+@(private = "file")
 sprite_texture_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
@@ -1467,6 +1480,7 @@ sprite_texture_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 	return mrb.nil_value()
 }
 
+@(private = "file")
 sprite_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
@@ -1480,6 +1494,7 @@ sprite_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 }
 
 
+@(private = "file")
 sprite_tint_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
@@ -1496,6 +1511,8 @@ sprite_tint_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return mrb.nil_value()
 }
 
+
+@(private = "file")
 sprite_tint_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
@@ -1505,7 +1522,7 @@ sprite_tint_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return color_object_new(state, spr.tint)
 }
 
-
+@(private = "file")
 sprite_visible_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
@@ -1519,6 +1536,7 @@ sprite_visible_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 	return mrb.nil_value()
 }
 
+@(private = "file")
 sprite_visible_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
@@ -1528,6 +1546,7 @@ sprite_visible_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 	return mrb.bool_value(spr.visible)
 }
 
+@(private = "file")
 sprite_destroy :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 

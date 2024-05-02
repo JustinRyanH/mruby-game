@@ -12,11 +12,14 @@ end
 class GameObject
   extend ::Forwardable
 
+  # @return [Collider] collider
+  # @return [Sprite] sprite
   attr_reader :collider, :sprite
 
   def initialize(collider: nil, sprite: nil)
     @collider = collider
     @sprite = sprite
+    @animation = nil
   end
 
   def pos
@@ -28,9 +31,14 @@ class GameObject
     @sprite&.pos = value
   end
 
-  def tick; end
+  def animation=(new_animation)
+    @animation = new_animation
+    @animation.force_update(sprite)
+  end
 
-  def animation=(value); end
+  def tick
+    @animation&.update(sprite)
+  end
 
   def destroy
     [sprite, collider].compact.each(&:destroy)
@@ -41,8 +49,7 @@ class GameObject
   end
 
   def id
-    collider&.id
-    @id ||= [collider, sprite].compact.join(', ')
+    @id ||= [collider&.id, sprite&.id].compact.join(':')
   end
 
   def collider_id
@@ -83,16 +90,16 @@ class Animation
     @current = 0
   end
 
-  def update(collider)
-    collider.texture = current_frame if collider.texture.nil?
+  def update(sprite)
+    sprite.texture = current_frame if sprite.texture.nil?
     return false unless should_update?
 
     @current = (@current + 1) % textures.size
-    collider.texture = current_frame
+    sprite.texture = current_frame
   end
 
-  def force_update(collider)
-    collider.texture = current_frame
+  def force_update(sprite)
+    sprite.texture = current_frame
   end
 
   private
