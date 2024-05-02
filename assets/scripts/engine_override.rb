@@ -53,3 +53,45 @@ Texture.class_eval do
     { name: 'Texture', id: }
   end
 end
+
+# TODO: Make this map from RL Rectangle
+class Rectangle
+  attr_reader :pos, :size
+
+  def self.from_bounds(top:, right:, bottom:, left:)
+    height = (bottom - top).abs
+    width = (right - left).abs
+
+    center_y = top + (height * 0.5)
+    center_x = left + (width * 0.5)
+
+    pos = Vector.new(center_x, center_y)
+    size = Vector.new(width, height)
+    new(pos:, size:)
+  end
+
+  def initialize(pos:, size:)
+    @pos = pos
+    @size = size
+  end
+
+  def bottom
+    pos.y + (size.y * 0.5)
+  end
+
+  def top
+    pos.y - (size.y * 0.5)
+  end
+
+  def left
+    pos.x - (size.x * 0.5)
+  end
+
+  def right
+    pos.x + (size.x * 0.5)
+  end
+
+  def inspect
+    { name: 'Rectangle', top:, right:, bottom:, left: }
+  end
+end
