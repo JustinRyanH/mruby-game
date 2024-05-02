@@ -1,5 +1,15 @@
 # frozen_string_literal: true
 
+Integer.class_eval do
+  def even?
+    (self % 2).zero?
+  end
+
+  def odd?
+    !even?
+  end
+end
+
 Vector.class_eval do
   def self.all(v)
     new(v, v)
