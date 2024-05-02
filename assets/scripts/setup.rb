@@ -413,7 +413,9 @@ class GameplayState
   def check_for_score
     leave_score = game.obstacles
                       .map(&:check_area_collisions)
-                      .any? { |evt| evt.entities_leaving.include?(game.player) }
+                      .any? do |evt|
+                        evt.entities_leaving.map(&:id).include?(game.player.id)
+                      end
     return unless leave_score
 
     game.score += 1

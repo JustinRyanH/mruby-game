@@ -373,10 +373,9 @@ setup_entity_class :: proc(st: ^mrb.State) {
 	mrb.define_method(st, entity_class, "pos=", entity_pos_set, mrb.args_req(1))
 	mrb.define_method(st, entity_class, "size", entity_size_get, mrb.args_none())
 	mrb.define_method(st, entity_class, "collisions", entity_collisions_get, mrb.args_none())
-	mrb.define_method(st, entity_class, "==", entity_eq, mrb.args_req(1))
+	mrb.define_method(st, entity_class, "eql?", entity_eq, mrb.args_req(1))
 	mrb.define_class_method(st, entity_class, "create", entity_create, mrb.args_key(1, 0))
 
-	mrb.define_alias(st, entity_class, "eql?", "==")
 	mrb.define_alias(st, entity_class, "hash", "id")
 	engine_classes.entity = entity_class
 }
