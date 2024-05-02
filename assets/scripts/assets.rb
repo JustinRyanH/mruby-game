@@ -44,6 +44,18 @@ class Textures
   end
 
   def self.platform_middle_right
-    @platform_middle_right ||= AssetSystem.load_texture('assets/textures/platform_lm.png')
+    @platform_middle_right ||= AssetSystem.load_texture('assets/textures/platform_rm.png')
+  end
+
+  def self.platform_lower_middle
+    @platform_lower_middle ||= AssetSystem.load_texture('assets/textures/platform_blc.png')
+  end
+
+  def self.platform_lower_left
+    @platform_lower_left ||= AssetSystem.load_texture('assets/textures/platform_bm.png')
+  end
+
+  def self.platform_lower_right
+    @platform_lower_right ||= AssetSystem.load_texture('assets/textures/platform_brc.png')
   end
 end

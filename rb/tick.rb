@@ -7,6 +7,17 @@ require 'assets/scripts/setup'
 
 # $game ||= Game.new
 # $game.tick
+SQUARE_MAP = {
+  center: Textures.platform_middle,
+  left: Textures.platform_middle_left,
+  right: Textures.platform_middle_right,
+  upper_left: Textures.platform_top_left,
+  upper_middle: Textures.platform_top_middle,
+  upper_right: Textures.platform_top_right,
+  bottom_left: Textures.platform_lower_left,
+  bottom_middle: Textures.platform_lower_middle,
+  bottom_right: Textures.platform_lower_right
+}
 
 # This
 class StaticObject
@@ -22,29 +33,48 @@ end
 class Demo
   def initialize
     @ready = false
+    @position_index = 0
+    @positions = %i[
+      center
+      left
+      right
+      upper_left
+      upper_middle
+      upper_right
+      bottom_left
+      bottom_middle
+      bottom_right
+    ]
   end
 
   def tick
     setup unless ready?
+    return unless FrameInput.key_was_down?(:space)
+
+    @position_index = (@position_index + 1) % @positions.size
+    texture = SQUARE_MAP[current_section]
+
+    @sprite.texture = texture
   end
 
   def setup
     width, height = FrameInput.screen_size
 
-    @sa = StaticObject.new
     pos = Vector.new(width / 2, height / 2)
-    middle = Sprite.create(pos:, size: Vector.all(64), texture: Textures.platform_top_middle)
-    left = Sprite.create(pos: pos - Vector.new(64, 0), size: Vector.all(64), texture: Textures.platform_top_left)
-    right = Sprite.create(pos: pos + Vector.new(64, 0), size: Vector.all(64), texture: Textures.platform_top_right)
-    @sa.add_sprite(middle)
-    @sa.add_sprite(left)
-    @sa.add_sprite(right)
-
+    size = Vector.all(64)
+    texture = SQUARE_MAP[current_section]
+    @sprite = Sprite.create(pos:, size:, texture:)
     @ready = true
   end
 
   def ready?
     @ready
+  end
+
+  private
+
+  def current_section
+    @positions[@position_index]
   end
 end
 
