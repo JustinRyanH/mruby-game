@@ -69,6 +69,7 @@ ruby_code_load :: proc(rc: ^RubyCodeAsset) -> bool {
 
 	ruby_code, read_ruby_code_success := os.read_entire_file(rc.file_path)
 	assert(read_ruby_code_success, fmt.tprintf("Failed to open %s", rc.file_path))
+	rl.TraceLog(.INFO, fmt.ctprintf("Reloaded File: %s", rc.file_path))
 
 	rc.code = string(ruby_code)
 	return true
