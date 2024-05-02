@@ -22,7 +22,7 @@ SQUARE_MAP = {
 class TileMapRect
   attr_reader :pos, :width, :height, :size
 
-  def initialize(pos:, width: 2, height: 2, size: 64)
+  def initialize(pos:, width: 3, height: 2, size: 64)
     @pos = pos
     @width = width
     @height = height
@@ -31,14 +31,24 @@ class TileMapRect
 
   def build
     [].tap do |out|
-      (-width..width).each do |x|
+      x_range.each do |x|
         (-height..height).each do |y|
-          offset = Vector.new(x * size.x, y * size.y)
+          offset = Vector.new(offset_x(x), y * size.y)
           offset_pos = pos + offset
           out << Sprite.create(pos: offset_pos, size:, texture: SQUARE_MAP[:center])
         end
       end
     end
+  end
+
+  def offset_x(x)
+    return x * size.x unless width.even?
+
+    (x * size.x) - (size.x * 0.5)
+  end
+
+  def x_range
+    0...width
   end
 end
 
@@ -72,13 +82,15 @@ class Demo
 
   def tick
     setup unless ready?
+
+    width, height = FrameInput.screen_size
+    Draw.line(start: Vector.new(width / 2, 0), end: Vector.new(width / 2, height))
+
+    rebuild_map if FrameInput.key_was_down?(:p)
   end
 
   def setup
-    width, height = FrameInput.screen_size
-
-    pos = Vector.new(width / 2, height / 2)
-    TileMapRect.new(pos:).build
+    rebuild_map
     @ready = true
   end
 
@@ -87,6 +99,16 @@ class Demo
   end
 
   private
+
+  def rebuild_map
+    @map ||= []
+    @map.each(&:destroy)
+
+    width, height = FrameInput.screen_size
+    pos = Vector.new(width / 2, height / 2)
+
+    @map = TileMapRect.new(pos:, width: 4).build
+  end
 
   def current_section
     @positions[@position_index]
