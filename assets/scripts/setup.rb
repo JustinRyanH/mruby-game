@@ -155,11 +155,16 @@ def random_obstcle(x)
   bottom_rect = Rectangle.from_bounds(left: gap.left, right: gap.right, top: gap.bottom, bottom: height)
   top_rect = Rectangle.from_bounds(left: gap.left, right: gap.right, top: 0, bottom: gap.top)
 
-  bottom_sprite = Sprite.create(pos: bottom_rect.pos, size: bottom_rect.size, tint: Color.affinity, texture: Textures.square)
+  bottom_sprite = Sprite.create(pos: bottom_rect.pos, size: bottom_rect.size, tint: Color.affinity,
+                                texture: Textures.square)
   bottom_entity = Entity.create(pos: bottom_rect.pos, size: bottom_rect.size, color: Color.affinity)
+  bottom_entity.visible = false
   bottom = GameObject.new(bottom_entity, bottom_sprite)
 
-  top = Entity.create(pos: top_rect.pos, size: top_rect.size, color: Color.affinity)
+  top_entity = Entity.create(pos: top_rect.pos, size: top_rect.size, color: Color.affinity)
+  top_sprite = Sprite.create(pos: top_rect.pos, size: top_rect.size, tint: Color.affinity, texture: Textures.square)
+  top_entity.visible = false
+  top = GameObject.new(top_entity, top_sprite)
 
   area = Entity.create(pos:, size:, color: Color.blank)
   area.visible = false
@@ -428,6 +433,7 @@ class GameplayState
       size: Vector.new(45, 45),
       color: Color.blunt_violet,
     )
+    entity.visible = false
     sprite = Sprite.create(
       pos: starting_position,
       size: Vector.new(45, 45),
