@@ -182,7 +182,7 @@ def random_obstcle(x)
   area_collider = Collider.create(pos:, size:)
   area = GameObject.new(collider: area_collider)
 
-  Obstacle.new(top:, bottom:, area:).tap { |obs| Log.info "SpawnObstacle: #{obs.id}" }
+  Obstacle.new(top:, bottom:, area:)
 end
 
 class DestroyObstacle

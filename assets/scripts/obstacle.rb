@@ -57,10 +57,7 @@ class Obstacle
     before.clear_after if !before.nil? && before.after == self
     after.clear_before if !after.nil? && after.before == self
 
-    Log.info("Destroy: #{id}")
-    top.destroy
-    bottom.destroy
-    area.destroy
+    [top, bottom, area].each(&:destroy)
   end
 
   def after?
@@ -72,12 +69,10 @@ class Obstacle
   end
 
   def clear_before
-    Log.info("Clear Before: #{before.id}")
     @before = nil
   end
 
   def clear_after
-    Log.info("Clear After: #{after.id}")
     @after = nil
   end
 
