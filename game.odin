@@ -22,18 +22,18 @@ Sprite :: struct {
 	z_index:   f32,
 }
 
-Entity :: struct {
+Collider :: struct {
 	pos:  Vector2,
 	size: Vector2,
 }
 
-EntityHandle :: distinct dp.Handle
+ColliderHandle :: distinct dp.Handle
 
-EntityPool :: dp.DataPool(128, Entity, EntityHandle)
+EntityPool :: dp.DataPool(128, Collider, ColliderHandle)
 
 SpritePool :: dp.DataPool(1024, Sprite, SpriteHandle)
 
-CollisionTargets :: [dynamic]EntityHandle
+CollisionTargets :: [dynamic]ColliderHandle
 
 Game :: struct {
 	ruby:             ^mrb.State,
@@ -46,11 +46,11 @@ Game :: struct {
 	rand:             rand.Rand,
 
 	// Temp Data
-	collision_evts_t: map[EntityHandle]CollisionTargets,
+	collision_evts_t: map[ColliderHandle]CollisionTargets,
 
 	// Game Data
 	bg_color:         rl.Color,
-	entities:         EntityPool,
+	colliders:        EntityPool,
 	sprites:          SpritePool,
 }
 
@@ -71,10 +71,10 @@ game_init :: proc(game: ^Game) {
 }
 
 game_setup_temp :: proc(game: ^Game) {
-	game.collision_evts_t = make(map[EntityHandle]CollisionTargets, 16, context.temp_allocator)
+	game.collision_evts_t = make(map[ColliderHandle]CollisionTargets, 16, context.temp_allocator)
 }
 
-game_add_collision :: proc(game: ^Game, a, b: EntityHandle) {
+game_add_collision :: proc(game: ^Game, a, b: ColliderHandle) {
 	if !(a in game.collision_evts_t) {
 		game.collision_evts_t[a] = make(CollisionTargets, 0, 8, context.temp_allocator)
 	}

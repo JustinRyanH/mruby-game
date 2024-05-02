@@ -12,19 +12,19 @@ end
 class GameObject
   extend ::Forwardable
 
-  attr_reader :entity, :sprite
+  attr_reader :collider, :sprite
 
-  def initialize(entity, sprite)
-    @entity = entity
+  def initialize(collider, sprite)
+    @collider = collider
     @sprite = sprite
   end
 
   def pos
-    @entity.pos
+    @collider.pos
   end
 
   def pos=(value)
-    @entity.pos = value
+    @collider.pos = value
     @sprite.pos = value
   end
 
@@ -33,38 +33,38 @@ class GameObject
   def animation=(value); end
 
   def destroy
-    entity.destroy
+    collider.destroy
     sprite.destroy
   end
 
   def valid?
-    sprite.valid? && entity.valid?
+    sprite.valid? && collider.valid?
   end
 
-  def_delegators :@entity, :id, :offscreen_top?, :offscreen_left?, :offscreen_bottom?, :collisions, :==, :eql?
+  def_delegators :@collider, :id, :offscreen_top?, :offscreen_left?, :offscreen_bottom?, :collisions, :==, :eql?
 end
 
 class AnimatedEntity
   extend ::Forwardable
   # @return [Animation] animation
-  # @return [Entity] entity
-  attr_reader :animation, :entity
+  # @return [Collider] collider
+  attr_reader :animation, :collider
 
-  def initialize(animation:, entity:)
-    @entity = entity
+  def initialize(animation:, collider:)
+    @collider = collider
     @animation = animation
   end
 
   def tick
-    animation.update(entity)
+    animation.update(collider)
   end
 
   def animation=(new_animation)
     @animation = new_animation
-    @animation.force_update(entity)
+    @animation.force_update(collider)
   end
 
-  def_delegators :@entity, :pos, :pos=, :offscreen_top?, :offscreen_bottom?, :collisions
+  def_delegators :@collider, :pos, :pos=, :offscreen_top?, :offscreen_bottom?, :collisions
 end
 
 class Animation
@@ -75,16 +75,16 @@ class Animation
     @current = 0
   end
 
-  def update(entity)
-    entity.texture = current_frame if entity.texture.nil?
+  def update(collider)
+    collider.texture = current_frame if collider.texture.nil?
     return false unless should_update?
 
     @current = (@current + 1) % textures.size
-    entity.texture = current_frame
+    collider.texture = current_frame
   end
 
-  def force_update(entity)
-    entity.texture = current_frame
+  def force_update(collider)
+    collider.texture = current_frame
   end
 
   private
@@ -157,28 +157,28 @@ def random_obstcle(x)
 
   bottom_sprite = Sprite.create(pos: bottom_rect.pos, size: bottom_rect.size, tint: Color.affinity,
                                 texture: Textures.square)
-  bottom_entity = Entity.create(pos: bottom_rect.pos, size: bottom_rect.size)
+  bottom_entity = Collider.create(pos: bottom_rect.pos, size: bottom_rect.size)
   bottom = GameObject.new(bottom_entity, bottom_sprite)
 
-  top_entity = Entity.create(pos: top_rect.pos, size: top_rect.size)
+  top_entity = Collider.create(pos: top_rect.pos, size: top_rect.size)
   top_sprite = Sprite.create(pos: top_rect.pos, size: top_rect.size, tint: Color.affinity, texture: Textures.square)
   top = GameObject.new(top_entity, top_sprite)
 
-  area = Entity.create(pos:, size:)
+  area = Collider.create(pos:, size:)
 
   Obstacle.new(top:, bottom:, area:).tap { |obs| Log.info "SpawnObstacle: #{obs.id}" }
 end
 
 class DestroyObstacle
-  attr_reader :game, :entity
+  attr_reader :game, :collider
 
-  def initialize(game, entity)
+  def initialize(game, collider)
     @game = game
-    @entity = entity
+    @collider = collider
   end
 
   def perform
-    entity.destroy
+    collider.destroy
   end
 end
 
@@ -427,7 +427,7 @@ class GameplayState
   end
 
   def create_player
-    entity = Entity.create(
+    collider = Collider.create(
       pos: starting_position,
       size: Vector.new(45, 45),
     )
@@ -438,7 +438,7 @@ class GameplayState
       texture: Textures.copter,
     )
 
-    game.player = GameObject.new(entity, sprite)
+    game.player = GameObject.new(collider, sprite)
   end
 
   def starting_position
@@ -470,12 +470,12 @@ class GameplayState
 end
 
 class Game
-  # @return [Entity] player
+  # @return [Collider] player
   # @return [Number] score
   attr_accessor :player, :score
 
   # @return [Vector] player_velocity
-  # @return [Hash<Integer, Entity>] score_areas
+  # @return [Hash<Integer, Collider>] score_areas
   attr_accessor :score_areas, :player_velocity
 
   # @return [Array] events

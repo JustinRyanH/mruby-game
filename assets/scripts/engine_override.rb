@@ -12,9 +12,9 @@ Color.class_eval do
   end
 end
 
-Entity.class_eval do
+Collider.class_eval do
   def inspect
-    { name: 'Entity', id:, pos: pos.inspect, size: size.inspect }
+    { name: 'Collider', id:, pos: pos.inspect, size: size.inspect }
   end
 
   def onscreen?

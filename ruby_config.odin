@@ -68,7 +68,8 @@ get_curent_game :: proc "contextless" (state: ^mrb.State) -> mrb.Value {
 }
 
 mrb_frame_input_type: mrb.DataType = {"FrameInput", mrb.free}
-mrb_entity_handle_type: mrb.DataType = {"Entity", mrb.free}
+mrb_collider_type: mrb.DataType = {"Collider", mrb.free}
+
 mrb_font_handle_type: mrb.DataType = {"Font", mrb.free}
 mrb_vector_type: mrb.DataType = {"Vector", mrb.free}
 mrb_color_type: mrb.DataType = {"Color", mrb.free}
@@ -80,7 +81,7 @@ EngineRClass :: struct {
 	color:         ^mrb.RClass,
 	draw_module:   ^mrb.RClass,
 	engine:        ^mrb.RClass,
-	entity:        ^mrb.RClass,
+	collider:      ^mrb.RClass,
 	font_asset:    ^mrb.RClass,
 	frame:         ^mrb.RClass,
 	texture_asset: ^mrb.RClass,
@@ -357,67 +358,66 @@ logger_fatal :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 }
 
 //////////////////////////////
-//// Entity
+//// collider
 //////////////////////////////
 
 setup_entity_class :: proc(st: ^mrb.State) {
-	entity_class := mrb.define_class(st, "Entity", mrb.state_get_object_class(st))
-	mrb.set_data_type(entity_class, .CData)
-	mrb.define_method(st, entity_class, "initialize", entity_init, mrb.args_req(1))
+	collider_class := mrb.define_class(st, "Collider", mrb.state_get_object_class(st))
+	mrb.set_data_type(collider_class, .CData)
+	mrb.define_method(st, collider_class, "initialize", collider_init, mrb.args_req(1))
 	// Removes the Entity, returns true if is was destroyed,
 	// return false if failed (likely because it was already destroyed)
-	mrb.define_method(st, entity_class, "destroy", entity_destroy, mrb.args_none())
-	mrb.define_method(st, entity_class, "id", entity_get_id, mrb.args_none())
-	mrb.define_method(st, entity_class, "valid?", entity_valid, mrb.args_none())
-	mrb.define_method(st, entity_class, "pos", entity_pos_get, mrb.args_none())
-	mrb.define_method(st, entity_class, "pos=", entity_pos_set, mrb.args_req(1))
-	mrb.define_method(st, entity_class, "size", entity_size_get, mrb.args_none())
-	mrb.define_method(st, entity_class, "collisions", entity_collisions_get, mrb.args_none())
-	mrb.define_method(st, entity_class, "eql?", entity_eq, mrb.args_req(1))
-	mrb.define_class_method(st, entity_class, "create", entity_create, mrb.args_key(1, 0))
+	mrb.define_method(st, collider_class, "destroy", collider_destroy, mrb.args_none())
+	mrb.define_method(st, collider_class, "id", collider_get_id, mrb.args_none())
+	mrb.define_method(st, collider_class, "valid?", collider_valid, mrb.args_none())
+	mrb.define_method(st, collider_class, "pos", collider_get_pos, mrb.args_none())
+	mrb.define_method(st, collider_class, "pos=", collider_pos_set, mrb.args_req(1))
+	mrb.define_method(st, collider_class, "size", collider_size_get, mrb.args_none())
+	mrb.define_method(st, collider_class, "collisions", collider_other_collisions, mrb.args_none())
+	mrb.define_class_method(st, collider_class, "create", collider_create, mrb.args_key(1, 0))
 
-	mrb.define_alias(st, entity_class, "hash", "id")
-	engine_classes.entity = entity_class
+	mrb.define_alias(st, collider_class, "hash", "id")
+	engine_classes.collider = collider_class
 }
 
 @(private = "file")
-entity_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	entity_id: int
-	mrb.get_args(state, "i", &entity_id)
+collider_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	collider_id: int
+	mrb.get_args(state, "i", &collider_id)
 
-	i := mrb.get_data_from_value(EntityHandle, self)
+	i := mrb.get_data_from_value(ColliderHandle, self)
 
 	if (i == nil) {
-		mrb.data_init(self, nil, &mrb_entity_handle_type)
-		v := mrb.malloc(state, size_of(EntityHandle))
-		i = cast(^EntityHandle)v
-		mrb.data_init(self, i, &mrb_entity_handle_type)
+		mrb.data_init(self, nil, &mrb_collider_type)
+		v := mrb.malloc(state, size_of(ColliderHandle))
+		i = cast(^ColliderHandle)v
+		mrb.data_init(self, i, &mrb_collider_type)
 	}
-	i^ = cast(EntityHandle)entity_id
+	i^ = cast(ColliderHandle)collider_id
 
 	return self
 }
 
 @(private = "file")
-entity_destroy :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+collider_destroy :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
-	i := mrb.get_data_from_value(EntityHandle, self)^
-	assert(i != 0, "Entity Id should not be 0")
+	i := mrb.get_data_from_value(ColliderHandle, self)^
+	assert(i != 0, "ColliderHandle should not be 0")
 
-	if !dp.valid(&g.entities, i) {
+	if !dp.valid(&g.colliders, i) {
 		mrb.bool_value(false)
 	}
-	success := dp.remove(&g.entities, i)
+	success := dp.remove(&g.colliders, i)
 	return mrb.bool_value(success)
 }
 
 @(private = "file")
-entity_get_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+collider_get_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
-	handle := mrb.get_data_from_value(EntityHandle, self)
-	success := dp.valid(&g.entities, handle^)
+	handle := mrb.get_data_from_value(ColliderHandle, self)
+	success := dp.valid(&g.colliders, handle^)
 	if success {
 		return mrb.int_value(state, cast(mrb.Int)handle^)
 	}
@@ -425,35 +425,35 @@ entity_get_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 }
 
 @(private = "file")
-entity_valid :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+collider_valid :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
-	handle := mrb.get_data_from_value(EntityHandle, self)
-	success := dp.valid(&g.entities, handle^)
+	handle := mrb.get_data_from_value(ColliderHandle, self)
+	success := dp.valid(&g.colliders, handle^)
 	return mrb.bool_value(success)
 }
 
 @(private = "file")
-entity_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+collider_get_pos :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
-	handle := mrb.get_data_from_value(EntityHandle, self)
+	handle := mrb.get_data_from_value(ColliderHandle, self)
 
-	entity, found := dp.get(&g.entities, handle^)
+	collider, found := dp.get(&g.colliders, handle^)
 	if !found {
-		mrb.raise_exception(state, "Failed to access Entity: %d", handle^)
+		mrb.raise_exception(state, "Failed to access collider: %d", handle^)
 	}
 
 	values := []mrb.Value {
-		mrb.float_value(state, cast(f64)entity.pos.x),
-		mrb.float_value(state, cast(f64)entity.pos.y),
+		mrb.float_value(state, cast(mrb.Float)collider.pos.x),
+		mrb.float_value(state, cast(mrb.Float)collider.pos.y),
 	}
 
 	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(values))
 }
 
 @(private = "file")
-entity_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+collider_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
 	new_pos: mrb.Value
@@ -465,47 +465,47 @@ entity_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	pos := mrb.get_data_from_value(Vector2, new_pos)
 
-	i := mrb.get_data_from_value(EntityHandle, self)
-	entity := dp.get_ptr(&g.entities, i^)
-	if entity == nil {
-		mrb.raise_exception(state, "Failed to access Entity: %d", i^)
+	i := mrb.get_data_from_value(ColliderHandle, self)
+	collider := dp.get_ptr(&g.colliders, i^)
+	if collider == nil {
+		mrb.raise_exception(state, "Failed to access collider: %d", i^)
 	}
-	entity.pos = pos^
+	collider.pos = pos^
 
 	return mrb.nil_value()
 }
 
 @(private = "file")
-entity_size_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+collider_size_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
-	handle := mrb.get_data_from_value(EntityHandle, self)
+	handle := mrb.get_data_from_value(ColliderHandle, self)
 
-	entity, found := dp.get(&g.entities, handle^)
+	collider, found := dp.get(&g.colliders, handle^)
 	if !found {
-		mrb.raise_exception(state, "Failed to access Entity: %d", handle)
+		mrb.raise_exception(state, "Failed to access collider: %d", handle)
 	}
 
 	values := []mrb.Value {
-		mrb.float_value(state, cast(f64)entity.size.x),
-		mrb.float_value(state, cast(f64)entity.size.y),
+		mrb.float_value(state, cast(mrb.Float)collider.size.x),
+		mrb.float_value(state, cast(mrb.Float)collider.size.y),
 	}
 
 	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(values))
 }
 
 @(private = "file")
-entity_collisions_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+collider_other_collisions :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
-	entity := mrb.get_data_from_value(EntityHandle, self)^
-	if !(entity in g.collision_evts_t) {
+	handle := mrb.get_data_from_value(ColliderHandle, self)^
+	if !(handle in g.collision_evts_t) {
 		mrb.ary_new(state)
 	}
-	collided_with := g.collision_evts_t[entity]
+	collided_with := g.collision_evts_t[handle]
 	out := make([]mrb.Value, len(collided_with), context.temp_allocator)
 	for e, idx in collided_with {
 		mrb_v := mrb.int_value(state, cast(mrb.Int)e)
-		mrb_e := mrb.obj_new(state, engine_classes.entity, 1, &mrb_v)
+		mrb_e := mrb.obj_new(state, engine_classes.collider, 1, &mrb_v)
 		out[idx] = mrb_e
 	}
 
@@ -514,53 +514,30 @@ entity_collisions_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Va
 
 
 @(private = "file")
-entity_eq :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+collider_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
-	other_v: mrb.Value
-	mrb.get_args(state, "o", &other_v)
-	assert(
-		mrb.obj_is_kind_of(state, other_v, engine_classes.entity),
-		"Entity can only equal another entity",
-	)
 
-	entity := mrb.get_data_from_value(EntityHandle, self)^
-	other := mrb.get_data_from_value(EntityHandle, other_v)^
-
-	return mrb.bool_value(entity == other)
-}
-
-@(private = "file")
-entity_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = load_context(state)
-
-	NumOfArgs :: 2
-	kwargs: mrb.Kwargs
-	kwargs.num = NumOfArgs
-
-	names: [NumOfArgs]mrb.Sym =  {
-		mrb.sym_from_string(state, "pos"),
-		mrb.sym_from_string(state, "size"),
+	KValues :: struct {
+		pos:  mrb.Value,
+		size: mrb.Value,
 	}
-	values := [NumOfArgs]mrb.Value{}
-	kwargs.table = raw_data(names[:])
-	kwargs.values = raw_data(values[:])
+	values: KValues
+	load_kwargs(KValues, state, &values)
 
-	mrb.get_args(state, ":", &kwargs)
-	assert(!mrb.undef_p(values[0]), "Entity Required for `pos:`")
-	assert(!mrb.undef_p(values[1]), "Entity Required for `size:`")
-	pos: Vector2 = mrb.get_data_from_value(Vector2, values[0])^
-	size: Vector2 = mrb.get_data_from_value(Vector2, values[1])^
+	assert(!mrb.undef_p(values.pos), "Entity Required for `pos:`")
+	assert(!mrb.undef_p(values.size), "Entity Required for `size:`")
+	pos := vector_from_object(state, values.pos)
+	size := vector_from_object(state, values.size)
 
-	entity_ptr, handle, success := dp.add_empty(&g.entities)
+	collider_ptr, handle, success := dp.add_empty(&g.colliders)
 	assert(success, "Failed to Create Entity")
 
-	entity_ptr.pos = pos
-	entity_ptr.size = size
+	collider_ptr.pos = pos
+	collider_ptr.size = size
 
 	id := mrb.int_value(state, cast(mrb.Int)handle)
-	collection: []mrb.Value = {id}
-	return mrb.obj_new(state, engine_classes.entity, 1, raw_data(collection[:]))
+	return mrb.obj_new(state, engine_classes.collider, 1, &id)
 }
 
 //////////////////////////////

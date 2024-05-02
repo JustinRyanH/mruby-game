@@ -97,9 +97,9 @@ game_run_code :: proc(game: ^Game, handle: RubyCodeHandle, loc := #caller_locati
 game_ctx: runtime.Context
 
 game_check_collisions :: proc(game: ^Game) {
-	iter_a := dp.new_iter(&game.entities)
+	iter_a := dp.new_iter(&game.colliders)
 	for entity_a, handle_a in dp.iter_next(&iter_a) {
-		iter_b := dp.new_iter_start_at(&game.entities, handle_a)
+		iter_b := dp.new_iter_start_at(&game.colliders, handle_a)
 		for entity_b, handle_b in dp.iter_next(&iter_b) {
 			if handle_a == handle_b {
 				continue

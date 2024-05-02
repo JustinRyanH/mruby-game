@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class CollisionEvent
-  # @param [Array<Entity>] entities_leaving
-  # @param [Array<Entity>] entities_entering
+  # @param [Array<Collider>] entities_leaving
+  # @param [Array<Collider>] entities_entering
   attr_accessor :entities_leaving, :entities_entering
 
   def initialize
@@ -12,9 +12,9 @@ class CollisionEvent
 end
 
 class Obstacle
-  # @return [Entity] top
-  # @return [Entity] bottom
-  # @return [Entity] area
+  # @return [Collider] top
+  # @return [Collider] bottom
+  # @return [Collider] area
   attr_reader :top, :bottom, :area
 
   # @return [Obstacle, nil] before
