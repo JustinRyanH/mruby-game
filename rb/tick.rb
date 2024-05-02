@@ -22,7 +22,7 @@ SQUARE_MAP = {
 class TileMapRect
   attr_reader :pos, :width, :height, :size
 
-  def initialize(pos:, width: 3, height: 3, size: 64)
+  def initialize(pos:, width: 2, height: 2, size: 64)
     @pos = pos
     @width = width
     @height = height
@@ -31,8 +31,8 @@ class TileMapRect
 
   def build
     [].tap do |out|
-      (-1..1).each do |x|
-        (-1..1).each do |y|
+      (-width..width).each do |x|
+        (-height..height).each do |y|
           offset = Vector.new(x * size.x, y * size.y)
           offset_pos = pos + offset
           out << Sprite.create(pos: offset_pos, size:, texture: SQUARE_MAP[:center])
