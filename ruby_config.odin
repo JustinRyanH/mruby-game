@@ -19,7 +19,7 @@ load_context :: proc "contextless" (state: ^mrb.State) -> runtime.Context {
 }
 
 
-// This uses reflects to load in the kwargs.
+// This uses reflects to lfofad in the kwargs.
 load_kwargs :: proc($T: typeid, state: ^mrb.State, args: ^T) {
 	names := reflect.struct_field_names(T)
 	num_of_args := len(names)
@@ -1462,6 +1462,7 @@ setup_sprite_class :: proc(state: ^mrb.State) {
 	mrb.define_method(state, sprite_class, "texture", sprite_texture_get, mrb.args_none())
 	mrb.define_method(state, sprite_class, "tint=", sprite_tint_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "tint", sprite_tint_get, mrb.args_none())
+	mrb.define_method(state, sprite_class, "valid?", sprite_is_valid, mrb.args_none())
 	mrb.define_method(state, sprite_class, "visible=", sprite_visible_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "visible?", sprite_visible_get, mrb.args_none())
 	mrb.define_method(state, sprite_class, "destroy", sprite_destroy, mrb.args_none())
@@ -1544,6 +1545,11 @@ sprite_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	spr.pos = vec
 
 	return mrb.nil_value()
+}
+
+sprite_is_valid :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	hnd := mrb.get_data_from_value(SpriteHandle, self)^
+	return mrb.bool_value(dp.valid(&g.sprites, hnd))
 }
 
 sprite_texture_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {

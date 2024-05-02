@@ -32,12 +32,16 @@ class GameObject
 
   def animation=(value); end
 
-  def destory
+  def destroy
     entity.destroy
     sprite.destroy
   end
 
-  def_delegators :@entity, :offscreen_top?, :offscreen_bottom?, :collisions
+  def valid?
+    sprite.valid? && entity.valid?
+  end
+
+  def_delegators :@entity, :id, :offscreen_top?, :offscreen_left?, :offscreen_bottom?, :collisions
 end
 
 class AnimatedEntity
@@ -151,7 +155,10 @@ def random_obstcle(x)
   bottom_rect = Rectangle.from_bounds(left: gap.left, right: gap.right, top: gap.bottom, bottom: height)
   top_rect = Rectangle.from_bounds(left: gap.left, right: gap.right, top: 0, bottom: gap.top)
 
-  bottom = Entity.create(pos: bottom_rect.pos, size: bottom_rect.size, color: Color.affinity)
+  bottom_sprite = Sprite.create(pos: bottom_rect.pos, size: bottom_rect.size, tint: Color.affinity, texture: Textures.square)
+  bottom_entity = Entity.create(pos: bottom_rect.pos, size: bottom_rect.size, color: Color.affinity)
+  bottom = GameObject.new(bottom_entity, bottom_sprite)
+
   top = Entity.create(pos: top_rect.pos, size: top_rect.size, color: Color.affinity)
 
   area = Entity.create(pos:, size:, color: Color.blank)
