@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 Vector.class_eval do
+  def self.all(v)
+    new(v, v)
+  end
+
   def inspect
     { name: 'Vector', x:, y: }
   end
