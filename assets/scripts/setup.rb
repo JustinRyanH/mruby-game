@@ -41,7 +41,7 @@ class GameObject
     sprite.valid? && entity.valid?
   end
 
-  def_delegators :@entity, :id, :offscreen_top?, :offscreen_left?, :offscreen_bottom?, :collisions
+  def_delegators :@entity, :id, :offscreen_top?, :offscreen_left?, :offscreen_bottom?, :collisions, :==, :eql?
 end
 
 class AnimatedEntity
