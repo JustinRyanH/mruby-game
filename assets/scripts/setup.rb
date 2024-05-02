@@ -23,22 +23,7 @@ def random_obstcle(x)
   pos = Vector.new(x, gap_center_y)
   gap = Rectangle.new(pos:, size:)
 
-  bottom_rect = Rectangle.from_bounds(left: gap.left, right: gap.right, top: gap.bottom, bottom: height)
-  top_rect = Rectangle.from_bounds(left: gap.left, right: gap.right, top: 0, bottom: gap.top)
-
-  bottom_sprite = Sprite.create(pos: bottom_rect.pos, size: bottom_rect.size, tint: Color.affinity,
-                                texture: Textures.square)
-  bottom_entity = Collider.create(pos: bottom_rect.pos, size: bottom_rect.size)
-  bottom = GameObject.new(collider: bottom_entity, sprite: bottom_sprite)
-
-  top_entity = Collider.create(pos: top_rect.pos, size: top_rect.size)
-  top_sprite = Sprite.create(pos: top_rect.pos, size: top_rect.size, tint: Color.affinity, texture: Textures.square)
-  top = GameObject.new(collider: top_entity, sprite: top_sprite)
-
-  area_collider = Collider.create(pos:, size:)
-  area = GameObject.new(collider: area_collider)
-
-  Obstacle.new(top:, bottom:, area:)
+  Obstacle.create(gap)
 end
 
 class DestroyObstacle
