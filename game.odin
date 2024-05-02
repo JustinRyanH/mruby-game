@@ -23,11 +23,8 @@ Sprite :: struct {
 }
 
 Entity :: struct {
-	pos:     Vector2,
-	size:    Vector2,
-	color:   Color,
-	visible: bool,
-	texture: TextureHandle,
+	pos:  Vector2,
+	size: Vector2,
 }
 
 EntityHandle :: distinct dp.Handle

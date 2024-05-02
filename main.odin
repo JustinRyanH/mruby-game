@@ -144,11 +144,6 @@ main :: proc() {
 
 	rl.SetTargetFPS(TargetFPS)
 
-	entity: Entity
-	entity.pos = Vector2{100, 300}
-	entity.size = Vector2{45, 45}
-	entity.color = rl.GREEN
-
 	for !rl.WindowShouldClose() {
 		defer {
 			is_bad := track_bad_free_tracking_allocator(&tracking_allocator)
@@ -169,30 +164,6 @@ main :: proc() {
 
 		game_check_collisions(g)
 		game_run_code(g, tick_handle)
-
-		entity_iter := dp.new_iter(&g.entities)
-		for entity in dp.iter_next(&entity_iter) {
-			if !entity.visible {
-				continue
-			}
-			if entity.texture != 0 {
-				rect: rl.Rectangle = {entity.pos.x, entity.pos.y, entity.size.x, entity.size.y}
-				asset, success := as_get_texture(&g.assets, entity.texture)
-				assert(success, "We should always have a texture here")
-				rl.DrawTexturePro(
-					asset.texture,
-					{0, 0, 16, 16},
-					{entity.pos.x, entity.pos.y, entity.size.x, entity.size.y},
-					entity.size * 0.5,
-					0,
-					entity.color,
-				)
-
-			} else {
-				rect: rl.Rectangle = {entity.pos.x, entity.pos.y, entity.size.x, entity.size.y}
-				rl.DrawRectanglePro(rect, entity.size * 0.5, 0.0, entity.color)
-			}
-		}
 
 		sprt_iter := dp.new_iter(&g.sprites)
 		for spr in dp.iter_next(&sprt_iter) {
