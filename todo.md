@@ -2,8 +2,6 @@
 
 ## Current
 
-* Refactor - Extract a sprite system
-* Fix Score
 * Start Menu
   * Ruby ImUI
 * Seperate Sprites and Collisions
@@ -42,6 +40,8 @@
 * Loading Texture Assets
 * Texture Assets
 * Animation
+* Refactor - Extract a sprite system
+* Fix Score
 
 ## AOR
 
