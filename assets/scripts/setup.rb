@@ -1,63 +1,14 @@
 # frozen_string_literal: true
 
-require 'assets/scripts/engine_override'
-require 'assets/scripts/constants'
-require 'assets/scripts/obstacle'
-require 'assets/scripts/assets'
 require 'assets/scripts/animation'
+require 'assets/scripts/assets'
+require 'assets/scripts/constants'
+require 'assets/scripts/engine_override'
+require 'assets/scripts/game_object'
+require 'assets/scripts/obstacle'
 
 def dt
   FrameInput.delta_time
-end
-
-class GameObject
-  extend ::Forwardable
-
-  # @return [Collider] collider
-  # @return [Sprite] sprite
-  attr_reader :collider, :sprite
-
-  def initialize(collider: nil, sprite: nil)
-    @collider = collider
-    @sprite = sprite
-    @animation = nil
-  end
-
-  def pos
-    @collider.pos
-  end
-
-  def pos=(value)
-    @collider&.pos = value
-    @sprite&.pos = value
-  end
-
-  def animation=(new_animation)
-    @animation = new_animation
-    @animation.force_update(sprite)
-  end
-
-  def tick
-    @animation&.update(sprite)
-  end
-
-  def destroy
-    [sprite, collider].compact.each(&:destroy)
-  end
-
-  def valid?
-    [sprite, collider].compact.all?(&:valid?)
-  end
-
-  def id
-    @id ||= [collider&.id, sprite&.id].compact.join(':')
-  end
-
-  def collider_id
-    collider&.id
-  end
-
-  def_delegators :@collider, :offscreen_top?, :offscreen_left?, :offscreen_bottom?, :collisions
 end
 
 def random_obstcle(x)
