@@ -22,4 +22,28 @@ class Textures
   def self.square
     @square ||= AssetSystem.load_texture('assets/textures/square.png')
   end
+
+  def self.platform_top_middle
+    @platform_top_middle ||= AssetSystem.load_texture('assets/textures/platform_um.png')
+  end
+
+  def self.platform_top_left
+    @platform_top_left ||= AssetSystem.load_texture('assets/textures/platform_ulc.png')
+  end
+
+  def self.platform_top_right
+    @platform_top_right ||= AssetSystem.load_texture('assets/textures/platform_urc.png')
+  end
+
+  def self.platform_middle
+    @platform_middle ||= AssetSystem.load_texture('assets/textures/platform_m.png')
+  end
+
+  def self.platform_middle_left
+    @platform_middle_left ||= AssetSystem.load_texture('assets/textures/platform_lm.png')
+  end
+
+  def self.platform_middle_right
+    @platform_middle_right ||= AssetSystem.load_texture('assets/textures/platform_lm.png')
+  end
 end
