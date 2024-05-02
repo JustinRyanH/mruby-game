@@ -59,29 +59,6 @@ class GameObject
   def_delegators :@collider, :offscreen_top?, :offscreen_left?, :offscreen_bottom?, :collisions
 end
 
-class AnimatedEntity
-  extend ::Forwardable
-  # @return [Animation] animation
-  # @return [Collider] collider
-  attr_reader :animation, :collider
-
-  def initialize(animation:, collider:)
-    @collider = collider
-    @animation = animation
-  end
-
-  def tick
-    animation.update(collider)
-  end
-
-  def animation=(new_animation)
-    @animation = new_animation
-    @animation.force_update(collider)
-  end
-
-  def_delegators :@collider, :pos, :pos=, :offscreen_top?, :offscreen_bottom?, :collisions
-end
-
 class Animation
   attr_reader :textures
 
