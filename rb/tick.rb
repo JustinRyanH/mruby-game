@@ -22,7 +22,7 @@ SQUARE_MAP = {
 class TileMapRect
   attr_reader :pos, :width, :height, :size
 
-  def initialize(pos:, width: 3, right: 3, size: 64)
+  def initialize(pos:, width: 3, height: 3, size: 64)
     @pos = pos
     @width = width
     @height = height
