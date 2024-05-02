@@ -116,7 +116,7 @@ class Obstacle
 
   def check_area_collisions
     CollisionEvent.new.tap do |evt|
-      new_collisions = Set.new(area.collisions)
+      new_collisions = Set.new(area.collisions.map(&:id))
       next evt unless @area_collisions.any? || new_collisions.any?
 
       evt.entities_leaving = @area_collisions - new_collisions
