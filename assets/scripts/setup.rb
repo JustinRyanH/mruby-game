@@ -11,21 +11,6 @@ def dt
   FrameInput.delta_time
 end
 
-def random_obstcle(x)
-  _, height = FrameInput.screen_size
-
-  gap_width = FrameInput.random_int(40...60)
-  gap_size = FrameInput.random_int(150...450)
-  size = Vector.new(gap_width, gap_size)
-  x += (size.x * 0.5)
-
-  gap_center_y = FrameInput.random_int(((gap_size * 0.5) + 25)...(height - (gap_size * 0.5) - 25))
-  pos = Vector.new(x, gap_center_y)
-  gap = Rectangle.new(pos:, size:)
-
-  Obstacle.create(gap)
-end
-
 class DestroyObstacle
   attr_reader :game, :collider
 
@@ -212,6 +197,21 @@ class GameplayState
   def exit; end
 
   private
+
+  def random_obstcle(x)
+    _, height = FrameInput.screen_size
+
+    gap_width = FrameInput.random_int(40...60)
+    gap_size = FrameInput.random_int(150...450)
+    size = Vector.new(gap_width, gap_size)
+    x += (size.x * 0.5)
+
+    gap_center_y = FrameInput.random_int(((gap_size * 0.5) + 25)...(height - (gap_size * 0.5) - 25))
+    pos = Vector.new(x, gap_center_y)
+    gap = Rectangle.new(pos:, size:)
+
+    Obstacle.create(gap)
+  end
 
   def challenge_factor(angle)
     case angle
