@@ -216,8 +216,8 @@ class GameplayState
   def challenge_factor(angle)
     case angle
     when 30...35 then return 1
-    when 35..40 then return 2
-    when 40..180 then return 3
+    when 35..40 then return 1.5
+    when 40..180 then return 2
     end
     0
   end
