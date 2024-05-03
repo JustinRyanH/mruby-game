@@ -173,7 +173,7 @@ main :: proc() {
 			assert(success, "We should always have a texture here")
 			rl.DrawTexturePro(asset.texture, asset.src, dest, spr.size * 0.5, 0, spr.tint)
 		}
-
+		game_debug_draw(g)
 
 		imui_draw(&g.imui)
 

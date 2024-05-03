@@ -29,7 +29,7 @@ Collider :: struct {
 
 ColliderHandle :: distinct dp.Handle
 
-EntityPool :: dp.DataPool(128, Collider, ColliderHandle)
+ColliderPool :: dp.DataPool(128, Collider, ColliderHandle)
 
 SpritePool :: dp.DataPool(1024, Sprite, SpriteHandle)
 
@@ -44,13 +44,14 @@ Game :: struct {
 	imui:             ImUiState,
 	input:            input.FrameInput,
 	rand:             rand.Rand,
+	debug:            bool,
 
 	// Temp Data
 	collision_evts_t: map[ColliderHandle]CollisionTargets,
 
 	// Game Data
 	bg_color:         rl.Color,
-	colliders:        EntityPool,
+	colliders:        ColliderPool,
 	sprites:          SpritePool,
 }
 
@@ -100,4 +101,17 @@ game_add_collision :: proc(game: ^Game, a, b: ColliderHandle) {
 game_deinit :: proc(game: ^Game) {
 	as_deinit(&game.assets)
 	mrb.close(game.ruby)
+}
+
+
+game_debug_draw :: proc(game: ^Game) {
+	if !g.debug {
+		return
+	}
+	cldr_iter := dp.new_iter(&g.colliders)
+	for clr in dp.iter_next(&cldr_iter) {
+		pos := clr.pos - clr.size * 0.5
+		rect := rl.Rectangle{pos.x, pos.y, clr.size.x, clr.size.y}
+		rl.DrawRectangleLinesEx(rect, 2.0, rl.GREEN)
+	}
 }

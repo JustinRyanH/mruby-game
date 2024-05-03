@@ -1359,9 +1359,23 @@ setup_engine :: proc(st: ^mrb.State) {
 		engine_get_bg_color,
 		mrb.args_none(),
 	)
+	mrb.define_class_method(st, engine_module, "debug?", engine_get_debug, mrb.args_none())
+	mrb.define_class_method(st, engine_module, "debug=", engine_set_debug, mrb.args_req(1))
 	engine_classes.engine = engine_module
 }
 
+@(private = "file")
+engine_get_debug :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return mrb.bool_value(g.debug)
+}
+
+@(private = "file")
+engine_set_debug :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	debug: bool
+	mrb.get_args(state, "b", &debug)
+	g.debug = debug
+	return mrb.nil_value()
+}
 
 @(private = "file")
 engine_set_bg_color :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {

@@ -327,7 +327,6 @@ class Game
     @obstacles = []
     @score_areas = {}
     @collider_to_obstacle = {}
-    @debug = false
   end
 
   def setup
@@ -374,15 +373,13 @@ class Game
   end
 
   def debug?
-    @debug
+    Engine.debug?
   end
 
   private
 
   def toggle_debug
-    @debug = !@debug
-    Log.info('Debug Turned Off') unless @debug
-    Log.info('Debug Turned On') unless @debug
+    Engine.debug = !Engine.debug?
   end
 
   def change_scene(new_scene)
