@@ -59,7 +59,9 @@ class TileMapRect
     end
   end
 
-  def texture(_x, _y)
+  def texture(x, _y)
+    return SQUARE_MAP[:left] if left?(x)
+
     SQUARE_MAP[:center]
   end
 
@@ -93,6 +95,12 @@ class TileMapRect
 
   def h
     @h ||= height / 2
+  end
+
+  def left?(x)
+    return false if width == 1
+
+    x == -w
   end
 end
 
