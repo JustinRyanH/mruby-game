@@ -76,17 +76,23 @@ class TileMapRect
   end
 
   def x_range
-    w = width / 2
     return (-w...w) if width.even?
 
     (-w..w)
   end
 
   def y_range
-    h = height / 2
     return (-h...h) if height.even?
 
     (-h..h)
+  end
+
+  def w
+    @w ||= width / 2
+  end
+
+  def h
+    @h ||= height / 2
   end
 end
 
