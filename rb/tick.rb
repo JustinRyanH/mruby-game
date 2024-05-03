@@ -20,9 +20,9 @@ COLORS = [
 # $game ||= Game.new
 # $game.tick
 SQUARE_MAP = {
-  center: Textures.platform_middle,
-  left: Textures.platform_middle_left,
-  right: Textures.platform_middle_right,
+  middle_middle: Textures.platform_middle,
+  middle_left: Textures.platform_middle_left,
+  middle_right: Textures.platform_middle_right,
   upper_left: Textures.platform_top_left,
   upper_middle: Textures.platform_top_middle,
   upper_right: Textures.platform_top_right,
@@ -30,6 +30,12 @@ SQUARE_MAP = {
   bottom_middle: Textures.platform_lower_middle,
   bottom_right: Textures.platform_lower_right
 }.freeze
+
+def get_square(x, y)
+  v = :"#{x}_#{y}"
+  puts v
+  SQUARE_MAP[v]
+end
 
 class TileMapRect
   attr_reader :pos, :width, :height, :size
@@ -59,10 +65,8 @@ class TileMapRect
     end
   end
 
-  def texture(x, _y)
-    return SQUARE_MAP[:left] if left?(x)
-
-    SQUARE_MAP[:center]
+  def texture(_x, _y)
+    get_square(:middle, :middle)
   end
 
   def offset_x(x)
@@ -97,7 +101,7 @@ class TileMapRect
     @h ||= height / 2
   end
 
-  def left?(x)
+  def x_position(x)
     return false if width == 1
 
     x == -w
@@ -120,7 +124,7 @@ class Demo
     @ready = false
     @position_index = 0
     @positions = %i[
-      center
+      middle
       left
       right
       upper_left
