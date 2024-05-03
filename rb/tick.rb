@@ -5,6 +5,18 @@ require 'assets/scripts/setup'
 # ObjectSpace.count_objects(h)
 # puts h
 
+COLORS = [
+  Color.red,
+  Color.blue,
+  Color.green,
+  Color.orange,
+  Color.gray,
+  Color.dark_purple,
+  Color.dark_green,
+  Color.purple,
+  Color.pink,
+].freeze
+
 # $game ||= Game.new
 # $game.tick
 SQUARE_MAP = {
@@ -35,20 +47,29 @@ class TileMapRect
         (-height..height).each do |y|
           offset = Vector.new(offset_x(x), y * size.y)
           offset_pos = pos + offset
-          out << Sprite.create(pos: offset_pos, size:, texture: SQUARE_MAP[:center])
+          tint = COLORS[FrameInput.random_int(0...COLORS.size)]
+          out << Sprite.create(
+            pos: offset_pos,
+            size:,
+            texture: SQUARE_MAP[:center],
+            tint:,
+          )
         end
       end
     end
   end
 
   def offset_x(x)
-    return x * size.x unless width.even?
+    return (x * size.x) if width.odd?
 
-    (x * size.x) - (size.x * 0.5)
+    (x * size.x) + (size.x / 2)
   end
 
   def x_range
-    0...width
+    w = width / 2
+    return (-w...w) if width.even?
+
+    (-w..w)
   end
 end
 
@@ -86,7 +107,10 @@ class Demo
     width, height = FrameInput.screen_size
     Draw.line(start: Vector.new(width / 2, 0), end: Vector.new(width / 2, height))
 
-    rebuild_map if FrameInput.key_was_down?(:p)
+    @width -= 1 if FrameInput.key_was_down?(:left)
+    @width += 1 if FrameInput.key_was_down?(:right)
+
+    rebuild_map if FrameInput.key_was_down?(:left) || FrameInput.key_was_down?(:right)
   end
 
   def setup
@@ -106,8 +130,9 @@ class Demo
 
     width, height = FrameInput.screen_size
     pos = Vector.new(width / 2, height / 2)
+    @width ||= 5
 
-    @map = TileMapRect.new(pos:, width: 4).build
+    @map = TileMapRect.new(pos:, width: @width).build
   end
 
   def current_section
