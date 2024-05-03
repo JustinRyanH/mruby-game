@@ -51,12 +51,16 @@ class TileMapRect
           out << Sprite.create(
             pos: offset_pos,
             size:,
-            texture: SQUARE_MAP[:center],
+            texture: texture(x, y),
             tint:,
           )
         end
       end
     end
+  end
+
+  def texture(_x, _y)
+    SQUARE_MAP[:center]
   end
 
   def offset_x(x)
