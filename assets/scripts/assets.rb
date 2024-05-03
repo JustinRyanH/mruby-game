@@ -59,3 +59,15 @@ class Textures
     @platform_lower_right ||= AssetSystem.load_texture('assets/textures/platform_brc.png')
   end
 end
+
+SQUARE_MAP = {
+  middle_middle: Textures.platform_middle,
+  middle_left: Textures.platform_middle_left,
+  middle_right: Textures.platform_middle_right,
+  upper_left: Textures.platform_top_left,
+  upper_middle: Textures.platform_top_middle,
+  upper_right: Textures.platform_top_right,
+  lower_left: Textures.platform_lower_left,
+  lower_middle: Textures.platform_lower_middle,
+  lower_right: Textures.platform_lower_right
+}.freeze
