@@ -1568,9 +1568,12 @@ sprite_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	spr, found := dp.get(&g.sprites, hnd)
 	assert(found, fmt.tprintf("Sprite should exist: %s", hnd))
 
-	texture_hnd := mrb.int_value(state, cast(mrb.Int)spr.texture)
+	positions := []mrb.Value {
+		mrb.int_value(state, cast(mrb.Int)spr.pos.x),
+		mrb.int_value(state, cast(mrb.Int)spr.pos.y),
+	}
 
-	return mrb.obj_new(state, engine_classes.texture_asset, 1, &texture_hnd)
+	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(positions))
 }
 
 
