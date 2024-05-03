@@ -26,24 +26,28 @@ SQUARE_MAP = {
   upper_left: Textures.platform_top_left,
   upper_middle: Textures.platform_top_middle,
   upper_right: Textures.platform_top_right,
-  bottom_left: Textures.platform_lower_left,
-  bottom_middle: Textures.platform_lower_middle,
-  bottom_right: Textures.platform_lower_right
+  lower_left: Textures.platform_lower_left,
+  lower_middle: Textures.platform_lower_middle,
+  lower_right: Textures.platform_lower_right
 }.freeze
 
-def get_square(x, y)
-  v = :"#{y}_#{x}"
-  SQUARE_MAP[v]
+class SquareMap
+  def get_square(x, y)
+    v = :"#{y}_#{x}"
+    SQUARE_MAP[v]
+  end
 end
 
 class TileMapRect
-  attr_reader :pos, :width, :height, :size
+  attr_reader :pos, :width, :height, :size, :tint
 
-  def initialize(pos:, width: 3, height: 2, size: 64)
+  def initialize(pos:, width: 3, height: 2, size: 64, tint: Color.white)
     @pos = pos
     @width = width
     @height = height
     @size = Vector.all(size)
+    @tint = tint
+    @tile_map = SquareMap.new
   end
 
   def build
@@ -52,7 +56,6 @@ class TileMapRect
         y_range.each do |y|
           offset = Vector.new(offset_x(x), offset_y(y))
           offset_pos = pos + offset
-          tint = COLORS[FrameInput.random_int(0...COLORS.size)]
           out << Sprite.create(
             pos: offset_pos,
             size:,
@@ -64,8 +67,8 @@ class TileMapRect
     end
   end
 
-  def texture(x, _y)
-    get_square(x_position(x), :middle)
+  def texture(x, y)
+    @tile_map.get_square(x_position(x), y_position(y))
   end
 
   def offset_x(x)
@@ -108,6 +111,15 @@ class TileMapRect
 
     :middle
   end
+
+  def y_position(y)
+    return :middle if height == 1
+    return :upper if y == -h
+    return :lower if y == h && height.odd?
+    return :lower if y + 1 == h && height.even?
+
+    :middle
+  end
 end
 
 # This
@@ -132,9 +144,9 @@ class Demo
       upper_left
       upper_middle
       upper_right
-      bottom_left
-      bottom_middle
-      bottom_right
+      lower_left
+      lower_middle
+      lower_right
     ]
   end
 
