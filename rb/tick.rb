@@ -21,8 +21,9 @@ end
 
 class TileMapBuilder
   # @param [Vector] ps
-  attr_accessor :pos
-  attr_reader :width, :height, :size, :tint
+  # @param [Color] tint
+  attr_accessor :pos, :tint
+  attr_reader :width, :height, :size
 
   def initialize(pos: Vector.zero, width: 3, height: 2, size: 64, tint: Color.white)
     @pos = pos
@@ -47,6 +48,11 @@ class TileMapBuilder
         end
       end
     end
+  end
+
+  def bounds
+    new_size = (Vector.new(1, 0) * width) + (Vector.new(0, 1) * height)
+    Rectangle.new(pos:, size: new_size)
   end
 
   def texture(x, y)
@@ -106,10 +112,11 @@ end
 
 # This
 class StaticObject
-  attr_reader :pos
+  attr_reader :pos, :bounds
 
   def initialize(pos:)
     @pos = pos
+    @bounds = Rectangle.zero
     @sprites = []
   end
 
@@ -118,6 +125,7 @@ class StaticObject
 
     builder.pos = pos
 
+    @bounds = builder.bounds
     @sprites = builder.build
   end
 
@@ -157,7 +165,7 @@ class Demo
     @height ||= 5
 
     obs = StaticObject.new(pos:)
-    tmr = TileMapBuilder.new(width: @width, height: @height)
+    tmr = TileMapBuilder.new(width: @width, height: @height, tint: Color.affinity)
     obs.replace(tmr)
   end
 end
