@@ -135,11 +135,10 @@ class Demo
       size: 48,
       halign: :center,
     )
-
-    @width -= 1 if FrameInput.key_was_down?(:left)
+    @width = [@width - 1, 1].max if FrameInput.key_was_down?(:left)
     @width += 1 if FrameInput.key_was_down?(:right)
     @height += 1 if FrameInput.key_was_down?(:up)
-    @height -= 1 if FrameInput.key_was_down?(:down)
+    @height = [@height - 1, 1].max if FrameInput.key_was_down?(:down)
 
     changed_width = FrameInput.key_was_down?(:left) || FrameInput.key_was_down?(:right)
     changed_height = FrameInput.key_was_down?(:up) || FrameInput.key_was_down?(:down)
