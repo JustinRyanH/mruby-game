@@ -5,18 +5,6 @@ require 'assets/scripts/setup'
 # ObjectSpace.count_objects(h)
 # puts h
 
-COLORS = [
-  Color.red,
-  Color.blue,
-  Color.green,
-  Color.orange,
-  Color.gray,
-  Color.dark_purple,
-  Color.dark_green,
-  Color.purple,
-  Color.pink,
-].freeze
-
 # $game ||= Game.new
 # $game.tick
 SQUARE_MAP = {
