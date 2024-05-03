@@ -781,14 +781,23 @@ setup_color_class :: proc(st: ^mrb.State) {
 	mrb.set_data_type(color_class, .CData)
 	mrb.define_method(st, color_class, "initialize", color_init, mrb.args_req(4))
 	mrb.define_method(st, color_class, "red", color_get_r, mrb.args_none())
+	mrb.define_method(st, color_class, "red=", color_set_r, mrb.args_req(1))
 	mrb.define_method(st, color_class, "blue", color_get_b, mrb.args_none())
+	mrb.define_method(st, color_class, "blue=", color_set_b, mrb.args_req(1))
 	mrb.define_method(st, color_class, "green", color_get_g, mrb.args_none())
+	mrb.define_method(st, color_class, "green=", color_set_g, mrb.args_req(1))
 	mrb.define_method(st, color_class, "alpha", color_get_a, mrb.args_none())
+	mrb.define_method(st, color_class, "alpha=", color_set_a, mrb.args_req(1))
 
 	mrb.define_alias(st, color_class, "r", "red")
 	mrb.define_alias(st, color_class, "b", "blue")
 	mrb.define_alias(st, color_class, "g", "green")
 	mrb.define_alias(st, color_class, "a", "alpha")
+	mrb.define_alias(st, color_class, "r=", "red=")
+	mrb.define_alias(st, color_class, "b=", "blue=")
+	mrb.define_alias(st, color_class, "g=", "green=")
+	mrb.define_alias(st, color_class, "a=", "alpha=")
+
 
 	for pallet in ColorPallet {
 		as_str, success := reflect.enum_name_from_value(pallet)
@@ -861,6 +870,63 @@ color_get_a :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	v := mrb.get_data_from_value(rl.Color, self)
 	return mrb.int_value(state, cast(mrb.Int)v.a)
 }
+
+@(private = "file")
+color_set_r :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	value: mrb.Int
+	mrb.get_args(state, "i", &value)
+	new_value := cast(u8)math.clamp(value, 0, 255)
+
+	v := mrb.get_data_from_value(Color, self)
+	v.r = new_value
+
+	return mrb.nil_value()
+}
+
+@(private = "file")
+color_set_b :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	value: mrb.Int
+	mrb.get_args(state, "i", &value)
+	new_value := cast(u8)math.clamp(value, 0, 255)
+
+	v := mrb.get_data_from_value(Color, self)
+	v.b = new_value
+
+	return mrb.nil_value()
+}
+
+@(private = "file")
+color_set_g :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	value: mrb.Int
+	mrb.get_args(state, "i", &value)
+	new_value := cast(u8)math.clamp(value, 0, 255)
+
+	v := mrb.get_data_from_value(Color, self)
+	v.g = new_value
+
+	return mrb.nil_value()
+}
+
+@(private = "file")
+color_set_a :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	value: mrb.Int
+	mrb.get_args(state, "i", &value)
+	new_value := cast(u8)math.clamp(value, 0, 255)
+
+	v := mrb.get_data_from_value(Color, self)
+	v.a = new_value
+
+	return mrb.nil_value()
+}
+
 
 @(private = "file")
 color_from_pallet :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
