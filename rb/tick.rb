@@ -5,8 +5,8 @@ require 'assets/scripts/setup'
 # ObjectSpace.count_objects(h)
 # puts h
 
-$game ||= Game.new
-$game.tick
+# $game ||= Game.new
+# $game.tick
 class SquareMap
   attr_reader :map
 
@@ -170,5 +170,5 @@ class Demo
   end
 end
 
-# $demo ||= Demo.new
-# $demo.tick
+$demo ||= Demo.new
+$demo.tick
