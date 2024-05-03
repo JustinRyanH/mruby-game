@@ -44,8 +44,8 @@ class TileMapRect
   def build
     [].tap do |out|
       x_range.each do |x|
-        (-height..height).each do |y|
-          offset = Vector.new(offset_x(x), y * size.y)
+        y_range.each do |y|
+          offset = Vector.new(offset_x(x), offset_y(y))
           offset_pos = pos + offset
           tint = COLORS[FrameInput.random_int(0...COLORS.size)]
           out << Sprite.create(
@@ -65,11 +65,24 @@ class TileMapRect
     (x * size.x) + (size.x / 2)
   end
 
+  def offset_y(y)
+    return (y * size.y) if height.odd?
+
+    (y * size.y) + (size.y / 2)
+  end
+
   def x_range
     w = width / 2
     return (-w...w) if width.even?
 
     (-w..w)
+  end
+
+  def y_range
+    h = height / 2
+    return (-h...h) if height.even?
+
+    (-h..h)
   end
 end
 
@@ -106,11 +119,31 @@ class Demo
 
     width, height = FrameInput.screen_size
     Draw.line(start: Vector.new(width / 2, 0), end: Vector.new(width / 2, height))
+    Draw.line(start: Vector.new(0, height / 2), end: Vector.new(width, height / 2))
+
+    target_pos = Vector.new(width / 2, height - 150)
+    size = Vector.new(800, 250)
+    pos = target_pos - (size * 0.5)
+    color = Color.crushed_cashew
+    color.a = 200
+
+    Draw.rect(pos:, size:, color:)
+    Draw.text(
+      text: "Width: #{@width}, Height: #{@height}",
+      pos: target_pos,
+      color: Color.red,
+      size: 48,
+      halign: :center,
+    )
 
     @width -= 1 if FrameInput.key_was_down?(:left)
     @width += 1 if FrameInput.key_was_down?(:right)
+    @height += 1 if FrameInput.key_was_down?(:up)
+    @height -= 1 if FrameInput.key_was_down?(:down)
 
-    rebuild_map if FrameInput.key_was_down?(:left) || FrameInput.key_was_down?(:right)
+    changed_width = FrameInput.key_was_down?(:left) || FrameInput.key_was_down?(:right)
+    changed_height = FrameInput.key_was_down?(:up) || FrameInput.key_was_down?(:down)
+    rebuild_map if changed_width || changed_height
   end
 
   def setup
@@ -131,8 +164,9 @@ class Demo
     width, height = FrameInput.screen_size
     pos = Vector.new(width / 2, height / 2)
     @width ||= 5
+    @height ||= 5
 
-    @map = TileMapRect.new(pos:, width: @width).build
+    @map = TileMapRect.new(pos:, width: @width, height: @height).build
   end
 
   def current_section
