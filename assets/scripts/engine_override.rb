@@ -72,6 +72,10 @@ end
 class Rectangle
   attr_reader :pos, :size
 
+  def self.zero
+    Rectangle.new(pos: Vector.zero, size: Vector.zero)
+  end
+
   def self.from_bounds(top:, right:, bottom:, left:)
     height = (bottom - top).abs
     width = (right - left).abs
