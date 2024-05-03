@@ -1521,6 +1521,23 @@ sprite_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 }
 
 @(private = "file")
+sprite_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	hnd := mrb.get_data_from_value(SpriteHandle, self)^
+	spr, found := dp.get(&g.sprites, hnd)
+	assert(found, fmt.tprintf("Sprite should exist: %s", hnd))
+
+	positions := []mrb.Value {
+		mrb.int_value(state, cast(mrb.Int)spr.pos.x),
+		mrb.int_value(state, cast(mrb.Int)spr.pos.y),
+	}
+
+	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(positions))
+}
+
+
+@(private = "file")
 sprite_is_valid :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	hnd := mrb.get_data_from_value(SpriteHandle, self)^
 	return mrb.bool_value(dp.valid(&g.sprites, hnd))
@@ -1559,23 +1576,6 @@ sprite_texture_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 
 	return mrb.nil_value()
 }
-
-@(private = "file")
-sprite_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	context = load_context(state)
-
-	hnd := mrb.get_data_from_value(SpriteHandle, self)^
-	spr, found := dp.get(&g.sprites, hnd)
-	assert(found, fmt.tprintf("Sprite should exist: %s", hnd))
-
-	positions := []mrb.Value {
-		mrb.int_value(state, cast(mrb.Int)spr.pos.x),
-		mrb.int_value(state, cast(mrb.Int)spr.pos.y),
-	}
-
-	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(positions))
-}
-
 
 @(private = "file")
 sprite_tint_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
