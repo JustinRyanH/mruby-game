@@ -32,8 +32,7 @@ SQUARE_MAP = {
 }.freeze
 
 def get_square(x, y)
-  v = :"#{x}_#{y}"
-  puts v
+  v = :"#{y}_#{x}"
   SQUARE_MAP[v]
 end
 
@@ -65,8 +64,8 @@ class TileMapRect
     end
   end
 
-  def texture(_x, _y)
-    get_square(:middle, :middle)
+  def texture(x, _y)
+    get_square(x_position(x), :middle)
   end
 
   def offset_x(x)
@@ -102,9 +101,12 @@ class TileMapRect
   end
 
   def x_position(x)
-    return false if width == 1
+    return :middle if width == 1
+    return :left if x == -w
+    return :right if x == w && width.odd?
+    return :right if x + 1 == w && width.even?
 
-    x == -w
+    :middle
   end
 end
 
