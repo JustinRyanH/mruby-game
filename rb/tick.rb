@@ -32,9 +32,14 @@ SQUARE_MAP = {
 }.freeze
 
 class SquareMap
+  attr_reader :map
+
+  def initialize(map = SQUARE_MAP)
+    @map = map
+  end
+
   def get_square(x, y)
-    v = :"#{y}_#{x}"
-    SQUARE_MAP[v]
+    @map[:"#{y}_#{x}"]
   end
 end
 
