@@ -29,10 +29,7 @@ class StaticObject
 
   def pos=(new_pos)
     new = new_pos - @pos
-    @sprites.each do |spr|
-      puts spr.inspect
-      spr.pos += new
-    end
+    @sprites.each { |spr| spr.pos += new }
     @pos = new
   end
 
@@ -53,10 +50,10 @@ class Demo
     Draw.line(start: Vector.new(width / 2, 0), end: Vector.new(width / 2, height))
     Draw.line(start: Vector.new(0, height / 2), end: Vector.new(width, height / 2))
 
-    @obs.pos -= Vector.new(1, 0) * FrameInput.delta_time if FrameInput.key_down?(:a)
+    @obs.pos -= Vector.new(1, 0) if FrameInput.key_down?(:a)
     return unless FrameInput.key_down?(:d)
 
-    @obs.pos += Vector.new(1, 0) * FrameInput.delta_time
+    @obs.pos += Vector.new(1, 0)
   end
 
   def setup
