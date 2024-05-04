@@ -1,5 +1,23 @@
 # frozen_string_literal: true
 
+module Bounds
+  def bottom
+    pos.y + (size.y * 0.5)
+  end
+
+  def top
+    pos.y - (size.y * 0.5)
+  end
+
+  def left
+    pos.x - (size.x * 0.5)
+  end
+
+  def right
+    pos.x + (size.x * 0.5)
+  end
+end
+
 Integer.class_eval do
   def even?
     (self % 2).zero?
@@ -27,6 +45,8 @@ Color.class_eval do
 end
 
 Collider.class_eval do
+  include Bounds
+
   def inspect
     { name: 'Collider', id:, pos: pos.inspect, size: size.inspect }
   end
@@ -60,29 +80,13 @@ Collider.class_eval do
   def colliding_with?(entity)
     collisions.include?(entity)
   end
+
+  alias_method :collider_id, :id
 end
 
 Texture.class_eval do
   def inspect
     { name: 'Texture', id: }
-  end
-end
-
-module Bounds
-  def bottom
-    pos.y + (size.y * 0.5)
-  end
-
-  def top
-    pos.y - (size.y * 0.5)
-  end
-
-  def left
-    pos.x - (size.x * 0.5)
-  end
-
-  def right
-    pos.x + (size.x * 0.5)
   end
 end
 
