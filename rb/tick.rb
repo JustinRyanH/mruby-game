@@ -10,7 +10,7 @@ require 'assets/scripts/tilemap'
 # $game.tick
 # This
 class StaticObject
-  attr_reader :pos, :bounds
+  attr_reader :pos, :collider
 
   def initialize(pos:)
     @pos = pos
