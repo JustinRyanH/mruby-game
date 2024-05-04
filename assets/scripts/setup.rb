@@ -4,7 +4,7 @@ require 'assets/scripts/animation'
 require 'assets/scripts/assets'
 require 'assets/scripts/constants'
 require 'assets/scripts/engine_override'
-require 'assets/scripts/game_object'
+require 'assets/scripts/object'
 require 'assets/scripts/obstacle'
 
 def dt

@@ -14,7 +14,6 @@ class StaticObject
 
   def initialize(pos:)
     @pos = pos
-    @bounds = Rectangle.zero
     @collider = nil
     @sprites = []
   end
@@ -24,7 +23,7 @@ class StaticObject
 
     builder.pos = pos
 
-    @bounds = builder.bounds
+    bounds = builder.bounds
 
     @collider = Collider.create(pos: bounds.pos, size: bounds.size)
     @sprites = builder.build

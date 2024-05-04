@@ -49,3 +49,37 @@ class GameObject
 
   def_delegators :@collider, :offscreen_top?, :offscreen_left?, :offscreen_bottom?, :collisions
 end
+
+class StaticObject
+  attr_reader :pos, :collider
+
+  def initialize(pos:)
+    @pos = pos
+    @collider = nil
+    @sprites = []
+  end
+
+  def replace(builder)
+    destroy
+
+    builder.pos = pos
+
+    bounds = builder.bounds
+
+    @collider = Collider.create(pos: bounds.pos, size: bounds.size)
+    @sprites = builder.build
+  end
+
+  def pos=(new_pos)
+    new = new_pos - @pos
+    @sprites.each { |spr| spr.pos += new }
+    @pos = new_pos
+    @collider.pos = new_pos
+  end
+
+  def destroy
+    @sprites.each(&:destroy)
+    @collider&.destroy
+    @collider = nil
+  end
+end
