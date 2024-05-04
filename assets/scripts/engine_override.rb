@@ -68,8 +68,28 @@ Texture.class_eval do
   end
 end
 
+module Bounds
+  def bottom
+    pos.y + (size.y * 0.5)
+  end
+
+  def top
+    pos.y - (size.y * 0.5)
+  end
+
+  def left
+    pos.x - (size.x * 0.5)
+  end
+
+  def right
+    pos.x + (size.x * 0.5)
+  end
+end
+
 # TODO: Make this map from RL Rectangle
 class Rectangle
+  include Bounds
+
   attr_reader :pos, :size
 
   def self.zero
@@ -91,22 +111,6 @@ class Rectangle
   def initialize(pos:, size:)
     @pos = pos
     @size = size
-  end
-
-  def bottom
-    pos.y + (size.y * 0.5)
-  end
-
-  def top
-    pos.y - (size.y * 0.5)
-  end
-
-  def left
-    pos.x - (size.x * 0.5)
-  end
-
-  def right
-    pos.x + (size.x * 0.5)
   end
 
   def inspect
