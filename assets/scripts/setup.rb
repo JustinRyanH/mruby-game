@@ -287,7 +287,7 @@ class GameplayState
   end
 
   def flap_player
-    game.player_velocity.y -= 4.5
+    # game.player_velocity.y -= 4.5
   end
 
   def move_world
