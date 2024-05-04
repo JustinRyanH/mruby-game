@@ -70,6 +70,7 @@ class StaticObject
 
     @collider = Collider.create(pos: bounds.pos, size: bounds.size)
     @sprites = builder.build
+    self
   end
 
   def pos=(new_pos)
@@ -85,5 +86,21 @@ class StaticObject
     @collider = nil
   end
 
+  def collider_id
+    collider&.id
+  end
+
+  def valid?
+    @sprites.all?(&:valid?) && collider_valid?
+  end
+
   def_delegators :@collider, :offscreen_top?, :offscreen_left?, :offscreen_bottom?, :collisions
+
+  private
+
+  def collider_valid?
+    return true if @collider.nil?
+
+    @collider.valid?
+  end
 end

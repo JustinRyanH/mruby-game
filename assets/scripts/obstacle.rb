@@ -29,10 +29,17 @@ class Obstacle
     bottom_rect = Rectangle.from_bounds(left: gap.left, right: gap.right, top: gap.bottom, bottom: height)
     top_rect = Rectangle.from_bounds(left: gap.left, right: gap.right, top: 0, bottom: gap.top)
 
-    bottom_sprite = Sprite.create(pos: bottom_rect.pos, size: bottom_rect.size, tint: Color.affinity,
-                                  texture: Textures.square)
-    bottom_entity = Collider.create(pos: bottom_rect.pos, size: bottom_rect.size)
-    bottom = GameObject.new(collider: bottom_entity, sprite: bottom_sprite)
+    bottom_height = (bottom_rect.size.y / 64).ceil
+    rand_width = FrameInput.random_int(2..3)
+
+    btm_tmb = TileMapBuilder.new(width: rand_width, height: bottom_height, size: 64, tint: Color.affinity)
+
+    bottom = StaticObject.new(pos: bottom_rect.pos).replace(btm_tmb)
+
+    # bottom_sprite = Sprite.create(pos: bottom_rect.pos, size: bottom_rect.size, tint: Color.affinity,
+    #                               texture: Textures.square)
+    # bottom_entity = Collider.create(pos: bottom_rect.pos, size: bottom_rect.size)
+    # bottom = GameObject.new(collider: bottom_entity, sprite: bottom_sprite)
 
     top_entity = Collider.create(pos: top_rect.pos, size: top_rect.size)
     top_sprite = Sprite.create(pos: top_rect.pos, size: top_rect.size, tint: Color.affinity, texture: Textures.square)
