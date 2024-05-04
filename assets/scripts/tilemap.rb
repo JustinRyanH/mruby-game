@@ -14,27 +14,6 @@ class SquareMap
   end
 end
 
-class OffsetSprite < Sprite
-  attr_accessor :offset
-
-  def self.create(offset:, **)
-    spr = Sprite.create(**)
-    new(spr.id).tap do |out|
-      out.offset = offset
-      out.pos = spr.pos
-    end
-  end
-
-  def pos
-    @src_pos
-  end
-
-  def pos=(value)
-    @src_pos = value
-    super(@src_pos + @offset)
-  end
-end
-
 class TileMapBuilder
   # @param [Vector] ps
   # @param [Color] tint

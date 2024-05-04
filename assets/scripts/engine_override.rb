@@ -90,6 +90,39 @@ Texture.class_eval do
   end
 end
 
+Sprite.class_eval do
+  include Bounds
+
+  def inspect
+    { name: 'Sprite', id: }
+  end
+end
+
+class OffsetSprite < Sprite
+  attr_accessor :offset
+
+  def self.create(offset:, **)
+    spr = Sprite.create(**)
+    new(spr.id).tap do |out|
+      out.offset = offset
+      out.pos = spr.pos
+    end
+  end
+
+  def pos
+    @src_pos
+  end
+
+  def pos=(value)
+    @src_pos = value
+    super(@src_pos + @offset)
+  end
+
+  def inspect
+    { name: 'OffsetSprite', id: }
+  end
+end
+
 # TODO: Make this map from RL Rectangle
 class Rectangle
   include Bounds
