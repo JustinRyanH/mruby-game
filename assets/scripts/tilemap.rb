@@ -21,8 +21,17 @@ class OffsetSprite < Sprite
     spr = Sprite.create(**)
     new(spr.id).tap do |out|
       out.offset = offset
-      out.pos = out.pos + offset
+      out.pos = spr.pos
     end
+  end
+
+  def pos
+    @src_pos
+  end
+
+  def pos=(value)
+    @src_pos = value
+    super(@src_pos + @offset)
   end
 end
 
