@@ -51,6 +51,8 @@ class GameObject
 end
 
 class StaticObject
+  extend ::Forwardable
+
   attr_reader :pos, :collider
 
   def initialize(pos:)
@@ -82,4 +84,6 @@ class StaticObject
     @collider&.destroy
     @collider = nil
   end
+
+  def_delegators :@collider, :offscreen_top?, :offscreen_left?, :offscreen_bottom?, :collisions
 end
