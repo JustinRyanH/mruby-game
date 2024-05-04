@@ -517,7 +517,6 @@ collider_other_collisions :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mr
 collider_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
-
 	KValues :: struct {
 		pos:  mrb.Value,
 		size: mrb.Value,
@@ -978,7 +977,7 @@ draw_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	// TODO: I can totally do this with generics and reflection
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
@@ -1156,7 +1155,7 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 		font: mrb.Value,
 	}
 
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "font"),
