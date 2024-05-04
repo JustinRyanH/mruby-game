@@ -15,6 +15,7 @@ class StaticObject
   def initialize(pos:)
     @pos = pos
     @bounds = Rectangle.zero
+    @collider = nil
     @sprites = []
   end
 
@@ -24,17 +25,22 @@ class StaticObject
     builder.pos = pos
 
     @bounds = builder.bounds
+
+    @collider = Collider.create(pos: bounds.pos, size: bounds.size)
     @sprites = builder.build
   end
 
   def pos=(new_pos)
     new = new_pos - @pos
     @sprites.each { |spr| spr.pos += new }
-    @pos = new
+    @pos = new_pos
+    @collider.pos = new_pos
   end
 
   def destroy
     @sprites.each(&:destroy)
+    @collider&.destroy
+    @collider = nil
   end
 end
 
@@ -51,9 +57,9 @@ class Demo
     Draw.line(start: Vector.new(0, height / 2), end: Vector.new(width, height / 2))
 
     @obs.pos -= Vector.new(1, 0) if FrameInput.key_down?(:a)
-    return unless FrameInput.key_down?(:d)
+    @obs.pos += Vector.new(1, 0) if FrameInput.key_down?(:d)
 
-    @obs.pos += Vector.new(1, 0)
+    Engine.debug = !Engine.debug? if FrameInput.key_was_down?(:p)
   end
 
   def setup

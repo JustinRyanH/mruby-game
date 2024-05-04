@@ -46,7 +46,7 @@ class TileMapBuilder
   end
 
   def bounds
-    new_size = (Vector.new(1, 0) * width) + (Vector.new(0, 1) * height)
+    new_size = (Vector.new(1, 0) * width * size.x) + (Vector.new(0, 1) * height * size.y)
     Rectangle.new(pos:, size: new_size)
   end
 
