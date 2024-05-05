@@ -4,14 +4,16 @@
 
 * Start Menu
   * Ruby ImUI
-* Collision maybe make Collision list always a set
 * Sounds
 * Re-do the Difficulty Calculator to use the edge differences between start of old and beginning of new
+* Collision maybe make Collision list always a set
 
 ## Nice to
 
-* Introduce Better errors for assets
 * Debug ImUI
+* Implement Debug Tooling
+* Fix windows floating point position errors
+* Introduce Better errors for assets
 * Loading `.mrb` code
 * Asset Packaging
 * WASM build
