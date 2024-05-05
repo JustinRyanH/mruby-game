@@ -1,5 +1,7 @@
 # Game written in Mruby/Odin
 
+<img width="1468" alt="image" src="https://github.com/JustinRyanH/mruby-game/assets/571433/0a64a0b3-7b10-4fc8-a2b7-34f33e49727d">
+
 ## Mruby Gems
 
 Compile with these GEMs. It is a reduce version of the GBA mruby
