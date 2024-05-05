@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
+require 'assets/scripts/engine_override'
+
 class GameObject
+  include Bounds
+
   extend ::Forwardable
 
   # @return [Collider] collider
@@ -15,6 +19,12 @@ class GameObject
 
   def pos
     @collider.pos
+  end
+
+  def size
+    return @collider.size unless @collider.nil?
+
+    @sprite.size
   end
 
   def pos=(value)
@@ -51,6 +61,7 @@ class GameObject
 end
 
 class StaticObject
+  include Bounds
   extend ::Forwardable
 
   attr_reader :pos, :collider
@@ -84,6 +95,12 @@ class StaticObject
     @sprites.each(&:destroy)
     @collider&.destroy
     @collider = nil
+  end
+
+  def size
+    return @collider.size unless @collider.nil?
+
+    Vector.zero
   end
 
   def collider_id
