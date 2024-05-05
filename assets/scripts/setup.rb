@@ -251,8 +251,7 @@ class GameplayState
   end
 
   def obstacle_collision
-    # game.player.collisions.any? { |c| game.collider_to_obstacle[c.id].obstacle?(c) }
-    false
+    game.player.collisions.any? { |c| game.collider_to_obstacle[c.id].obstacle?(c) }
   end
 
   def create_player
@@ -279,15 +278,15 @@ class GameplayState
 
   def move_player
     game.player.tick
-    # game.player_velocity.y = game.player_velocity.y + (GRAVITY_Y * dt)
+    game.player_velocity.y = game.player_velocity.y + (GRAVITY_Y * dt)
 
     flap_player if FrameInput.key_just_pressed?(:space)
-    # game.player_velocity.y = game.player_velocity.y.clamp(-5, 5)
+    game.player_velocity.y = game.player_velocity.y.clamp(-5, 5)
     game.player.pos += game.player_velocity
   end
 
   def flap_player
-    # game.player_velocity.y -= 4.5
+    game.player_velocity.y -= 4.5
   end
 
   def move_world

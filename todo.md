@@ -4,9 +4,10 @@
 
 * Start Menu
   * Ruby ImUI
-* Seperate Sprites and Collisions
 * Collision maybe make Collision list always a set
 * Sounds
+* Re-do the Difficulty Calculator to use the edge differences between start of old and beginning of new
+
 ## Nice to
 
 * Introduce Better errors for assets
@@ -20,6 +21,8 @@
 
 ## Done
 
+* Make Obstacle a collection of Sprites
+* Seperate Sprites and Collisions
 * Do a special entity regristration and free to check we actually clean them up
 * Add Collisions
 * Recompile libmruby without require
