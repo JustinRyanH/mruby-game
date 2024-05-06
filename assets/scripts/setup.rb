@@ -214,8 +214,8 @@ class GameplayState
   def generate_obstacles(count)
     count.times do
       last = game.obstacles.last
-      random_offset = FrameInput.random_int(150..500)
-      obs = random_obstcle(last.x + random_offset)
+      random_offset = FrameInput.random_int(200..500)
+      obs = random_obstcle(last.right_most + random_offset)
       game.add_obstacle(obs)
 
       og_challenge = obs.challenge_angle.abs
@@ -373,9 +373,6 @@ class Game
     while current.after?
       after = current.after
       next if after.nil?
-
-      a, b = after.cross_over_top
-      puts a.angle_between(b)
 
       current = after
     end

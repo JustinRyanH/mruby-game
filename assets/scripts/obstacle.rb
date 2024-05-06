@@ -203,15 +203,12 @@ class Obstacle
     [a, b]
   end
 
-  def impossible?
-    # return false unless before?
-    # return false if before.overlap_top.nil?
-    # return false if before.overlap_bottom.nil?
-    # return false if before.overlap_top.positive? && before.overlap_bottom.positive?
-    #
-    # before.cross_over_top_distance < before.overlap_top.abs * 2.5 ||
-    #   before.cross_over_bottom_distance < before.overlap_bottom.abs * 2.5
-    false
+  def left_most
+    [top.left, bottom.left].max
+  end
+
+  def right_most
+    [top.right, bottom.right].max
   end
 
   private
