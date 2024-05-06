@@ -204,7 +204,7 @@ class GameplayState
 
   def challenge_factor(angle)
     case angle
-    when 30...35 then return 1
+    when 30...35 then return 1.25
     when 35..40 then return 1.5
     when 40..180 then return 2
     end
@@ -220,7 +220,7 @@ class GameplayState
 
       og_challenge = obs.challenge_angle.abs
 
-      offset = challenge_factor(og_challenge) * FrameInput.random_int(75..150)
+      offset = challenge_factor(og_challenge) * FrameInput.random_int(100..150)
 
       obs.x += offset
       new = obs.challenge_angle.abs
