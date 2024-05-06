@@ -136,6 +136,23 @@ class GameplayState
     @game = game
   end
 
+  def debug_draw_obstacles
+    return unless game.debug? && game.obstacles.first
+
+    current = game.obstacles.first
+    while current.after?
+      after = current.after
+
+      a_pos, b_pos = current.after.challenge_line
+      angle = current.after.challenge_angle.abs
+
+      Draw.line(start: a_pos, end: b_pos)
+      text = "Angle: #{angle.round(1)}"
+      Draw.text(text:, pos: b_pos + Vector.new(16, 32))
+      current = after
+    end
+  end
+
   def tick
     move_player
     move_world
@@ -149,20 +166,7 @@ class GameplayState
               anchor_percentage: Vector.new(0.0, 0.5), color: Color.blue)
     Draw.text(**text_args, pos: Vector.new(32, 48), font: Fonts.kenney_future, color: Color.white, halign: :left)
 
-    if game.debug? && game.obstacles.first
-      current = game.obstacles.first
-      while current.after?
-        after = current.after
-
-        a_pos, b_pos = current.after.challenge_line
-        angle = current.after.challenge_angle.abs
-
-        Draw.line(start: a_pos, end: b_pos)
-        text = "Angle: #{angle.round(1)}"
-        Draw.text(text:, pos: b_pos + Vector.new(16, 32))
-        current = after
-      end
-    end
+    debug_draw_obstacles
 
     all_on_screen = game.obstacles.all?(&:onscreen?)
     generate_obstacles(5) if all_on_screen
