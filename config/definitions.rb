@@ -114,4 +114,12 @@ module Draw
   # @param [Font] font
   # @return [Vector]
   def self.measure_text(); end
+
+  # Draws a line from start to finish
+  #
+  # @param [Vector] start
+  # @param [Vector] end
+  # @param [Float] thickness
+  # @param [Color] color
+  def self.line(start:, end:, thickness: 2, color: Color.red); end
 end
