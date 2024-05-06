@@ -74,7 +74,6 @@ mrb_font_handle_type: mrb.DataType = {"Font", mrb.free}
 mrb_vector_type: mrb.DataType = {"Vector", mrb.free}
 mrb_color_type: mrb.DataType = {"Color", mrb.free}
 mrb_sprite_type: mrb.DataType = {"Sprite", mrb.free}
-mrb_collision_evt_handle_type: mrb.DataType = {"CollisionEvent", mrb.free}
 
 EngineRClass :: struct {
 	as:            ^mrb.RClass,
@@ -87,6 +86,7 @@ EngineRClass :: struct {
 	texture_asset: ^mrb.RClass,
 	sprite:        ^mrb.RClass,
 	vector:        ^mrb.RClass,
+	set:           ^mrb.RClass,
 }
 
 engine_classes: EngineRClass
@@ -94,6 +94,7 @@ engine_classes: EngineRClass
 game_load_mruby_raylib :: proc(game: ^Game) {
 	st := game.ruby
 
+	engine_classes.set = mrb.class_get(st, "Set")
 	setup_engine(st)
 	setup_assets(st)
 	setup_draw(st)
@@ -508,8 +509,9 @@ collider_other_collisions :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mr
 		mrb_e := mrb.obj_new(state, engine_classes.collider, 1, &mrb_v)
 		out[idx] = mrb_e
 	}
+	values := mrb.ary_new_from_values(state, len(out), raw_data(out))
 
-	return mrb.ary_new_from_values(state, len(out), raw_data(out))
+	return mrb.obj_new(state, engine_classes.set, 1, &values)
 }
 
 
@@ -977,7 +979,7 @@ draw_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	// TODO: I can totally do this with generics and reflection
-	names: []mrb.Sym = {
+	names: []mrb.Sym =  {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
@@ -1155,7 +1157,7 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 		font: mrb.Value,
 	}
 
-	names: []mrb.Sym = {
+	names: []mrb.Sym =  {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "font"),

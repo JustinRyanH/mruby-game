@@ -6,7 +6,6 @@
   * Ruby ImUI
 * Sounds
 * Re-do the Difficulty Calculator to use the edge differences between start of old and beginning of new
-* Collision maybe make Collision list always a set
 * Make the character move, use a camera to follow
 * Have the character/enemy loop in world space
 
@@ -58,6 +57,7 @@
 * Animation
 * Refactor - Extract a sprite system
 * Fix Score
+* Collision maybe make Collision list always a set
 
 ## AOR
 
