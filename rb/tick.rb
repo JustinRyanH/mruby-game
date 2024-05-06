@@ -10,6 +10,8 @@ require 'assets/scripts/assets'
 # $game.tick
 
 class Demo
+  attr_reader :volume
+
   def initialize
     @ready = false
   end
@@ -17,11 +19,18 @@ class Demo
   def tick
     setup unless ready?
 
-    @sound.play if FrameInput.key_was_down?(:p)
+    Draw.text(text: "Volume: #{volume}", pos: Vector.new(100, 100))
+    @volume += 0.1 if FrameInput.key_was_down?(:up)
+    @volume -= 0.1 if FrameInput.key_was_down?(:down)
+    @volume = @volume.clamp(0, 1)
+    @sound.play(volume:) if FrameInput.key_was_down?(:p)
   end
 
   def setup
     @sound = Sounds.flap1
+    @volume = 0.5
+
+    @ready = true
   end
 
   def ready?

@@ -1375,14 +1375,14 @@ sound_play :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	snd_hndle := mrb.get_data_from_value(SoundHandle, self)^
 
-	volumn: f32 = 0.5
+	volume: f32 = 0.5
 	if !mrb.undef_p(values.volume) && mrb.float_p(values.volume) {
-		volumn = cast(f32)mrb.as_float(state, values.volume)
-		volumn = math.clamp(volumn, 0, 1)
+		volume = cast(f32)mrb.as_float(state, values.volume)
+		volume = math.clamp(volume, 0, 1)
 	}
 
 	alias_hndle, alias := game_alias_sound(g, snd_hndle)
-	rl.SetSoundVolume(alias, 1)
+	rl.SetSoundVolume(alias, volume)
 	rl.PlaySound(alias)
 
 	// Set the Volume
