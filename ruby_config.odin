@@ -77,16 +77,16 @@ mrb_sprite_type: mrb.DataType = {"Sprite", mrb.free}
 
 EngineRClass :: struct {
 	as:            ^mrb.RClass,
+	collider:      ^mrb.RClass,
 	color:         ^mrb.RClass,
 	draw_module:   ^mrb.RClass,
 	engine:        ^mrb.RClass,
-	collider:      ^mrb.RClass,
 	font_asset:    ^mrb.RClass,
 	frame:         ^mrb.RClass,
-	texture_asset: ^mrb.RClass,
-	sprite:        ^mrb.RClass,
-	vector:        ^mrb.RClass,
 	set:           ^mrb.RClass,
+	sprite:        ^mrb.RClass,
+	texture_asset: ^mrb.RClass,
+	vector:        ^mrb.RClass,
 }
 
 engine_classes: EngineRClass
