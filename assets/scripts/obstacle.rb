@@ -148,24 +148,6 @@ class Obstacle
     end
   end
 
-  def challenge_line_low
-    return nil unless before?
-
-    a = Vector.new(bottom.left, bottom.top)
-    b = Vector.new(before.bottom.right, before.bottom.top)
-
-    [a, b]
-  end
-
-  def challenge_line_high
-    return nil unless before?
-
-    b = Vector.new(before.top.right, before.top.bottom)
-    a = Vector.new(top.left, top.bottom)
-
-    [a, b]
-  end
-
   def challenge_line
     return nil unless before?
 
@@ -179,18 +161,57 @@ class Obstacle
     get_angle(a, b)
   end
 
-  def challenge_angle_high
+  def overlap_top
     return nil unless before?
 
-    a, b = challenge_line_high
-    get_angle(a, b)
+    area.bottom - before.area.top
   end
 
-  def challenge_angle_low
+  def overlap_bottom
     return nil unless before?
 
-    a, b = challenge_line_low
-    get_angle(a, b)
+    area.top - before.area.bottom
+  end
+
+  def cross_over_bottom_distance
+    return nil unless before?
+
+    a, b = cross_over_bottom
+    (b - a).length
+  end
+
+  def cross_over_top_distance
+    return nil unless before?
+
+    a, b = cross_over_top
+    (b - a).length
+  end
+
+  def cross_over_top
+    return nil unless before?
+
+    a = Vector.new(top.left, area.bottom)
+    b = Vector.new(before.top.right, before.area.top)
+    [a, b]
+  end
+
+  def cross_over_bottom
+    return nil unless before?
+
+    a = Vector.new(top.left, area.top)
+    b = Vector.new(before.top.right, before.area.bottom)
+    [a, b]
+  end
+
+  def impossible?
+    # return false unless before?
+    # return false if before.overlap_top.nil?
+    # return false if before.overlap_bottom.nil?
+    # return false if before.overlap_top.positive? && before.overlap_bottom.positive?
+    #
+    # before.cross_over_top_distance < before.overlap_top.abs * 2.5 ||
+    #   before.cross_over_bottom_distance < before.overlap_bottom.abs * 2.5
+    false
   end
 
   private
