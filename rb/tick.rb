@@ -16,6 +16,8 @@ class Demo
 
   def tick
     setup unless ready?
+
+    @sound.play if FrameInput.key_was_down?(:p)
   end
 
   def setup

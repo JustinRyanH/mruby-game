@@ -1324,6 +1324,7 @@ setup_sounds :: proc(st: ^mrb.State) {
 	mrb.set_data_type(sound_class, .CData)
 	mrb.define_method(st, sound_class, "initialize", sound_init, mrb.args_req(1))
 	mrb.define_method(st, sound_class, "id", sound_get_id, mrb.args_none())
+	mrb.define_method(st, sound_class, "play", sound_play, mrb.args_key(1, 0))
 	engine_classes.sound = sound_class
 }
 
@@ -1359,6 +1360,36 @@ sound_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 	i^ = cast(SoundHandle)handle_id
 	return self
+}
+
+@(private = "file")
+sound_play :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	KValues :: struct {
+		volume: mrb.Value,
+	}
+
+	values: KValues
+	load_kwargs(KValues, state, &values)
+
+	i := mrb.get_data_from_value(SoundHandle, self)^
+
+	volumn: f32 = 0.5
+	if !mrb.undef_p(values.volume) && mrb.float_p(values.volume) {
+		volumn = cast(f32)mrb.as_float(state, values.volume)
+		volumn = math.clamp(volumn, 0, 1)
+	}
+
+	og_sound, sound_exists := as_get_sound(&g.assets, i)
+	assert(sound_exists, "Requested Sound does not exists")
+
+
+	// Set the Volume
+	// Set the Pitch
+
+
+	return mrb.nil_value()
 }
 
 //////////////////////////////
