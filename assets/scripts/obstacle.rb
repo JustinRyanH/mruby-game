@@ -148,6 +148,15 @@ class Obstacle
     end
   end
 
+  def challenge_line_low
+    return nil unless before?
+
+    a = Vector.new(bottom.left, bottom.top)
+    b = Vector.new(before.bottom.right, before.bottom.top)
+
+    [a, b]
+  end
+
   def challenge_line
     return nil unless before?
 

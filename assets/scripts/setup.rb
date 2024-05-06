@@ -144,9 +144,11 @@ class GameplayState
       after = current.after
 
       a_pos, b_pos = current.after.challenge_line
+      low_a_pos, low_b_pos = current.after.challenge_line_low
       angle = current.after.challenge_angle.abs
 
       Draw.line(start: a_pos, end: b_pos)
+      Draw.line(start: low_a_pos, end: low_b_pos, color: Color.orange)
       text = "Angle: #{angle.round(1)}"
       Draw.text(text:, pos: b_pos + Vector.new(16, 32))
       current = after
