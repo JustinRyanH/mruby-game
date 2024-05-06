@@ -157,6 +157,15 @@ class Obstacle
     [a, b]
   end
 
+  def challenge_line_high
+    return nil unless before?
+
+    b = Vector.new(before.top.right, before.top.bottom)
+    a = Vector.new(top.left, top.bottom)
+
+    [a, b]
+  end
+
   def challenge_line
     return nil unless before?
 
@@ -167,12 +176,30 @@ class Obstacle
     return nil unless before?
 
     a, b = challenge_line
+    get_angle(a, b)
+  end
+
+  def challenge_angle_high
+    return nil unless before?
+
+    a, b = challenge_line_high
+    get_angle(a, b)
+  end
+
+  def challenge_angle_low
+    return nil unless before?
+
+    a, b = challenge_line_low
+    get_angle(a, b)
+  end
+
+  private
+
+  def get_angle(a, b)
     c = a - b
 
     DEG_PER_RAD * c.normalize.angle
   end
-
-  private
 
   # @return [Set<Entity] area_collisions
   # @return [Game] game
