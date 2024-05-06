@@ -10,7 +10,7 @@ require 'assets/scripts/assets'
 # $game.tick
 
 class Demo
-  attr_reader :volume
+  attr_reader :volume, :pitch
 
   def initialize
     @ready = false
@@ -20,15 +20,22 @@ class Demo
     setup unless ready?
 
     Draw.text(text: "Volume: #{volume}", pos: Vector.new(100, 100))
+    Draw.text(text: "Pitch: #{pitch}", pos: Vector.new(100, 160))
     @volume += 0.1 if FrameInput.key_was_down?(:up)
     @volume -= 0.1 if FrameInput.key_was_down?(:down)
     @volume = @volume.clamp(0, 1)
-    @sound.play(volume:) if FrameInput.key_was_down?(:p)
+
+    @pitch += 0.1 if FrameInput.key_was_down?(:right)
+    @pitch -= 0.1 if FrameInput.key_was_down?(:left)
+    @pitch = @pitch.clamp(0, 2)
+
+    @sound.play(volume:, pitch:) if FrameInput.key_was_down?(:p)
   end
 
   def setup
     @sound = Sounds.flap1
     @volume = 0.5
+    @pitch = 1
 
     @ready = true
   end

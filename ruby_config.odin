@@ -1368,6 +1368,7 @@ sound_play :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	KValues :: struct {
 		volume: mrb.Value,
+		pitch:  mrb.Value,
 	}
 
 	values: KValues
@@ -1380,13 +1381,15 @@ sound_play :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		volume = cast(f32)mrb.as_float(state, values.volume)
 		volume = math.clamp(volume, 0, 1)
 	}
+	pitch: f32 = 1
+	if !mrb.undef_p(values.pitch) && mrb.float_p(values.pitch) {
+		pitch = cast(f32)mrb.as_float(state, values.pitch)
+	}
 
 	alias_hndle, alias := game_alias_sound(g, snd_hndle)
 	rl.SetSoundVolume(alias, volume)
+	rl.SetSoundPitch(alias, pitch)
 	rl.PlaySound(alias)
-
-	// Set the Volume
-	// Set the Pitch
 
 	return mrb.nil_value()
 }
