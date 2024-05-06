@@ -372,22 +372,11 @@ class Game
     current = obstacles.first
     while current.after?
       after = current.after
+      next if after.nil?
 
-      low_a_pos, low_b_pos = current.after.challenge_line_low
-      high_a_pos, high_b_pos = current.after.challenge_line_high
-      low_angle = current.after.challenge_angle_low.abs
-      high_angle = current.after.challenge_angle_high.abs
+      a, b = after.cross_over_top
+      puts a.angle_between(b)
 
-      low_dt = (low_b_pos - low_a_pos)
-      low_length = low_dt.length
-
-      Draw.line(start: low_a_pos, end: low_b_pos, color: Color.orange)
-      Draw.line(start: high_a_pos, end: high_b_pos, color: Color.orange)
-
-      text_low = "Low Angle: #{low_angle.round(1)}, Low Length: #{low_length.round(1)}"
-      text_high = "High Angle: #{high_angle.round(1)}"
-      Draw.text(text: text_high, pos: high_b_pos + Vector.new(16, 0), size: 34, color: Color.red)
-      Draw.text(text: text_low, pos: low_b_pos + Vector.new(16, 0), color: Color.red)
       current = after
     end
   end
