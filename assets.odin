@@ -242,3 +242,10 @@ as_load_sound :: proc(as: ^AssetSystem, path: string) -> (SoundHandle, bool) {
 
 	return sh, true
 }
+
+as_get_sound :: proc(as: ^AssetSystem, sh: SoundHandle) -> (SoundAsset, bool) {
+	if sh == 0 {
+		return {}, false
+	}
+	return as.sounds[sh]
+}

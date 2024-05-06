@@ -12,6 +12,8 @@ import dp "./data_pool"
 import "./input"
 import mrb "./mruby"
 
+ActiveSoundHandle :: distinct dp.Handle
+
 SpriteHandle :: distinct dp.Handle
 
 Sprite :: struct {
@@ -30,8 +32,8 @@ Collider :: struct {
 ColliderHandle :: distinct dp.Handle
 
 ColliderPool :: dp.DataPool(128, Collider, ColliderHandle)
-
 SpritePool :: dp.DataPool(1024, Sprite, SpriteHandle)
+ActiveSoundPool :: dp.DataPool(32, rl.Sound, ActiveSoundHandle)
 
 CollisionTargets :: [dynamic]ColliderHandle
 
@@ -52,6 +54,7 @@ Game :: struct {
 	// Game Data
 	bg_color:         rl.Color,
 	colliders:        ColliderPool,
+	active_sounds:    ActiveSoundPool,
 	sprites:          SpritePool,
 }
 
@@ -114,4 +117,16 @@ game_debug_draw :: proc(game: ^Game) {
 		rect := rl.Rectangle{pos.x, pos.y, clr.size.x, clr.size.y}
 		rl.DrawRectangleLinesEx(rect, 2.0, rl.GREEN)
 	}
+}
+
+game_alias_sound :: proc(game: ^Game, sh: SoundHandle) -> (ActiveSoundHandle, rl.Sound) {
+	og_sound, sound_exists := as_get_sound(&g.assets, sh)
+	assert(sound_exists, "Requested Sound does not exists")
+
+	alias := rl.LoadSoundAlias(og_sound.sound)
+	ah, success := dp.add(&game.active_sounds, alias)
+	assert(success, "Failed to create a Sound Alias")
+
+
+	return ah, alias
 }

@@ -1373,7 +1373,7 @@ sound_play :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	values: KValues
 	load_kwargs(KValues, state, &values)
 
-	i := mrb.get_data_from_value(SoundHandle, self)^
+	snd_hndle := mrb.get_data_from_value(SoundHandle, self)^
 
 	volumn: f32 = 0.5
 	if !mrb.undef_p(values.volume) && mrb.float_p(values.volume) {
@@ -1381,9 +1381,9 @@ sound_play :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		volumn = math.clamp(volumn, 0, 1)
 	}
 
-	og_sound, sound_exists := as_get_sound(&g.assets, i)
-	assert(sound_exists, "Requested Sound does not exists")
-
+	alias_hndle, alias := game_alias_sound(g, snd_hndle)
+	rl.SetSoundVolume(alias, 1)
+	rl.PlaySound(alias)
 
 	// Set the Volume
 	// Set the Pitch
