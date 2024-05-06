@@ -560,6 +560,7 @@ setup_vector_class :: proc(st: ^mrb.State) {
 	mrb.define_method(st, vector_class, "==", vector_eq, mrb.args_req(1))
 	mrb.define_method(st, vector_class, "lerp", vector_lerp, mrb.args_req(2))
 	mrb.define_method(st, vector_class, "angle", vector_angle, mrb.args_none())
+	mrb.define_method(st, vector_class, "angle_between", vector_angle_between, mrb.args_req(1))
 	mrb.define_method(st, vector_class, "length", vector_length, mrb.args_none())
 	mrb.define_method(st, vector_class, "normalize", vector_normalize, mrb.args_none())
 	engine_classes.vector = vector_class
@@ -760,6 +761,23 @@ vector_angle :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	old := mrb.get_data_from_value(rl.Vector2, self)
 
 	angle := math.atan2(old.y, old.x)
+
+	return mrb.float_value(state, cast(mrb.Float)angle)
+}
+
+@(private = "file")
+vector_angle_between :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+	other: mrb.Value
+	mrb.get_args(state, "o", &other)
+
+	a := mrb.get_data_from_value(rl.Vector2, self)^
+	b := mrb.get_data_from_value(rl.Vector2, other)^
+
+	c := b - a
+
+	c = math.normalize(c)
+	angle := math.atan2(c.y, c.x)
 
 	return mrb.float_value(state, cast(mrb.Float)angle)
 }
