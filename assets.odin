@@ -100,8 +100,9 @@ AssetSystem :: struct {
 }
 
 as_init :: proc(as: ^AssetSystem, asset_dir: string) {
-	as.ruby = make(map[RubyCodeHandle]RubyCodeAsset, 32)
-	as.fonts = make(map[FontHandle]FontAsset, 32)
+	as.ruby = make(map[RubyCodeHandle]RubyCodeAsset)
+	as.fonts = make(map[FontHandle]FontAsset)
+	as.sounds = make(map[SoundHandle]SoundAsset)
 	as.asset_dir = asset_dir
 }
 
@@ -124,6 +125,7 @@ as_deinit :: proc(as: ^AssetSystem) {
 	delete(as.fonts)
 	delete(as.asset_dir)
 	delete(as.textures)
+	delete(as.sounds)
 }
 
 as_load_ruby :: proc(as: ^AssetSystem, file: string) -> (RubyCodeHandle, bool) {
