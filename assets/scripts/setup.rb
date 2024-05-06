@@ -87,37 +87,11 @@ class DeathState
     @restart_timer = Timer.new
   end
 
-  def debug_draw_obstacles
-    return unless game.debug? && game.obstacles.first
-
-    current = game.obstacles.first
-    while current.after?
-      after = current.after
-
-      low_a_pos, low_b_pos = current.after.challenge_line_low
-      high_a_pos, high_b_pos = current.after.challenge_line_high
-      low_angle = current.after.challenge_angle_low.abs
-      high_angle = current.after.challenge_angle_high.abs
-
-      low_dt = (low_b_pos - low_a_pos)
-      low_length = low_dt.length
-
-      Draw.line(start: low_a_pos, end: low_b_pos, color: Color.orange)
-      Draw.line(start: high_a_pos, end: high_b_pos, color: Color.orange)
-
-      text_low = "Low Angle: #{low_angle.round(1)}, Low Length: #{low_length.round(1)}"
-      text_high = "High Angle: #{high_angle.round(1)}"
-      Draw.text(text: text_high, pos: high_b_pos + Vector.new(16, 0), size: 34, color: Color.red)
-      Draw.text(text: text_low, pos: low_b_pos + Vector.new(16, 0), color: Color.red)
-      current = after
-    end
-  end
-
   def tick
     @death_timer.tick
     @restart_timer.tick
 
-    debug_draw_obstacles
+    game.debug_draw_obstacles
 
     game.player.pos = @player_start.lerp(@player_end, @death_timer.percentage)
 
@@ -164,32 +138,6 @@ class GameplayState
     @game = game
   end
 
-  def debug_draw_obstacles
-    return unless game.debug? && game.obstacles.first
-
-    current = game.obstacles.first
-    while current.after?
-      after = current.after
-
-      low_a_pos, low_b_pos = current.after.challenge_line_low
-      high_a_pos, high_b_pos = current.after.challenge_line_high
-      low_angle = current.after.challenge_angle_low.abs
-      high_angle = current.after.challenge_angle_high.abs
-
-      low_dt = (low_b_pos - low_a_pos)
-      low_length = low_dt.length
-
-      Draw.line(start: low_a_pos, end: low_b_pos, color: Color.orange)
-      Draw.line(start: high_a_pos, end: high_b_pos, color: Color.orange)
-
-      text_low = "Low Angle: #{low_angle.round(1)}, Low Length: #{low_length.round(1)}"
-      text_high = "High Angle: #{high_angle.round(1)}"
-      Draw.text(text: text_high, pos: high_b_pos + Vector.new(16, 0), size: 34, color: Color.red)
-      Draw.text(text: text_low, pos: low_b_pos + Vector.new(16, 0), color: Color.red)
-      current = after
-    end
-  end
-
   def tick
     move_player
     move_world
@@ -203,7 +151,7 @@ class GameplayState
               anchor_percentage: Vector.new(0.0, 0.5), color: Color.blue)
     Draw.text(**text_args, pos: Vector.new(32, 48), font: Fonts.kenney_future, color: Color.white, halign: :left)
 
-    debug_draw_obstacles
+    game.debug_draw_obstacles
 
     all_on_screen = game.obstacles.all?(&:onscreen?)
     generate_obstacles(5) if all_on_screen
@@ -416,6 +364,32 @@ class Game
 
   def debug?
     Engine.debug?
+  end
+
+  def debug_draw_obstacles
+    return unless debug? && obstacles.first
+
+    current = obstacles.first
+    while current.after?
+      after = current.after
+
+      low_a_pos, low_b_pos = current.after.challenge_line_low
+      high_a_pos, high_b_pos = current.after.challenge_line_high
+      low_angle = current.after.challenge_angle_low.abs
+      high_angle = current.after.challenge_angle_high.abs
+
+      low_dt = (low_b_pos - low_a_pos)
+      low_length = low_dt.length
+
+      Draw.line(start: low_a_pos, end: low_b_pos, color: Color.orange)
+      Draw.line(start: high_a_pos, end: high_b_pos, color: Color.orange)
+
+      text_low = "Low Angle: #{low_angle.round(1)}, Low Length: #{low_length.round(1)}"
+      text_high = "High Angle: #{high_angle.round(1)}"
+      Draw.text(text: text_high, pos: high_b_pos + Vector.new(16, 0), size: 34, color: Color.red)
+      Draw.text(text: text_low, pos: low_b_pos + Vector.new(16, 0), color: Color.red)
+      current = after
+    end
   end
 
   private
