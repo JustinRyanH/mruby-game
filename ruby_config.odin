@@ -1388,7 +1388,6 @@ sound_play :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	// Set the Volume
 	// Set the Pitch
 
-
 	return mrb.nil_value()
 }
 

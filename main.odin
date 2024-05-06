@@ -154,6 +154,7 @@ main :: proc() {
 		}
 		defer free_all(context.temp_allocator)
 		defer mrb.incremental_gc(g.ruby)
+		defer game_handle_sounds(g)
 
 		imui_beign(&g.imui)
 

@@ -130,3 +130,13 @@ game_alias_sound :: proc(game: ^Game, sh: SoundHandle) -> (ActiveSoundHandle, rl
 
 	return ah, alias
 }
+
+
+game_handle_sounds :: proc(game: ^Game) {
+	sound_iter := dp.new_iter(&game.active_sounds)
+	for sound, hndle in dp.iter_next(&sound_iter) {
+		if !rl.IsSoundPlaying(sound) {
+			dp.remove(&game.active_sounds, hndle)
+		}
+	}
+}
