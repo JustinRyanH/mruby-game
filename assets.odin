@@ -9,6 +9,17 @@ import rl "vendor:raylib"
 
 import "./utils"
 
+SoundHandle :: distinct u64
+
+wave_handle :: proc(str: string) -> SoundHandle {
+	return cast(SoundHandle)utils.generate_u64_from_string(str)
+}
+
+SoundAsset :: struct {
+	handle: SoundHandle,
+	sound:  rl.Sound,
+}
+
 TextureHandle :: distinct u64
 
 texture_handle :: proc(str: string) -> TextureHandle {
@@ -85,6 +96,7 @@ AssetSystem :: struct {
 	ruby:      map[RubyCodeHandle]RubyCodeAsset,
 	fonts:     map[FontHandle]FontAsset,
 	textures:  map[TextureHandle]TextureAsset,
+	sounds:    map[SoundHandle]SoundAsset,
 }
 
 as_init :: proc(as: ^AssetSystem, asset_dir: string) {
@@ -102,6 +114,12 @@ as_deinit :: proc(as: ^AssetSystem) {
 		rc := &as.ruby[i]
 		ruby_code_deinit(rc)
 	}
+
+	for hndle in as.sounds {
+		snd := &as.sounds[hndle]
+		rl.UnloadSound(snd.sound)
+	}
+
 	delete(as.ruby)
 	delete(as.fonts)
 	delete(as.asset_dir)
@@ -206,4 +224,19 @@ as_get_texture :: proc(as: ^AssetSystem, th: TextureHandle) -> (TextureAsset, bo
 	}
 
 	return as.textures[th]
+}
+
+as_load_sound :: proc(as: ^AssetSystem, path: string) -> (SoundHandle, bool) {
+	sh := wave_handle(path)
+	if sh in as.sounds {
+		return sh, true
+	}
+
+	cpath := strings.clone_to_cstring(path, context.temp_allocator)
+
+	sound := rl.LoadSound(cpath)
+	assert(sound != {})
+	as.sounds[sh] = SoundAsset{sh, sound}
+
+	return sh, true
 }

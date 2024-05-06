@@ -142,6 +142,9 @@ main :: proc() {
 	rl.InitWindow(1280, 800, "Odin-Ruby Game Demo")
 	defer rl.CloseWindow()
 
+	rl.InitAudioDevice()
+	defer rl.CloseAudioDevice()
+
 	rl.SetTargetFPS(TargetFPS)
 
 	for !rl.WindowShouldClose() {

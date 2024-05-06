@@ -6,6 +6,16 @@ class Fonts
   end
 end
 
+class Sounds
+  def self.flap1
+    @flap1 ||= AssetSystem.load_sound('assets/sounds/flap1.ogg')
+  end
+
+  def self.flap2
+    @flap2 ||= AssetSystem.load_sound('assets/sounds/flap2.ogg')
+  end
+end
+
 class Textures
   def self.copter
     @copter ||= AssetSystem.load_texture('assets/textures/copter_1.png')

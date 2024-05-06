@@ -84,6 +84,7 @@ EngineRClass :: struct {
 	font_asset:    ^mrb.RClass,
 	frame:         ^mrb.RClass,
 	set:           ^mrb.RClass,
+	sound:         ^mrb.RClass,
 	sprite:        ^mrb.RClass,
 	texture_asset: ^mrb.RClass,
 	vector:        ^mrb.RClass,
@@ -1232,10 +1233,12 @@ extract_color_from_value :: proc(
 setup_assets :: proc(st: ^mrb.State) {
 	setup_fonts(st)
 	setup_textures(st)
+	setup_sounds(st)
 
 	as_class := mrb.define_class(st, "AssetSystem", mrb.state_get_object_class(st))
 	mrb.define_class_method(st, as_class, "add_font", assets_add_font, mrb.args_req(1))
 	mrb.define_class_method(st, as_class, "load_texture", assets_load_texture, mrb.args_req(1))
+	mrb.define_class_method(st, as_class, "load_sound", assets_load_sound, mrb.args_req(1))
 	engine_classes.as = as_class
 }
 
@@ -1267,6 +1270,33 @@ assets_load_texture :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Valu
 }
 
 @(private = "file")
+assets_load_sound :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	asset_system := &g.assets
+
+	path: mrb.Value
+	mrb.get_args(state, "o", &path)
+
+	if !mrb.string_p(path) {
+		mrb.raise_exception(state, "Expected the Sound path to be a string")
+		return mrb.nil_value()
+	}
+	path_str, success := mrb.string_from_value(state, path, context.temp_allocator)
+	assert(success, "We should be able to always create a new string value")
+
+	handle, sound_loaded := as_load_sound(&g.assets, path_str)
+	if !sound_loaded {
+		mrb.raise_exception(state, "Failed to Load Texture: %s", path_str)
+		return mrb.nil_value()
+	}
+
+	handle_value := mrb.int_value(state, cast(mrb.Int)handle)
+
+	return mrb.obj_new(state, engine_classes.sound, 1, &handle_value)
+}
+
+@(private = "file")
 assets_add_font :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
@@ -1282,6 +1312,53 @@ assets_add_font :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	handle_v := mrb.int_value(state, cast(mrb.Int)handle)
 
 	return mrb.obj_new(state, engine_classes.font_asset, 1, &handle_v)
+}
+
+
+//////////////////////////////
+//// Sound
+//////////////////////////////
+
+setup_sounds :: proc(st: ^mrb.State) {
+	sound_class := mrb.define_class(st, "Sound", mrb.state_get_object_class(st))
+	mrb.set_data_type(sound_class, .CData)
+	mrb.define_method(st, sound_class, "initialize", sound_init, mrb.args_req(1))
+	mrb.define_method(st, sound_class, "id", sound_get_id, mrb.args_none())
+	engine_classes.sound = sound_class
+}
+
+sound_from_object :: proc(
+	state: ^mrb.State,
+	v: mrb.Value,
+	loc := #caller_location,
+) -> SoundHandle {
+	assert(
+		mrb.obj_is_kind_of(state, v, engine_classes.sound),
+		fmt.tprintf("Expected Object to be a Sound @ %v", loc),
+	)
+	return mrb.get_data_from_value(SoundHandle, v)^
+}
+
+@(private = "file")
+sound_get_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	id := mrb.get_data_from_value(SoundHandle, self)^
+	return mrb.int_value(state, cast(mrb.Int)id)
+}
+
+@(private = "file")
+sound_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	handle_id: int
+	mrb.get_args(state, "i", &handle_id)
+
+	i := mrb.get_data_from_value(SoundHandle, self)
+
+	if (i == nil) {
+		mrb.data_init(self, nil, &mrb_font_handle_type)
+		i = cast(^SoundHandle)mrb.malloc(state, size_of(SoundHandle))
+		mrb.data_init(self, i, &mrb_font_handle_type)
+	}
+	i^ = cast(SoundHandle)handle_id
+	return self
 }
 
 //////////////////////////////
