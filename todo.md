@@ -7,6 +7,8 @@
 * Sounds
 * Re-do the Difficulty Calculator to use the edge differences between start of old and beginning of new
 * Collision maybe make Collision list always a set
+* Make the character move, use a camera to follow
+* Have the character/enemy loop in world space
 
 ## Nice to
 
@@ -20,6 +22,15 @@
 * Input Recording/Playback
 * Particle Emission
 * Swap out to use Odin log context
+
+## Juice
+
+* Squash character on "flap"
+* Trail behind character
+
+## Gameplay
+
+* High Risk bouns areas
 
 ## Done
 
