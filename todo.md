@@ -2,25 +2,23 @@
 
 ## Current
 
-* Re-do the Difficulty Calculator to use the edge differences between start of old and beginning of new
 * Start Menu
   * Ruby ImUI
 * Sounds
 * Make the character move, use a camera to follow
-* Have the character/enemy loop in world space
+* Have the character/obstacle loop in world space
 
 ## Nice to
 
+* Swap out to use Odin log context
 * Debug ImUI
 * Implement Debug Tooling
 * Fix windows floating point position errors
 * Introduce Better errors for assets
 * Loading `.mrb` code
 * Asset Packaging
-* WASM build
 * Input Recording/Playback
-* Particle Emission
-* Swap out to use Odin log context
+* WASM build
 
 ## Juice
 
@@ -29,7 +27,13 @@
 
 ## Gameplay
 
+* Shadows
+* Echolocation
 * High Risk bouns areas
+
+## Backburner
+
+* Particle Emission
 
 ## Done
 
@@ -57,6 +61,7 @@
 * Animation
 * Refactor - Extract a sprite system
 * Fix Score
+* Re-do the Difficulty Calculator to use the edge differences between start of old and beginning of new
 
 ## AOR
 
