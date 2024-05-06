@@ -2,9 +2,9 @@
 
 ## Current
 
+* Sounds
 * Start Menu
   * Ruby ImUI
-* Sounds
 * Make the character move, use a camera to follow
 * Have the character/obstacle loop in world space
 
@@ -30,6 +30,16 @@
 * Shadows
 * Echolocation
 * High Risk bouns areas
+
+
+## Art
+
+* Swap to SVG art (more organic world?)
+* Pick a simple tri-color pallete
+* Movement
+  - Flap (High Sound)
+  - Glide (straight with slight drop) (No Sound)
+  - Dive (Medium Sound)
 
 ## Backburner
 
