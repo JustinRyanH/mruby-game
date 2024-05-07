@@ -2,9 +2,11 @@
 
 ## Current
 
+* Replace Sprite Draw with NPatch
 * Start Menu
   * Ruby ImUI
   * Idea of Focus
+  * Raylib NPatch
 
 * Make the character move, use a camera to follow
 * Have the character/obstacle loop in world space
