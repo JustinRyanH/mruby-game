@@ -1386,8 +1386,6 @@ sound_play :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		pitch = cast(f32)mrb.as_float(state, values.pitch)
 	}
 
-	fmt.println("Pitch ", pitch)
-
 	alias_hndle, alias := game_alias_sound(g, snd_hndle)
 	rl.SetSoundVolume(alias, volume)
 	rl.SetSoundPitch(alias, pitch)
