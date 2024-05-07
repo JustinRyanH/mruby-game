@@ -4,6 +4,7 @@
 
 * Start Menu
   * Ruby ImUI
+
 * Make the character move, use a camera to follow
 * Have the character/obstacle loop in world space
 
