@@ -10,6 +10,14 @@
 require 'assets/scripts/engine_override'
 require 'assets/scripts/assets'
 
+class Style
+  attr_writer :padding
+
+  def padding
+    @padding ||= 8
+  end
+end
+
 class ImUiText
   attr_reader :message, :pos, :size, :font
 
@@ -27,11 +35,14 @@ class ImUiText
 end
 
 class ImUiContainer
+  attr_reader :style
+
   def initialize(
     size: Vector.new(100, 200),
-    pos: Vector.new(*FrameInput.screen_size) * 0.5
+    pos: Vector.new(*FrameInput.screen_size) * 0.5,
+    style: Style.new
   )
-    @padding = 8
+    @style = style
     @pos = pos
     @size = size
     @elements = []
@@ -43,8 +54,8 @@ class ImUiContainer
 
   def draw
     dimensions = @elements.map(&:dimensions)
-    height = dimensions.inject(0) { |sum, dim| sum + dim.y + @padding } + @padding
-    width = dimensions.inject(0) { |max, dim| [max, dim.x].max } + (@padding * 2)
+    height = dimensions.inject(0) { |sum, dim| sum + dim.y + style.padding } + style.padding
+    width = dimensions.inject(0) { |max, dim| [max, dim.x].max } + (style.padding * 2)
 
     calculated_size = Vector.new(width, height)
     rect = Rectangle.new(pos:, size: calculated_size)
@@ -55,11 +66,11 @@ class ImUiContainer
       color: Color.regal_blue,
       anchor_percentage: Vector.new(0.5, 0.5),
     )
-    y = rect.top + @padding
+    y = rect.top + style.padding
     @elements.each do |el|
       dimensions = el.dimensions
       pos = Vector.new(@pos.x, (dimensions.y * 0.5) + y)
-      y += @padding + dimensions.y
+      y += style.padding + dimensions.y
       Draw.text(text: el.message, pos:, font: el.font, size: el.size, halign: :center)
     end
   end
