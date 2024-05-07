@@ -10,6 +10,14 @@ class Sounds
   def self.thruster
     @thruster ||= AssetSystem.load_sound('assets/sounds/kenney_thruster.ogg')
   end
+
+  def self.explosion
+    @explosion ||= AssetSystem.load_sound('assets/sounds/kenney_explosion.ogg')
+  end
+
+  def self.laser
+    @laser ||= AssetSystem.load_sound('assets/sounds/kenney_laser.ogg')
+  end
 end
 
 class Textures

@@ -276,8 +276,7 @@ class GameplayState
 
   def flap_player
     game.player_velocity.y -= 4.5
-    Sounds.flap2.play(volume: 0.1, pitch: 0.5)
-    Sounds.flap1.play(volume: 0.2, pitch: 2)
+    Sounds.explosion.play(volume: 0.4, pitch: 2)
   end
 
   def move_world
