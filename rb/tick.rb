@@ -27,6 +27,10 @@ class Style
   def font_size
     @font_size ||= 32
   end
+
+  def font_color
+    @font_color ||= Color.white
+  end
 end
 
 class ImUiText
@@ -117,7 +121,7 @@ class Demo
 
     ImUI.container do |ui|
       ui.text('Immediate Mode GUI')
-      ui.text('Immediate Mode GUI')
+      ui.text('Test')
     end
   end
 
