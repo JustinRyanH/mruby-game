@@ -11,27 +11,41 @@ require 'assets/scripts/engine_override'
 require 'assets/scripts/assets'
 
 class Style
-  attr_writer :padding
+  # @param [Float] padding
+  # @param [Font] font
+  # @param [Float] font_size
+  attr_writer :padding, :font, :font_size
 
   def padding
     @padding ||= 8
   end
+
+  def font
+    @font ||= Fonts.kenney_future
+  end
+
+  def font_size
+    @font_size ||= 32
+  end
 end
 
 class ImUiText
-  attr_reader :message, :pos, :size, :font
+  extend ::Forwardable
 
-  def initialize(message)
+  attr_reader :message, :style
+
+  def initialize(message, style: Style.new)
     @message = message
-    @size = 32
-    @font = Fonts.kenney_future
+    @style = style
   end
 
   def dimensions
-    Draw.measure_text(text: message, size:, font:)
+    Draw.measure_text(text: message, size: style.font_size, font: style.font)
   end
 
   def draw; end
+
+  def_delegators :@style, :padding, :font, :font_size
 end
 
 class ImUiContainer
@@ -71,7 +85,7 @@ class ImUiContainer
       dimensions = el.dimensions
       pos = Vector.new(@pos.x, (dimensions.y * 0.5) + y)
       y += style.padding + dimensions.y
-      Draw.text(text: el.message, pos:, font: el.font, size: el.size, halign: :center)
+      Draw.text(text: el.message, pos:, font: el.font, size: el.font_size, halign: :center)
     end
   end
 
