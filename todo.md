@@ -2,7 +2,6 @@
 
 ## Current
 
-* Sounds
 * Start Menu
   * Ruby ImUI
 * Make the character move, use a camera to follow
@@ -72,6 +71,7 @@
 * Refactor - Extract a sprite system
 * Fix Score
 * Re-do the Difficulty Calculator to use the edge differences between start of old and beginning of new
+* Sounds
 
 ## AOR
 
