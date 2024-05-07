@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'assets/scripts/tilemap'
+
+
 class CollisionEvent
   # @param [Array<Collider>] entities_leaving
   # @param [Array<Collider>] entities_entering
