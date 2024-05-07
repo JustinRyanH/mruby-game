@@ -7,12 +7,8 @@ class Fonts
 end
 
 class Sounds
-  def self.flap1
-    @flap1 ||= AssetSystem.load_sound('assets/sounds/flap1.ogg')
-  end
-
-  def self.flap2
-    @flap2 ||= AssetSystem.load_sound('assets/sounds/flap2.ogg')
+  def self.thruster
+    @thruster ||= AssetSystem.load_sound('assets/sounds/kenney_thruster.ogg')
   end
 end
 
