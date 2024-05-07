@@ -1162,6 +1162,7 @@ draw_draw_line :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return mrb.nil_value()
 }
 
+// TODO: Font should not be required
 @(private = "file")
 draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
