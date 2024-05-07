@@ -1324,7 +1324,7 @@ setup_sounds :: proc(st: ^mrb.State) {
 	mrb.set_data_type(sound_class, .CData)
 	mrb.define_method(st, sound_class, "initialize", sound_init, mrb.args_req(1))
 	mrb.define_method(st, sound_class, "id", sound_get_id, mrb.args_none())
-	mrb.define_method(st, sound_class, "play", sound_play, mrb.args_key(1, 0))
+	mrb.define_method(st, sound_class, "play", sound_play, mrb.args_key(2, 0))
 	engine_classes.sound = sound_class
 }
 
@@ -1377,14 +1377,16 @@ sound_play :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	snd_hndle := mrb.get_data_from_value(SoundHandle, self)^
 
 	volume: f32 = 0.5
-	if !mrb.undef_p(values.volume) && mrb.float_p(values.volume) {
+	if !mrb.undef_p(values.volume) {
 		volume = cast(f32)mrb.as_float(state, values.volume)
 		volume = math.clamp(volume, 0, 1)
 	}
 	pitch: f32 = 1
-	if !mrb.undef_p(values.pitch) && mrb.float_p(values.pitch) {
+	if !mrb.undef_p(values.pitch) {
 		pitch = cast(f32)mrb.as_float(state, values.pitch)
 	}
+
+	fmt.println("Pitch ", pitch)
 
 	alias_hndle, alias := game_alias_sound(g, snd_hndle)
 	rl.SetSoundVolume(alias, volume)
