@@ -29,16 +29,15 @@
 * Shadows
 * Echolocation
 * High Risk bouns areas
-
+* Movement
+  - Flap (High Sound)
+  - Glide (straight with slight drop) (No Sound)
+  - Dive (Medium Sound)
 
 ## Art
 
 * Swap to SVG art (more organic world?)
 * Pick a simple tri-color pallete
-* Movement
-  - Flap (High Sound)
-  - Glide (straight with slight drop) (No Sound)
-  - Dive (Medium Sound)
 
 ## Backburner
 
