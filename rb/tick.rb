@@ -14,7 +14,15 @@ class Style
   # @param [Float] padding
   # @param [Font] font
   # @param [Float] font_size
-  attr_writer :padding, :font, :font_size
+  attr_writer :padding, :font, :font_size, :font_color
+
+  def self.from_hash(hsh)
+    Style.new.tap do |style|
+      hsh.keys
+         .select { |k| style.respond_to?(:"#{k}=") }
+         .each { |k| style.send(:"#{k}=", hsh[k]) }
+    end
+  end
 
   def padding
     @padding ||= 8
@@ -126,6 +134,7 @@ class Demo
   end
 
   def setup
+    @style = Style.from_hash({ padding: 16 })
     @ready = true
   end
 
