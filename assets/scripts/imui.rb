@@ -8,7 +8,8 @@ class Style
   # @param [Font] font
   # @param [Float] font_size
   # @param [Color] font_color
-  attr_writer :padding, :font, :font_size, :font_color
+  # @param [Symbol] text_align `:left`, `:right`, or `:center`
+  attr_writer :padding, :font, :font_size, :font_color, :text_align
 
   def self.from_hash(hsh)
     Style.new.tap { |style| style.merge_hash(hsh) }
@@ -32,6 +33,10 @@ class Style
 
   def background_color
     @background_color ||= Color.blank
+  end
+
+  def text_align
+    @text_align ||= :center
   end
 
   def merge(style)
@@ -77,9 +82,18 @@ class ImUiText
     Draw.measure_text(text: message, size: style.font_size, font: style.font)
   end
 
-  def draw; end
+  def draw
+    Draw.text(
+      text: message,
+      pos:,
+      font: style.font,
+      color: style.font_color,
+      size: style.font_size,
+      halign: style.text_align,
+    )
+  end
 
-  def_delegators :@style, :padding, :font, :font_size, :font_color
+  def_delegators :@style, :padding, :font, :font_size, :font_color, :text_align
 end
 
 class ImUiContainer
@@ -117,15 +131,8 @@ class ImUiContainer
     @elements.each do |el|
       dimensions = el.dimensions
       el.pos = Vector.new(@pos.x, (dimensions.y * 0.5) + y)
+      el.draw
       y += style.padding + dimensions.y
-      Draw.text(
-        text: el.message,
-        pos: el.pos,
-        font: el.font,
-        color: el.font_color,
-        size: el.font_size,
-        halign: :center,
-      )
     end
   end
 
