@@ -16,7 +16,7 @@ class Style
   end
 
   def padding
-    @padding ||= 2
+    @padding ||= 4
   end
 
   def font
