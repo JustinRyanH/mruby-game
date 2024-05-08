@@ -60,18 +60,23 @@ class Style
   end
 end
 
-class ImUiText
-  extend ::Forwardable
-
+class ImElement
   # @param [Vector] pos
   attr_accessor :pos
 
   # @return [Integer] id
-  # @return [String] message
   # @return [Style] style
-  attr_reader :id, :message, :style
+  attr_reader :id, :style
+end
+
+class ImUiText < ImElement
+  extend ::Forwardable
+
+  # @return [String] message
+  attr_reader :message
 
   def initialize(message, pos: nil, id: nil, style: Style.new)
+    super()
     @pos = pos
     @message = message
     @id = id || Engine.hash_str(message)
