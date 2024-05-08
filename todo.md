@@ -2,11 +2,11 @@
 
 ## Current
 
-* Replace Sprite Draw with NPatch
 * Start Menu
-  * Ruby ImUI
-  * Idea of Focus
-  * Raylib NPatch
+  - Button
+  - Focus for Button (Improved State)
+  - Hover Animation
+  - NPatch Background
 
 * Make the character move, use a camera to follow
 * Have the character/obstacle loop in world space
@@ -14,6 +14,8 @@
 ## Nice to
 
 * Swap out to use Odin log context
+* Texture Packing
+ - Maybe using Ruby scropts
 * Debug ImUI
 * Implement Debug Tooling
 * Fix windows floating point position errors
