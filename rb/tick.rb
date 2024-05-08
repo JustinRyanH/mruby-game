@@ -44,10 +44,11 @@ end
 class ImUiText
   extend ::Forwardable
 
-  attr_reader :message, :style
+  attr_reader :id, :message, :style
 
-  def initialize(message, style: Style.new)
+  def initialize(message, id: nil, style: Style.new)
     @message = message
+    @id = id || Engine.hash_str(message)
     @style = style
   end
 
@@ -64,10 +65,12 @@ class ImUiContainer
   attr_reader :style
 
   def initialize(
+    id:,
     size: Vector.new(100, 200),
     pos: Vector.new(*FrameInput.screen_size) * 0.5,
     style: Style.new
   )
+    @id = Engine.hash_str(id.to_s)
     @style = style
     @pos = pos
     @size = size
@@ -79,16 +82,11 @@ class ImUiContainer
   end
 
   def draw
-    dimensions = @elements.map(&:dimensions)
-    height = dimensions.inject(0) { |sum, dim| sum + dim.y + style.padding } + style.padding
-    width = dimensions.inject(0) { |max, dim| [max, dim.x].max } + (style.padding * 2)
-
-    calculated_size = Vector.new(width, height)
-    rect = Rectangle.new(pos:, size: calculated_size)
+    rect = Rectangle.new(pos:, size: dimensions)
 
     Draw.rect(
       pos:,
-      size: calculated_size,
+      size: dimensions,
       color: Color.regal_blue,
       anchor_percentage: Vector.new(0.5, 0.5),
     )
@@ -101,16 +99,26 @@ class ImUiContainer
     end
   end
 
-  def dimensions; end
+  def dimensions
+    dimensions = @elements.map(&:dimensions)
+    height = dimensions.inject(0) { |sum, dim| sum + dim.y + style.padding } + style.padding
+    width = dimensions.inject(0) { |max, dim| [max, dim.x].max } + (style.padding * 2)
+
+    Vector.new(width, height)
+  end
 
   private
 
   attr_reader :pos, :size, :padding
 end
 
-module ImUI
-  def self.container
-    c = ImUiContainer.new
+class ImUI
+  def self.ctx
+    @@ctx ||= ImUI.new
+  end
+
+  def self.container(id)
+    c = ImUiContainer.new(id:)
     yield c
     c.draw
   end
@@ -127,7 +135,7 @@ class Demo
     setup unless ready?
     Engine.background_color = Color.crow_black_blue
 
-    ImUI.container do |ui|
+    ImUI.container(:example) do |ui|
       ui.text('Immediate Mode GUI')
       ui.text('Test')
     end
