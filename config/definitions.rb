@@ -123,3 +123,11 @@ module Draw
   # @param [Color] color
   def self.line(start:, end:, thickness: 2, color: Color.red); end
 end
+
+class Engine
+  # Takes a ruby string and gives you a hash
+  #
+  # @param [String] str
+  # @return [Integer]
+  def self.hash_str(str); end
+end

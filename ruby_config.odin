@@ -12,6 +12,8 @@ import rl "vendor:raylib"
 import dp "./data_pool"
 import "./input"
 import mrb "./mruby"
+import "./utils"
+
 
 load_context :: proc "contextless" (state: ^mrb.State) -> runtime.Context {
 	ctx := transmute(^runtime.Context)mrb.state_alloc_ud(state)
@@ -998,7 +1000,7 @@ draw_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	// TODO: I can totally do this with generics and reflection
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
@@ -1177,7 +1179,7 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 		font: mrb.Value,
 	}
 
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "font"),
@@ -1491,6 +1493,7 @@ setup_engine :: proc(st: ^mrb.State) {
 	)
 	mrb.define_class_method(st, engine_module, "debug?", engine_get_debug, mrb.args_none())
 	mrb.define_class_method(st, engine_module, "debug=", engine_set_debug, mrb.args_req(1))
+	mrb.define_class_method(st, engine_module, "hash_str", engine_hash_str, mrb.args_req(1))
 	engine_classes.engine = engine_module
 }
 
@@ -1506,6 +1509,18 @@ engine_set_debug :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	g.debug = debug
 	return mrb.nil_value()
 }
+
+@(private = "file")
+engine_hash_str :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+	str: mrb.Value
+	mrb.get_args(state, "o", &str)
+	assert(mrb.string_p(str), "Engine.hash_str can only hash strings")
+	cstr := mrb.string_cstr(state, str)
+	hash := utils.generate_u64_from_cstring(cstr)
+	return mrb.int_value(state, cast(mrb.Int)hash)
+}
+
 
 @(private = "file")
 engine_set_bg_color :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
