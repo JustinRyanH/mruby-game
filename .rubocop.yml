@@ -10,6 +10,8 @@ Style/TrailingCommaInArguments:
 Style/TrailingCommaInArrayLiteral:
   EnforcedStyleForMultiline: comma
 
+Style/ClassVars:
+  Enabled: false
 Style/Documentation:
   Enabled: false
 
