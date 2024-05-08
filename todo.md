@@ -4,7 +4,7 @@
 
 * Start Menu
   - Button
-  - Focus for Button (Improved State)
+  - Focus for Button (State)
   - Hover Animation
   - NPatch Background
 
@@ -77,6 +77,7 @@
 * Fix Score
 * Re-do the Difficulty Calculator to use the edge differences between start of old and beginning of new
 * Sounds
+* ImUI
 
 ## AOR
 
