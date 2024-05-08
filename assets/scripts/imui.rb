@@ -7,6 +7,7 @@ class Style
   # @param [Float] padding
   # @param [Font] font
   # @param [Float] font_size
+  # @param [Color] font_color
   attr_writer :padding, :font, :font_size, :font_color
 
   def self.from_hash(hsh)
@@ -57,9 +58,16 @@ end
 class ImUiText
   extend ::Forwardable
 
+  # @param [Vector] pos
+  attr_accessor :pos
+
+  # @return [Integer] id
+  # @return [String] message
+  # @return [Style] style
   attr_reader :id, :message, :style
 
-  def initialize(message, id: nil, style: Style.new)
+  def initialize(message, pos: nil, id: nil, style: Style.new)
+    @pos = pos
     @message = message
     @id = id || Engine.hash_str(message)
     @style = style
@@ -108,11 +116,11 @@ class ImUiContainer
     y = rect.top + style.padding
     @elements.each do |el|
       dimensions = el.dimensions
-      pos = Vector.new(@pos.x, (dimensions.y * 0.5) + y)
+      el.pos = Vector.new(@pos.x, (dimensions.y * 0.5) + y)
       y += style.padding + dimensions.y
       Draw.text(
         text: el.message,
-        pos:,
+        pos: el.pos,
         font: el.font,
         color: el.font_color,
         size: el.font_size,
@@ -123,7 +131,7 @@ class ImUiContainer
 
   def dimensions
     dimensions = @elements.map(&:dimensions)
-    height = dimensions.inject(0) { |sum, dim| sum + dim.y + style.padding } + style.padding
+    height = dimensions.inject(0) { |sum, dim| sum + dim.y } + (style.padding * 2)
     width = dimensions.inject(0) { |max, dim| [max, dim.x].max } + (style.padding * 2)
 
     Vector.new(width, height)
