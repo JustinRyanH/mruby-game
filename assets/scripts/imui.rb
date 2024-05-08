@@ -10,11 +10,7 @@ class Style
   attr_writer :padding, :font, :font_size, :font_color
 
   def self.from_hash(hsh)
-    Style.new.tap do |style|
-      hsh.keys
-         .select { |k| style.respond_to?(:"#{k}=") }
-         .each { |k| style.send(:"#{k}=", hsh[k]) }
-    end
+    Style.new.tap { |style| style.merge_hash(hsh) }
   end
 
   def padding
@@ -31,6 +27,30 @@ class Style
 
   def font_color
     @font_color ||= Color.white
+  end
+
+  def background_color
+    @background_color ||= Color.blank
+  end
+
+  def merge(style)
+    merge_hash(style.to_h)
+  end
+
+  def merge_hash(hsh)
+    hsh.keys
+       .select { |k| respond_to?(:"#{k}=") }
+       .each { |k| send(:"#{k}=", hsh[k]) }
+  end
+
+  def to_h
+    {
+      padding:,
+      font:,
+      font_color:,
+      font_size:,
+      background_color:
+    }
   end
 end
 
@@ -51,7 +71,7 @@ class ImUiText
 
   def draw; end
 
-  def_delegators :@style, :padding, :font, :font_size
+  def_delegators :@style, :padding, :font, :font_size, :font_color
 end
 
 class ImUiContainer
@@ -70,8 +90,10 @@ class ImUiContainer
     @elements = []
   end
 
-  def text(message)
-    @elements << ImUiText.new(message)
+  def text(message, style: nil)
+    txt_style = self.style.clone
+    txt_style.merge(style) unless style.nil?
+    @elements << ImUiText.new(message, style: txt_style)
   end
 
   def draw
@@ -88,7 +110,14 @@ class ImUiContainer
       dimensions = el.dimensions
       pos = Vector.new(@pos.x, (dimensions.y * 0.5) + y)
       y += style.padding + dimensions.y
-      Draw.text(text: el.message, pos:, font: el.font, size: el.font_size, halign: :center)
+      Draw.text(
+        text: el.message,
+        pos:,
+        font: el.font,
+        color: el.font_color,
+        size: el.font_size,
+        halign: :center,
+      )
     end
   end
 
@@ -110,8 +139,8 @@ class ImUI
     @@ctx ||= ImUI.new
   end
 
-  def self.container(id)
-    c = ImUiContainer.new(id:)
+  def self.container(id, style: Style.new)
+    c = ImUiContainer.new(id:, style:)
     yield c
     c.draw
   end

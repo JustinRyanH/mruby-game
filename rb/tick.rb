@@ -24,7 +24,7 @@ class Demo
 
     ImUI.container(:example) do |ui|
       ui.text('Immediate Mode GUI')
-      ui.text('Test')
+      ui.text('Test', style: Style.from_hash({ font_color: Color.red }))
     end
   end
 
