@@ -115,7 +115,6 @@ class ImUiContainer < ImElement
     **
   )
     super(pos:, **)
-    @style = style
     @pos = pos
     @size = size
     @elements = []
@@ -168,4 +167,10 @@ class ImUI
     yield c
     c.draw
   end
+
+  def initialize
+    @elements = {}
+  end
+
+  def track_element(element); end
 end
