@@ -16,7 +16,7 @@ class Style
   end
 
   def padding
-    @padding ||= 8
+    @padding ||= 2
   end
 
   def font
@@ -67,24 +67,33 @@ class ImElement
   # @return [Integer] id
   # @return [Style] style
   attr_reader :id, :style
-end
 
-class ImUiText < ImElement
-  extend ::Forwardable
-
-  # @return [String] message
-  attr_reader :message
-
-  def initialize(message:, pos: nil, id: nil, style: Style.new)
-    super()
-    @pos = pos
-    @message = message
-    @id = id || Engine.hash_str(message)
+  def initialize(id:, style: Style.new)
+    @id = id
     @style = style
   end
 
   def dimensions
-    Draw.measure_text(text: message, size: style.font_size, font: style.font)
+    raise 'All ImElements must provide `dimensions`'
+  end
+
+  def draw
+    raise 'All ImElements must be able to draw'
+  end
+end
+
+class ImUiText < ImElement
+  # @return [String] message
+  attr_reader :message
+
+  def initialize(message:, pos: nil, id: nil, **)
+    super(id: id || Engine.hash_str(message), **)
+    @pos = pos
+    @message = message
+  end
+
+  def dimensions
+    Draw.measure_text(text: message, size: style.font_size, font: style.font) + (Vector.new(1, 1) * style.padding * 2)
   end
 
   def draw
@@ -97,8 +106,6 @@ class ImUiText < ImElement
       halign: style.text_align,
     )
   end
-
-  def_delegators :@style, :padding, :font, :font_size, :font_color, :text_align
 end
 
 class ImUiContainer
