@@ -142,19 +142,26 @@ skyline_find_min_y :: proc(
 	visited_width := 0
 
 	for nodes[idx].x < x1 {
-		if nodes[idx].y > cast(Coord)min_y {
+		node := &nodes[idx]
+		next := nodes[idx + 1]
+		if node.y > cast(Coord)min_y {
 			// raise min_y higher.
 			// we've accounted for all waste up to min_y,
 			// but we'll now add more waste for everything we've visted
-			waste_area += visited_width * (cast(int)nodes[idx].y - min_y)
-			min_y = cast(int)nodes[idx].y
+			waste_area += visited_width * (cast(int)node.y - min_y)
+			min_y = cast(int)node.y
+			if node.x < x0 {
+				visited_width += cast(int)(next.x - x0)
+			} else {
+				visited_width += cast(int)(next.x - node.x)
+			}
 		} else {
 			// add waste area
-			under_width := cast(int)(nodes[idx + 1].x - nodes[idx].x)
+			under_width := cast(int)(next.x - node.x)
 			if (under_width + visited_width > width) {
 				under_width = width - visited_width
 			}
-			waste_area += under_width * (min_y - cast(int)nodes[idx].y)
+			waste_area += under_width * (min_y - cast(int)node.y)
 			visited_width += under_width
 		}
 		idx += 1
@@ -162,52 +169,3 @@ skyline_find_min_y :: proc(
 
 	return
 }
-// static int stbrp__skyline_find_min_y(stbrp_context *c, stbrp_node *first, int x0, int width, int *pwaste)
-// {
-//    stbrp_node *node = first;
-//    int x1 = x0 + width;
-//    int min_y, visited_width, waste_area;
-//
-//    STBRP__NOTUSED(c);
-//
-//    STBRP_ASSERT(first->x <= x0);
-//
-//    #if 0
-//    // skip in case we're past the node
-//    while (node->next->x <= x0)
-//       ++node;
-//    #else
-//    STBRP_ASSERT(node->next->x > x0); // we ended up handling this in the caller for efficiency
-//    #endif
-//
-//    STBRP_ASSERT(node->x <= x0);
-//
-//    min_y = 0;
-//    waste_area = 0;
-//    visited_width = 0;
-//    while (node->x < x1) {
-//       if (node->y > min_y) {
-//          // raise min_y higher.
-//          // we've accounted for all waste up to min_y,
-//          // but we'll now add more waste for everything we've visted
-//          waste_area += visited_width * (node->y - min_y);
-//          min_y = node->y;
-//          // the first time through, visited_width might be reduced
-//          if (node->x < x0)
-//             visited_width += node->next->x - x0;
-//          else
-//             visited_width += node->next->x - node->x;
-//       } else {
-//          // add waste area
-//          int under_width = node->next->x - node->x;
-//          if (under_width + visited_width > width)
-//             under_width = width - visited_width;
-//          waste_area += under_width * (min_y - node->y);
-//          visited_width += under_width;
-//       }
-//       node = node->next;
-//    }
-//
-//    *pwaste = waste_area;
-//    return min_y;
-// }
