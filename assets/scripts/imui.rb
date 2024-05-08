@@ -109,9 +109,26 @@ class ImUiText < ImElement
 end
 
 class ImUiButton < ImElement
+  attr_reader :message
+
   def initialize(message:, pos: nil, id: nil, **)
     super(id: id || Engine.hash_str(message), pos:, **)
     @message = message
+  end
+
+  def draw
+    Draw.text(
+      text: message,
+      pos:,
+      font: style.font,
+      color: style.font_color,
+      size: style.font_size,
+      halign: style.text_align,
+    )
+  end
+
+  def dimensions
+    Draw.measure_text(text: message, size: style.font_size, font: style.font) + (Vector.new(1, 1) * style.padding * 2)
   end
 
   def clicked?
@@ -133,7 +150,9 @@ class ImUiContainer < ImElement
   end
 
   def button(message)
-    ImUiButton.new(message:)
+    ImUiButton.new(message:).tap do |btn|
+      @elements << btn
+    end
   end
 
   def draw
