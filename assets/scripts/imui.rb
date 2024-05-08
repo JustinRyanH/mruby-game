@@ -69,7 +69,7 @@ class ImElement
   attr_reader :id, :style
 
   def initialize(id:, pos:, style: Style.new)
-    @id = id
+    @id = Engine.hash_str(id.to_s)
     @style = style
     @pos = pos
   end
@@ -108,16 +108,13 @@ class ImUiText < ImElement
   end
 end
 
-class ImUiContainer
-  attr_reader :style
-
+class ImUiContainer < ImElement
   def initialize(
-    id:,
     size: Vector.new(100, 200),
     pos: Vector.new(*FrameInput.screen_size) * 0.5,
-    style: Style.new
+    **
   )
-    @id = Engine.hash_str(id.to_s)
+    super(pos:, **)
     @style = style
     @pos = pos
     @size = size
