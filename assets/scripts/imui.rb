@@ -75,7 +75,7 @@ class ImUiText < ImElement
   # @return [String] message
   attr_reader :message
 
-  def initialize(message, pos: nil, id: nil, style: Style.new)
+  def initialize(message:, pos: nil, id: nil, style: Style.new)
     super()
     @pos = pos
     @message = message
@@ -120,7 +120,7 @@ class ImUiContainer
   def text(message, style: nil)
     txt_style = self.style.clone
     txt_style.merge(style) unless style.nil?
-    @elements << ImUiText.new(message, style: txt_style)
+    @elements << ImUiText.new(message:, style: txt_style)
   end
 
   def draw
