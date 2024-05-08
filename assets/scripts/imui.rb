@@ -109,14 +109,9 @@ class ImUiText < ImElement
 end
 
 class ImUiContainer < ImElement
-  def initialize(
-    size: Vector.new(100, 200),
-    pos: Vector.new(*FrameInput.screen_size) * 0.5,
-    **
-  )
+  def initialize(pos:, min_size: Vector.new(0, 0), **)
     super(pos:, **)
-    @pos = pos
-    @size = size
+    @min_size = min_size
     @elements = []
   end
 
@@ -147,14 +142,16 @@ class ImUiContainer < ImElement
   def dimensions
     dimensions = @elements.map(&:dimensions)
     height = dimensions.inject(0) { |sum, dim| sum + dim.y } + (style.padding * 2)
+    height = [min_size.y, height].max
     width = dimensions.inject(0) { |max, dim| [max, dim.x].max } + (style.padding * 2)
+    width = [min_size.x, width].max
 
     Vector.new(width, height)
   end
 
   private
 
-  attr_reader :pos, :size, :padding
+  attr_reader :pos, :min_size, :padding
 end
 
 class ImUI
@@ -162,8 +159,8 @@ class ImUI
     @@ctx ||= ImUI.new
   end
 
-  def self.container(id, style: Style.new)
-    c = ImUiContainer.new(id:, style:)
+  def self.container(id, **)
+    c = ImUiContainer.new(id:, **)
     yield c
     c.draw
   end

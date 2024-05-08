@@ -22,9 +22,10 @@ class Demo
     setup unless ready?
     Engine.background_color = Color.crow_black_blue
 
-    ImUI.container(:example) do |ui|
+    center = Vector.new(*FrameInput.screen_size) * 0.5
+    ImUI.container(:example, pos: center) do |ui|
       ui.text('Immediate Mode GUI')
-      ui.text('Test', style: Style.from_hash({ font_color: Color.red }))
+      ui.text('Test')
     end
   end
 
