@@ -7,6 +7,7 @@
   - Focus for Button (State)
   - Hover Animation
   - NPatch Background
+  - Scissor, and max size
 
 * Make the character move, use a camera to follow
 * Have the character/obstacle loop in world space
