@@ -108,6 +108,17 @@ class ImUiText < ImElement
   end
 end
 
+class ImUiButton < ImElement
+  def initialize(message:, pos: nil, id: nil, **)
+    super(id: id || Engine.hash_str(message), pos:, **)
+    @message = message
+  end
+
+  def clicked?
+    false
+  end
+end
+
 class ImUiContainer < ImElement
   def initialize(pos:, min_size: Vector.new(0, 0), **)
     super(pos:, **)
@@ -119,6 +130,10 @@ class ImUiContainer < ImElement
     txt_style = self.style.clone
     txt_style.merge(style) unless style.nil?
     @elements << ImUiText.new(message:, style: txt_style)
+  end
+
+  def button(message)
+    ImUiButton.new(message:)
   end
 
   def draw

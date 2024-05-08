@@ -25,7 +25,7 @@ class Demo
     center = Vector.new(*FrameInput.screen_size) * 0.5
     ImUI.container(:example, pos: center) do |ui|
       ui.text('Immediate Mode GUI')
-      ui.text('Test')
+      puts 'Button Clicked' if ui.button('Button').clicked?
     end
   end
 
