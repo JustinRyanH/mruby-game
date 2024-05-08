@@ -68,9 +68,10 @@ class ImElement
   # @return [Style] style
   attr_reader :id, :style
 
-  def initialize(id:, style: Style.new)
+  def initialize(id:, pos:, style: Style.new)
     @id = id
     @style = style
+    @pos = pos
   end
 
   def dimensions
@@ -87,8 +88,7 @@ class ImUiText < ImElement
   attr_reader :message
 
   def initialize(message:, pos: nil, id: nil, **)
-    super(id: id || Engine.hash_str(message), **)
-    @pos = pos
+    super(id: id || Engine.hash_str(message), pos:, **)
     @message = message
   end
 
