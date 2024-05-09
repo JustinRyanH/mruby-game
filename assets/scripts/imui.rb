@@ -177,13 +177,7 @@ class ImUiContainer < ImElement
       anchor_percentage: Vector.new(0.5, 0.5),
     )
 
-    rect = Rectangle.new(pos:, size: dimensions)
-    y = rect.top + style.padding
-    @elements.each do |el|
-      dimensions = el.dimensions
-      el.pos = Vector.new(@pos.x, (dimensions.y * 0.5) + y)
-      y += dimensions.y + style.gap
-    end
+    update
     @elements.each(&:draw)
   end
 
@@ -198,6 +192,16 @@ class ImUiContainer < ImElement
   end
 
   private
+
+  def update
+    rect = Rectangle.new(pos:, size: dimensions)
+    y = rect.top + style.padding
+    @elements.each do |el|
+      dimensions = el.dimensions
+      el.pos = Vector.new(@pos.x, (dimensions.y * 0.5) + y)
+      y += dimensions.y + style.gap
+    end
+  end
 
   attr_reader :pos, :min_size, :padding
 end
