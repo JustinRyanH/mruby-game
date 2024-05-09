@@ -182,9 +182,9 @@ class ImUiContainer < ImElement
     @elements.each do |el|
       dimensions = el.dimensions
       el.pos = Vector.new(@pos.x, (dimensions.y * 0.5) + y)
-      el.draw
       y += dimensions.y + style.gap
     end
+    @elements.each(&:draw)
   end
 
   def dimensions
