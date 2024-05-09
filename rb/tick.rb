@@ -27,7 +27,7 @@ class Demo
     center = Vector.new(*FrameInput.screen_size) * 0.5
     main_style = Style.from_hash({ font_size: 60 })
     button_style = Style.from_hash({ background_color: Color.magic_spell })
-    hover_style = Style.from_hash({ background_color: Color.blunt_violet })
+    hover_style = Style.from_hash({ background_color: Color.blunt_violet, font_color: Color.magic_spell })
 
     ImUI.container(:example, pos: center, style: main_style) do |ui|
       ui.button('Button A', style: button_style, hover_style:) do |btn|

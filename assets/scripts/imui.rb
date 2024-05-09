@@ -150,10 +150,10 @@ class ImUiButton < ImElement
     Draw.text(
       text: message,
       pos:,
-      font: style.font,
-      color: style.font_color,
-      size: style.font_size,
-      halign: style.text_align,
+      font: current_style.font,
+      color: current_style.font_color,
+      size: current_style.font_size,
+      halign: current_style.text_align,
     )
   end
 
