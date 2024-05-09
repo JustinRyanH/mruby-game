@@ -21,7 +21,6 @@ class Demo
   def tick
     setup unless ready?
     @timer.tick
-    ImUI.update
     Engine.background_color = Color.crow_black_blue
 
     center = Vector.new(*FrameInput.screen_size) * 0.5
@@ -43,6 +42,7 @@ class Demo
       end
     end
 
+    ImUI.update
     ImUI.draw
   end
 

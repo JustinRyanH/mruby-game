@@ -264,7 +264,7 @@ class ImUiContainer < ImElement
 end
 
 class TrackedElement
-  attr_reader :element
+  attr_reader :element, :last_frame
 
   def track(element)
     @element = element
@@ -292,6 +292,8 @@ class TrackedElement
 end
 
 class ImUI
+  attr_reader :root_elements
+
   def self.ctx
     @@ctx ||= ImUI.new
   end
@@ -307,11 +309,12 @@ class ImUI
   def self.container(id, **)
     c = ImUiContainer.new(id:, **)
     yield c
-    c.draw
+    ctx.root_elements << c
   end
 
   def initialize
     @elements = {}
+    @root_elements = []
   end
 
   def track_element(element)
@@ -321,5 +324,8 @@ class ImUI
 
   def update; end
 
-  def draw; end
+  def draw
+    @root_elements.each(&:draw)
+    @root_elements.clear
+  end
 end
