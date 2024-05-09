@@ -3,10 +3,7 @@
 ## Current
 
 * Start Menu
-  - Button
   - Focus for Button (State)
-  - Hover Animation
-  - Active-Click
   - NPatch Background
   - Scissor, and max size
 
@@ -82,6 +79,11 @@
 * Re-do the Difficulty Calculator to use the edge differences between start of old and beginning of new
 * Sounds
 * ImUI
+* Start Menu
+  - Button
+  - Hover
+  - Active-Click
+  - Scissor, and max size
 
 ## AOR
 
