@@ -134,9 +134,10 @@ class ImUiButton < ImElement
 
   attr_writer :clicked
 
-  def initialize(message:, pos: nil, id: nil, **)
+  def initialize(message:, pos: nil, id: nil, hover_style: nil, **)
     super(id: id || Engine.hash_str(message), pos:, **)
     @message = message
+    @hover_style = hover_style
   end
 
   def draw
@@ -144,7 +145,7 @@ class ImUiButton < ImElement
       pos:,
       size: dimensions,
       anchor_percentage: Vector.new(0.5, 0.5),
-      color: style.background_color,
+      color: current_style.background_color,
     )
     Draw.text(
       text: message,
@@ -164,12 +165,26 @@ class ImUiButton < ImElement
     Draw.measure_text(text: message, size: style.font_size, font: style.font) + (Vector.new(1, 1) * style.padding * 2)
   end
 
+  def focusable?
+    true
+  end
+
   def clicked?
     @clicked || false
   end
 
   def hover?
     inside?(FrameInput.mouse_pos)
+  end
+
+  def current_style
+    return hover_style if hover?
+
+    style
+  end
+
+  def hover_style
+    @hover_style ||= style
   end
 end
 

@@ -27,12 +27,13 @@ class Demo
     center = Vector.new(*FrameInput.screen_size) * 0.5
     main_style = Style.from_hash({ font_size: 60 })
     button_style = Style.from_hash({ background_color: Color.magic_spell })
+    hover_style = Style.from_hash({ background_color: Color.blunt_violet })
 
     ImUI.container(:example, pos: center, style: main_style) do |ui|
-      ui.button('Button A', style: button_style) do |btn|
+      ui.button('Button A', style: button_style, hover_style:) do |btn|
         puts 'The Mouse Button A was clicked!' if btn.clicked?
       end
-      ui.button('Button B', style: button_style) do |btn|
+      ui.button('Button B', style: button_style, hover_style:) do |btn|
         puts 'The Mouse Button B was clicked!' if btn.clicked?
       end
     end
