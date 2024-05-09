@@ -3,7 +3,16 @@
 require 'assets/scripts/engine_override'
 require 'assets/scripts/assets'
 
-UiAction = Struct.new(:ui_e, :blk)
+class UiAction
+  def initialize(element, &block)
+    @element = element
+    @block = block
+  end
+
+  def perform
+    @block.call(@element)
+  end
+end
 
 class Style
   # @param [Float] padding
@@ -174,14 +183,12 @@ class ImUiContainer < ImElement
     ImUiButton.new(message:, style: style || self.style, **).tap do |btn|
       @elements << btn
       update
-      @actions << UiAction.new(btn, block)
+      @actions << UiAction.new(btn, &block)
     end
   end
 
   def draw
-    @actions.each do |action|
-      action.blk.call(action.ui_e)
-    end
+    @actions.each(&:perform)
     Draw.rect(
       pos:,
       size: dimensions,
