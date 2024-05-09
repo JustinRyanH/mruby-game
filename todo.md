@@ -13,7 +13,7 @@
 * Make the character move, use a camera to follow
 * Have the character/obstacle loop in world space
 
-## Nice to
+## Nice to Have
 
 * Swap out to use Odin log context
 * Texture Packing
@@ -26,6 +26,7 @@
 * Asset Packaging
 * Input Recording/Playback
 * WASM build
+* Delegate to the Style
 
 ## Juice
 
