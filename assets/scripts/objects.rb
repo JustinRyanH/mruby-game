@@ -5,7 +5,7 @@ require 'assets/scripts/engine_override'
 class GameObject
   include Bounds
 
-  extend ::Forwardable
+  extend Forwardable
 
   # @return [Collider] collider
   # @return [Sprite] sprite
