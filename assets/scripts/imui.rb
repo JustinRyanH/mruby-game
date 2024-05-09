@@ -11,7 +11,7 @@ class Style
   # @param [Color] background_color
   # @param [Symbol] text_align `:left`, `:right`, or `:center`
   attr_writer :padding, :font, :font_size, :font_color,
-              :text_align, :background_color
+              :text_align, :background_color, :gap
 
   def self.from_hash(hsh)
     Style.new.tap { |style| style.merge_hash(hsh) }
@@ -39,6 +39,10 @@ class Style
 
   def text_align
     @text_align ||= :center
+  end
+
+  def gap
+    @gap ||= 8
   end
 
   def merge(style)
@@ -177,13 +181,13 @@ class ImUiContainer < ImElement
       dimensions = el.dimensions
       el.pos = Vector.new(@pos.x, (dimensions.y * 0.5) + y)
       el.draw
-      y += style.padding + dimensions.y
+      y += dimensions.y + style.gap
     end
   end
 
   def dimensions
     dimensions = @elements.map(&:dimensions)
-    height = dimensions.inject(0) { |sum, dim| sum + dim.y } + (style.padding * 2)
+    height = dimensions.inject(0) { |sum, dim| sum + dim.y + style.gap }
     height = [min_size.y, height].max
     width = dimensions.inject(0) { |max, dim| [max, dim.x].max } + (style.padding * 2)
     width = [min_size.x, width].max
@@ -201,6 +205,10 @@ class ImUI
     @@ctx ||= ImUI.new
   end
 
+  def self.update
+    ctx.update
+  end
+
   def self.container(id, **)
     c = ImUiContainer.new(id:, **)
     yield c
@@ -212,4 +220,6 @@ class ImUI
   end
 
   def track_element(element); end
+
+  def update; end
 end
