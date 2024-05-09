@@ -158,7 +158,9 @@ class ImUiContainer < ImElement
   def text(message, style: nil)
     txt_style = self.style.clone
     txt_style.merge(style) unless style.nil?
-    @elements << ImUiText.new(message:, style: txt_style)
+    ImUiText.new(message:, style: txt_style).tap do |txt|
+      @elements << txt
+    end
   end
 
   def button(message, **)
