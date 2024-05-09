@@ -132,6 +132,8 @@ end
 class ImUiButton < ImElement
   attr_reader :message
 
+  attr_writer :clicked
+
   def initialize(message:, pos: nil, id: nil, **)
     super(id: id || Engine.hash_str(message), pos:, **)
     @message = message
@@ -163,7 +165,7 @@ class ImUiButton < ImElement
   end
 
   def clicked?
-    false
+    @clicked || false
   end
 
   def hover?
@@ -253,8 +255,9 @@ class TrackedElement
     return unless element.inside?(FrameInput.mouse_pos)
 
     @mouse_down_frame = FrameInput.id if FrameInput.mouse_down?(:left)
+    return unless FrameInput.mouse_was_down?(:left) && @mouse_down_frame == FrameInput.id - 1
 
-    puts "Cool Hover!! Mouse Down? #{FrameInput.mouse_down?(:left)}"
+    element.clicked = true
   end
 end
 

@@ -32,6 +32,7 @@ class Demo
       ui.text("We will be right back: #{@timer.time.round(0)}")
       ui.button('Button', style: button_style) do |btn|
         btn.style.background_color = Color.red if btn.hover?
+        puts 'The Mouse Button was clicked!' if btn.clicked?
       end
     end
 
