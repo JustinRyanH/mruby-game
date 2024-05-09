@@ -29,10 +29,11 @@ class Demo
     button_style = Style.from_hash({ background_color: Color.magic_spell })
 
     ImUI.container(:example, pos: center, style: main_style) do |ui|
-      ui.text("We will be right back: #{@timer.time.round(0)}")
-      ui.button('Button', style: button_style) do |btn|
-        btn.style.background_color = Color.red if btn.hover?
-        puts 'The Mouse Button was clicked!' if btn.clicked?
+      ui.button('Button A', style: button_style) do |btn|
+        puts 'The Mouse Button A was clicked!' if btn.clicked?
+      end
+      ui.button('Button B', style: button_style) do |btn|
+        puts 'The Mouse Button B was clicked!' if btn.clicked?
       end
     end
 

@@ -182,14 +182,14 @@ class ImUiContainer < ImElement
   end
 
   def text(message, style: nil)
-    ImUiText.new(message:, style: style || self.style).tap do |txt|
+    ImUiText.new(message:, style: style.dup || self.style.dup).tap do |txt|
       @elements << txt
       update
     end
   end
 
   def button(message, style: nil, **, &block)
-    ImUiButton.new(message:, style: style || self.style, **).tap do |btn|
+    ImUiButton.new(message:, style: style.dup || self.style.dup, **).tap do |btn|
       @elements << btn
       update
       @actions << UiAction.new(btn, &block)
