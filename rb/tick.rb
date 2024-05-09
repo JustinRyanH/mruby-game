@@ -28,7 +28,17 @@ class Demo
     button_style = Style.from_hash({ background_color: Color.magic_spell })
 
     ImUI.container(:example, pos: center) do |ui|
-      puts 'Button Clicked' if ui.button('Button', style: button_style).clicked?
+      ui.text('Foo')
+      ui.text('Foo')
+      ui.text('Foo')
+      ui.text('Foo')
+      ui.text('Foo')
+      ui.text('Foo')
+      ui.text('Foo')
+      ui.text('Foo')
+      ui.button('Button', style: button_style) do |btn|
+        puts 'Button Hover' if btn.hover?
+      end
     end
 
     ImUI.draw

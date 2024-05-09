@@ -44,6 +44,11 @@ class FrameInput
   # @return [Array(Number, Number)]
   def self.screen_size; end
 
+  # Gets the current mouse position
+  #
+  # @return [Vector]
+  def self.mouse_pos; end
+
   # Gets a random float betwen the given range,
   # it will raise if you pass in an inclusive range
   #

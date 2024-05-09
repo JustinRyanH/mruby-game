@@ -3,6 +3,8 @@
 require 'assets/scripts/engine_override'
 require 'assets/scripts/assets'
 
+UiAction = Struct.new(:ui_e, :blk)
+
 class Style
   # @param [Float] padding
   # @param [Font] font
@@ -146,12 +148,18 @@ class ImUiButton < ImElement
   def clicked?
     false
   end
+
+  def hover?
+    mouse_pos = FrameInput.mouse_pos
+    Rectangle.new(pos:, size: dimensions).inside?(mouse_pos)
+  end
 end
 
 class ImUiContainer < ImElement
   def initialize(pos:, min_size: Vector.new(0, 0), **)
     super(pos:, **)
     @min_size = min_size
+    @actions = []
     @elements = []
   end
 
@@ -160,16 +168,22 @@ class ImUiContainer < ImElement
     txt_style.merge(style) unless style.nil?
     ImUiText.new(message:, style: txt_style).tap do |txt|
       @elements << txt
+      update
     end
   end
 
-  def button(message, **)
+  def button(message, **, &block)
     ImUiButton.new(message:, **).tap do |btn|
       @elements << btn
+      update
+      @actions << UiAction.new(btn, block)
     end
   end
 
   def draw
+    @actions.each do |action|
+      action.blk.call(action.ui_e)
+    end
     Draw.rect(
       pos:,
       size: dimensions,
@@ -177,7 +191,6 @@ class ImUiContainer < ImElement
       anchor_percentage: Vector.new(0.5, 0.5),
     )
 
-    update
     @elements.each(&:draw)
   end
 

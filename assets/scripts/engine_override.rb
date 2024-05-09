@@ -150,6 +150,10 @@ class Rectangle
     @size = size
   end
 
+  def inside?(point)
+    point.x > left && point.x < right && point.y > top && point.y < bottom
+  end
+
   def inspect
     { name: 'Rectangle', top:, right:, bottom:, left: }
   end
