@@ -37,7 +37,7 @@ class Demo
       ui.text('Foo')
       ui.text('Foo')
       ui.button('Button', style: button_style) do |btn|
-        puts 'Button Hover' if btn.hover?
+        btn.style.background_color = Color.red if btn.hover?
       end
     end
 
