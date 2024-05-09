@@ -12,7 +12,6 @@
 
 ## Nice to Have
 
-* Modules?
 * Swap out to use Odin log context
 * Texture Packing
  - Maybe using Ruby scropts
@@ -23,8 +22,9 @@
 * Loading `.mrb` code
 * Asset Packaging
 * Input Recording/Playback
-* WASM build
+* Modules?
 * Delegate to the Style
+* WASM build
 
 ## Juice
 
