@@ -15,6 +15,7 @@
 
 ## Nice to Have
 
+* Modules?
 * Swap out to use Odin log context
 * Texture Packing
  - Maybe using Ruby scropts
