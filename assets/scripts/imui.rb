@@ -8,8 +8,10 @@ class Style
   # @param [Font] font
   # @param [Float] font_size
   # @param [Color] font_color
+  # @param [Color] background_color
   # @param [Symbol] text_align `:left`, `:right`, or `:center`
-  attr_writer :padding, :font, :font_size, :font_color, :text_align
+  attr_writer :padding, :font, :font_size, :font_color,
+              :text_align, :background_color
 
   def self.from_hash(hsh)
     Style.new.tap { |style| style.merge_hash(hsh) }
@@ -117,6 +119,12 @@ class ImUiButton < ImElement
   end
 
   def draw
+    Draw.rect(
+      pos:,
+      size: dimensions,
+      anchor_percentage: Vector.new(0.5, 0.5),
+      color: style.background_color,
+    )
     Draw.text(
       text: message,
       pos:,
@@ -149,8 +157,8 @@ class ImUiContainer < ImElement
     @elements << ImUiText.new(message:, style: txt_style)
   end
 
-  def button(message)
-    ImUiButton.new(message:).tap do |btn|
+  def button(message, **)
+    ImUiButton.new(message:, **).tap do |btn|
       @elements << btn
     end
   end

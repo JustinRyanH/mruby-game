@@ -20,17 +20,21 @@ class Demo
 
   def tick
     setup unless ready?
+    @timer.tick
     Engine.background_color = Color.crow_black_blue
 
     center = Vector.new(*FrameInput.screen_size) * 0.5
+    button_style = Style.from_hash({ background_color: Color.magic_spell })
+
     ImUI.container(:example, pos: center) do |ui|
       ui.text('Immediate Mode GUI')
-      puts 'Button Clicked' if ui.button('Button').clicked?
+      puts 'Button Clicked' if ui.button('Button', style: button_style).clicked?
     end
   end
 
   def setup
     @style = Style.from_hash({ padding: 16 })
+    @timer = Timer.new(180)
     @ready = true
   end
 
