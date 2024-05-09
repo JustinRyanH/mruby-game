@@ -134,10 +134,11 @@ class ImUiButton < ImElement
 
   attr_writer :clicked, :down
 
-  def initialize(message:, pos: nil, id: nil, hover_style: nil, **)
+  def initialize(message:, pos: nil, id: nil, hover_style: nil, down_style: nil, **)
     super(id: id || Engine.hash_str(message), pos:, **)
     @message = message
     @hover_style = hover_style
+    @down_style = down_style
   end
 
   def draw
@@ -182,6 +183,7 @@ class ImUiButton < ImElement
   end
 
   def current_style
+    return down_style if down?
     return hover_style if hover?
 
     style
@@ -189,6 +191,10 @@ class ImUiButton < ImElement
 
   def hover_style
     @hover_style ||= style
+  end
+
+  def down_style
+    @down_style ||= hover_style
   end
 end
 
