@@ -91,6 +91,10 @@ class ImElement
     @pos = pos
   end
 
+  def ctx
+    ImUI.ctx
+  end
+
   def dimensions
     raise 'All ImElements must provide `dimensions`'
   end
@@ -188,6 +192,11 @@ class ImUiContainer < ImElement
   end
 
   def draw
+    ctx.track_element(self)
+    @elements.each do |el|
+      ctx.track_element(el)
+    end
+
     @actions.each(&:perform)
     Draw.rect(
       pos:,
@@ -224,6 +233,15 @@ class ImUiContainer < ImElement
   attr_reader :pos, :min_size, :padding
 end
 
+class TrackedElement
+  attr_reader :element
+
+  def track(element)
+    @element = element
+    @last_frame = FrameInput.id
+  end
+end
+
 class ImUI
   def self.ctx
     @@ctx ||= ImUI.new
@@ -247,7 +265,10 @@ class ImUI
     @elements = {}
   end
 
-  def track_element(element); end
+  def track_element(element)
+    @elements[element.id] = TrackedElement.new unless @elements.key?(element.id)
+    @elements[element.id].track(element)
+  end
 
   def update; end
 
