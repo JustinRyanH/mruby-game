@@ -17,19 +17,16 @@ Style/Documentation:
 
 Metrics/AbcSize:
   Enabled: false
-
+Metrics/ParameterLists:
+  Enabled: false
 Naming/MethodParameterName:
   Enabled: false
-
 Metrics/MethodLength:
   Enabled: false
-
 Style/GlobalVars:
   Enabled: false
-
 Metrics/CyclomaticComplexity:
   Enabled: false
-
 Metrics/BlockLength:
   Enabled: false
 Metrics/ClassLength:
