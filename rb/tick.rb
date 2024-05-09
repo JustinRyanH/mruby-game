@@ -30,6 +30,8 @@ class Demo
     ImUI.container(:example, pos: center) do |ui|
       puts 'Button Clicked' if ui.button('Button', style: button_style).clicked?
     end
+
+    ImUI.draw
   end
 
   def setup

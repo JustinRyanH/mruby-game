@@ -209,6 +209,10 @@ class ImUI
     ctx.update
   end
 
+  def self.draw
+    ctx.draw
+  end
+
   def self.container(id, **)
     c = ImUiContainer.new(id:, **)
     yield c
@@ -222,4 +226,6 @@ class ImUI
   def track_element(element); end
 
   def update; end
+
+  def draw; end
 end
