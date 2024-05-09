@@ -25,17 +25,11 @@ class Demo
     Engine.background_color = Color.crow_black_blue
 
     center = Vector.new(*FrameInput.screen_size) * 0.5
+    main_style = Style.from_hash({ font_size: 60 })
     button_style = Style.from_hash({ background_color: Color.magic_spell })
 
-    ImUI.container(:example, pos: center) do |ui|
-      ui.text('Foo')
-      ui.text('Foo')
-      ui.text('Foo')
-      ui.text('Foo')
-      ui.text('Foo')
-      ui.text('Foo')
-      ui.text('Foo')
-      ui.text('Foo')
+    ImUI.container(:example, pos: center, style: main_style) do |ui|
+      ui.text("We will be right back: #{@timer.time.round(0)}")
       ui.button('Button', style: button_style) do |btn|
         btn.style.background_color = Color.red if btn.hover?
       end
