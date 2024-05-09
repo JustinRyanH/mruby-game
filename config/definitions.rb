@@ -54,6 +54,18 @@ class FrameInput
   # @return [Boolean]
   def self.mouse_down?(key); end
 
+  # Whether the mouse button is down this frame,
+  # but not the last
+  #
+  # @return [Boolean]
+  def self.mouse_just_pressed?(key); end
+
+  # Whether the mouse button is up this frame,
+  # but not the last
+  #
+  # @return [Boolean]
+  def self.mouse_was_down?(key); end
+
   # Gets a random float betwen the given range,
   # it will raise if you pass in an inclusive range
   #
