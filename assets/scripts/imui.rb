@@ -276,17 +276,18 @@ class TrackedElement
   private
 
   def handle_mouse_events
-    handle_mouse_event_inside
+    handle_click
+
     @mouse_down_frame = nil unless FrameInput.mouse_down?(:left)
+    element.down = true if @mouse_down_frame&.positive?
   end
 
-  def handle_mouse_event_inside
+  def handle_click
     return unless element.respond_to?(:inside?)
     return unless element.inside?(FrameInput.mouse_pos)
 
     @mouse_down_frame = FrameInput.id if FrameInput.mouse_down?(:left)
     element.clicked = true if FrameInput.mouse_was_down?(:left) && @mouse_down_frame == FrameInput.id - 1
-    element.down = true if @mouse_down_frame&.positive?
   end
 end
 
