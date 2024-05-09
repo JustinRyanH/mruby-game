@@ -49,6 +49,11 @@ class FrameInput
   # @return [Vector]
   def self.mouse_pos; end
 
+  # Whether the mouse button is down on this frame
+  #
+  # @return [Boolean]
+  def self.mouse_down?(key); end
+
   # Gets a random float betwen the given range,
   # it will raise if you pass in an inclusive range
   #

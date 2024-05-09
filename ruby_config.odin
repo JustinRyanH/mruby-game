@@ -148,6 +148,27 @@ setup_input :: proc(st: ^mrb.State) {
 	mrb.define_class_method(
 		st,
 		frame_class,
+		"mouse_down?",
+		frame_input_mouse_is_down,
+		mrb.args_req(1),
+	)
+	mrb.define_class_method(
+		st,
+		frame_class,
+		"mouse_just_pressed?",
+		frame_input_mouse_just_pressed,
+		mrb.args_req(1),
+	)
+	mrb.define_class_method(
+		st,
+		frame_class,
+		"mouse_was_down?",
+		frame_input_mouse_was_down,
+		mrb.args_req(1),
+	)
+	mrb.define_class_method(
+		st,
+		frame_class,
 		"random_float",
 		frame_input_random_float,
 		mrb.args_req(1),
@@ -197,6 +218,29 @@ sym_to_keyboard_key :: proc(state: ^mrb.State) -> (key: input.KeyboardKey, succe
 	}
 
 	key, success = reflect.enum_from_name(input.KeyboardKey, sym_upper)
+
+	if !success {
+		mrb.raise_exception(state, "No Key found: :%s", sym_name)
+		return
+	}
+
+	return
+}
+
+
+@(private = "file")
+sym_to_mouse_button :: proc(state: ^mrb.State) -> (btn: input.MouseButton, success: bool) {
+	key_sym: mrb.Sym
+	mrb.get_args(state, "n", &key_sym)
+
+	sym_name := mrb.sym_to_string(state, key_sym)
+	sym_upper, upper_err := strings.to_upper(sym_name, context.temp_allocator)
+	if upper_err != .None {
+		mrb.raise_exception(state, "Allocation Error: %v", upper_err)
+		return
+	}
+
+	btn, success = reflect.enum_from_name(input.MouseButton, sym_upper)
 
 	if !success {
 		mrb.raise_exception(state, "No Key found: :%s", sym_name)
@@ -317,6 +361,48 @@ frame_input_was_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Val
 	context = load_context(state)
 
 	key, success := sym_to_keyboard_key(state)
+	if !success {
+		return mrb.nil_value()
+	}
+
+	value := input.was_just_released(g.input, key)
+	return mrb.bool_value(value)
+}
+
+
+@(private = "file")
+frame_input_mouse_is_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	key, success := sym_to_mouse_button(state)
+	if !success {
+		return mrb.nil_value()
+	}
+
+	value := input.is_pressed(g.input, key)
+	return mrb.bool_value(value)
+}
+
+@(private = "file")
+frame_input_mouse_just_pressed :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	key, success := sym_to_mouse_button(state)
+	if !success {
+		return mrb.nil_value()
+	}
+
+	value := input.was_just_pressed(g.input, key)
+	return mrb.bool_value(value)
+
+}
+
+
+@(private = "file")
+frame_input_mouse_was_down :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	key, success := sym_to_mouse_button(state)
 	if !success {
 		return mrb.nil_value()
 	}

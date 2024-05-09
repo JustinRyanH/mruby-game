@@ -154,6 +154,10 @@ class ImUiButton < ImElement
     )
   end
 
+  def inside?(position)
+    Rectangle.new(pos:, size: dimensions).inside?(position)
+  end
+
   def dimensions
     Draw.measure_text(text: message, size: style.font_size, font: style.font) + (Vector.new(1, 1) * style.padding * 2)
   end
@@ -163,8 +167,7 @@ class ImUiButton < ImElement
   end
 
   def hover?
-    mouse_pos = FrameInput.mouse_pos
-    Rectangle.new(pos:, size: dimensions).inside?(mouse_pos)
+    inside?(FrameInput.mouse_pos)
   end
 end
 
@@ -239,6 +242,19 @@ class TrackedElement
   def track(element)
     @element = element
     @last_frame = FrameInput.id
+
+    handle_mouse_events
+  end
+
+  private
+
+  def handle_mouse_events
+    return unless element.respond_to?(:inside?)
+    return unless element.inside?(FrameInput.mouse_pos)
+
+    @mouse_down_frame = FrameInput.id if FrameInput.mouse_down?(:left)
+
+    puts "Cool Hover!! Mouse Down? #{FrameInput.mouse_down?(:left)}"
   end
 end
 
