@@ -170,14 +170,14 @@ class ImUiContainer < ImElement
   end
 
   def draw
-    rect = Rectangle.new(pos:, size: dimensions)
-
     Draw.rect(
       pos:,
       size: dimensions,
       color: Color.regal_blue,
       anchor_percentage: Vector.new(0.5, 0.5),
     )
+
+    rect = Rectangle.new(pos:, size: dimensions)
     y = rect.top + style.padding
     @elements.each do |el|
       dimensions = el.dimensions
