@@ -233,7 +233,7 @@ frame_query_dimensions :: proc "contextless" (frame_input: FrameInput) -> (width
 }
 
 // Get the mouse position this frame
-mouse_position :: proc(frame_input: FrameInput) -> math.Vector2f32 {
+mouse_position :: proc "contextless" (frame_input: FrameInput) -> math.Vector2f32 {
 	return frame_input.current_frame.mouse.pos
 }
 

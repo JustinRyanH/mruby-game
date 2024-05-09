@@ -144,6 +144,7 @@ setup_input :: proc(st: ^mrb.State) {
 		frame_input_screen_size,
 		mrb.args_none(),
 	)
+	mrb.define_class_method(st, frame_class, "mouse_pos", frame_input_mouse_pos, mrb.args_none())
 	mrb.define_class_method(
 		st,
 		frame_class,
@@ -214,6 +215,13 @@ frame_input_screen_size :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.
 		mrb.float_value(state, mrb_width),
 		mrb.float_value(state, mrb_height),
 	)
+}
+
+
+@(private = "file")
+frame_input_mouse_pos :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	vector := input.mouse_position(g.input)
+	return vector_obj_from_vec(state, vector)
 }
 
 @(private = "file")
@@ -576,6 +584,18 @@ vector_from_object :: proc(state: ^mrb.State, v: mrb.Value, loc := #caller_locat
 		fmt.tprintf("Expected Object to be a Vector @ %v", loc),
 	)
 	return mrb.get_data_from_value(Vector2, v)^
+}
+
+
+vector_obj_from_vec :: proc "contextless" (
+	state: ^mrb.State,
+	vec: Vector2,
+	loc := #caller_location,
+) -> mrb.Value {
+	x := mrb.float_value(state, cast(mrb.Float)vec.x)
+	y := mrb.float_value(state, cast(mrb.Float)vec.y)
+	values := []mrb.Value{x, y}
+	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(values[:]))
 }
 
 @(private = "file")
@@ -1000,7 +1020,7 @@ draw_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	// TODO: I can totally do this with generics and reflection
-	names: []mrb.Sym = {
+	names: []mrb.Sym =  {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
@@ -1179,7 +1199,7 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 		font: mrb.Value,
 	}
 
-	names: []mrb.Sym = {
+	names: []mrb.Sym =  {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "font"),
