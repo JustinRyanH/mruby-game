@@ -313,13 +313,14 @@ class ImUI
   end
 
   def initialize
-    @elements = {}
+    @tracked_elements = {}
     @root_elements = []
+    @focused_element = nil
   end
 
   def track_element(element)
-    @elements[element.id] = TrackedElement.new unless @elements.key?(element.id)
-    @elements[element.id].track(element)
+    @tracked_elements[element.id] = TrackedElement.new unless @tracked_elements.key?(element.id)
+    @tracked_elements[element.id].track(element)
   end
 
   def update; end
