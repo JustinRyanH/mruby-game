@@ -31,7 +31,7 @@ class Demo
 
     ImUI.container(:example, pos: center, style: main_style) do |ui|
       ui.button('Button A', style: button_style, hover_style:) do |btn|
-        puts 'The Mouse Button A was clicked!' if btn.clicked?
+        puts 'The Mouse Button A was clicked!' if btn.down?
       end
       ui.button('Button B', style: button_style, hover_style:) do |btn|
         puts 'The Mouse Button B was clicked!' if btn.clicked?
