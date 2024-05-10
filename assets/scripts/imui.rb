@@ -91,6 +91,10 @@ class ImElement
     @pos = pos
   end
 
+  def track
+    ctx.track_element(self)
+  end
+
   def ctx
     ImUI.ctx
   end
@@ -101,6 +105,10 @@ class ImElement
 
   def draw
     raise 'All ImElements must be able to draw'
+  end
+
+  def focusable?
+    false
   end
 end
 
@@ -156,6 +164,16 @@ class ImUiButton < ImElement
       size: current_style.font_size,
       halign: current_style.text_align,
     )
+
+    return unless focused?
+
+    Draw.rect(
+      pos:,
+      size: dimensions + Vector.new(8, 8),
+      anchor_percentage: Vector.new(0.5, 0.5),
+      color: Color.red,
+      mode: :outline,
+    )
   end
 
   def inside?(position)
@@ -164,6 +182,14 @@ class ImUiButton < ImElement
 
   def dimensions
     Draw.measure_text(text: message, size: style.font_size, font: style.font) + (Vector.new(1, 1) * style.padding * 2)
+  end
+
+  def focus
+    @focused = true
+  end
+
+  def focused?
+    @focused ||= false
   end
 
   def focusable?
@@ -221,12 +247,12 @@ class ImUiContainer < ImElement
     end
   end
 
-  def draw
+  def track
     ctx.track_element(self)
-    @elements.each do |el|
-      ctx.track_element(el)
-    end
+    @elements.each(&:track)
+  end
 
+  def draw
     @actions.each(&:perform)
     Draw.rect(
       pos:,
@@ -266,11 +292,21 @@ end
 class TrackedElement
   attr_reader :element, :last_frame
 
-  def track(element)
-    @element = element
+  def track(el)
+    @element = el
     @last_frame = FrameInput.id
 
     handle_mouse_events
+  end
+
+  def focus
+    return unless @element.respond_to?(:focus)
+
+    @element.focus
+  end
+
+  def focusable?
+    @element.focusable?
   end
 
   private
@@ -323,10 +359,23 @@ class ImUI
     @tracked_elements[element.id].track(element)
   end
 
-  def update; end
+  def update
+    @root_elements.each(&:track)
+    focus_element
+  end
 
   def draw
     @root_elements.each(&:draw)
     @root_elements.clear
+  end
+
+  private
+
+  def focus_element
+    focusable_elements = @tracked_elements.values.select(&:focusable?)
+    return nil if focusable_elements.empty?
+
+    @focused_element = focusable_elements.first if @focused_element.nil?
+    @focused_element&.focus
   end
 end
