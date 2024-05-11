@@ -376,6 +376,15 @@ class ImUI
     return nil if focusable_elements.empty?
 
     @focused_element = focusable_elements.first if @focused_element.nil?
+    move_focus_down(focusable_elements) if FrameInput.key_was_down?(:down)
     @focused_element&.focus
+  end
+
+  def move_focus_down(focusable)
+    return if @focused_element.nil?
+
+    idx = focusable.find_index(@focused_element)
+    next_element_idx = [idx + 1, focusable.size - 1].min
+    @focused_element = focusable[next_element_idx]
   end
 end
