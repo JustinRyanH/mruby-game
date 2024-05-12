@@ -1541,10 +1541,10 @@ texture_get_size :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	id := mrb.get_data_from_value(TextureHandle, self)^
 	asset, ok := as_get_texture(&g.assets, id)
 	assert(ok, "Texture does not exist")
-	txt: rl.Texture = asset.texture
+	src: rl.Rectangle = asset.src
 	size := []mrb.Value {
-		mrb.float_value(state, cast(mrb.Float)txt.width),
-		mrb.float_value(state, cast(mrb.Float)txt.height),
+		mrb.float_value(state, cast(mrb.Float)src.width),
+		mrb.float_value(state, cast(mrb.Float)src.height),
 	}
 
 	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(size))
