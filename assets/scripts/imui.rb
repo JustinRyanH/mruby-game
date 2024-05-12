@@ -338,13 +338,25 @@ class TrackedElement
     return unless element.respond_to?(:inside?)
     return unless element.inside?(FrameInput.mouse_pos)
 
-    @mouse_down_frame = FrameInput.id if FrameInput.mouse_down?(:left)
+    if FrameInput.mouse_down?(:left)
+      @mouse_down_frame = FrameInput.id
+      ctx.focused_element = self if ctx.focused_element != self
+    end
     element.click if FrameInput.mouse_was_down?(:left) && @mouse_down_frame == FrameInput.id - 1
+  end
+
+  # @return [ImUI]
+  def ctx
+    ImUI.ctx
   end
 end
 
 class ImUI
+  # @return [TrackedElement, nil] focused_element
+  attr_accessor :focused_element
   attr_reader :root_elements
+
+  # @return [TrackedElement, nil] focused_element
 
   def self.ctx
     @@ctx ||= ImUI.new
