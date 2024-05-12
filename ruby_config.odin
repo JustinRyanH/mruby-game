@@ -1106,7 +1106,7 @@ draw_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	// TODO: I can totally do this with generics and reflection
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
@@ -1285,7 +1285,7 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 		font: mrb.Value,
 	}
 
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "font"),
@@ -1512,6 +1512,7 @@ setup_textures :: proc(st: ^mrb.State) {
 	mrb.set_data_type(texture_asset_class, .CData)
 	mrb.define_method(st, texture_asset_class, "initialize", texture_init, mrb.args_req(1))
 	mrb.define_method(st, texture_asset_class, "id", texture_get_id, mrb.args_none())
+	mrb.define_method(st, texture_asset_class, "size", texture_get_size, mrb.args_none())
 	engine_classes.texture_asset = texture_asset_class
 }
 
@@ -1531,6 +1532,22 @@ texture_from_object :: proc(
 texture_get_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	id := mrb.get_data_from_value(TextureHandle, self)^
 	return mrb.int_value(state, cast(mrb.Int)id)
+}
+
+
+@(private = "file")
+texture_get_size :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+	id := mrb.get_data_from_value(TextureHandle, self)^
+	asset, ok := as_get_texture(&g.assets, id)
+	assert(ok, "Texture does not exist")
+	txt: rl.Texture = asset.texture
+	size := []mrb.Value {
+		mrb.float_value(state, cast(mrb.Float)txt.width),
+		mrb.float_value(state, cast(mrb.Float)txt.height),
+	}
+
+	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(size))
 }
 
 @(private = "file")
