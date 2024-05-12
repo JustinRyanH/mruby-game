@@ -140,7 +140,7 @@ end
 class ImUiButton < ImElement
   attr_reader :message
 
-  attr_writer :clicked, :down
+  attr_writer :down
 
   def initialize(message:, pos: nil, id: nil, hover_style: nil, down_style: nil, **)
     super(id: id || Engine.hash_str(message), pos:, **)
@@ -194,6 +194,10 @@ class ImUiButton < ImElement
 
   def focusable?
     true
+  end
+
+  def click
+    @clicked = true
   end
 
   def clicked?
@@ -305,6 +309,18 @@ class TrackedElement
     @element.focus
   end
 
+  def click
+    return unless @element.respond_to?(:click)
+
+    @element.click
+  end
+
+  def down
+    return unless @element.respond_to?(:down=)
+
+    @element.down = true
+  end
+
   def focusable?
     @element.focusable?
   end
@@ -323,7 +339,7 @@ class TrackedElement
     return unless element.inside?(FrameInput.mouse_pos)
 
     @mouse_down_frame = FrameInput.id if FrameInput.mouse_down?(:left)
-    element.clicked = true if FrameInput.mouse_was_down?(:left) && @mouse_down_frame == FrameInput.id - 1
+    element.click if FrameInput.mouse_was_down?(:left) && @mouse_down_frame == FrameInput.id - 1
   end
 end
 
@@ -376,15 +392,27 @@ class ImUI
     return nil if focusable_elements.empty?
 
     @focused_element = focusable_elements.first if @focused_element.nil?
+    return if @focused_element.nil?
+
     move_focus_down(focusable_elements) if FrameInput.key_was_down?(:down)
-    @focused_element&.focus
+    move_focus_up(focusable_elements) if FrameInput.key_was_down?(:up)
+    @focused_element.down if FrameInput.key_down?(:enter)
+    @focused_element.click if FrameInput.key_was_down?(:enter)
+
+    @focused_element.focus
   end
 
   def move_focus_down(focusable)
+    idx = focusable.find_index(@focused_element)
+    next_element_idx = [idx + 1, focusable.size - 1].min
+    @focused_element = focusable[next_element_idx]
+  end
+
+  def move_focus_up(focusable)
     return if @focused_element.nil?
 
     idx = focusable.find_index(@focused_element)
-    next_element_idx = [idx + 1, focusable.size - 1].min
+    next_element_idx = [idx - 1, 0].max
     @focused_element = focusable[next_element_idx]
   end
 end
