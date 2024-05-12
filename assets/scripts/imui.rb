@@ -408,8 +408,8 @@ class ImUI
 
     move_focus_down(focusable_elements) if FrameInput.key_was_down?(:down)
     move_focus_up(focusable_elements) if FrameInput.key_was_down?(:up)
-    @focused_element.down if FrameInput.key_down?(:enter)
-    @focused_element.click if FrameInput.key_was_down?(:enter)
+    @focused_element.down if %i[enter space].any? { |k| FrameInput.key_down?(k) }
+    @focused_element.click if %i[enter space].any? { |k| FrameInput.key_was_down?(k) }
 
     @focused_element.focus
   end
