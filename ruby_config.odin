@@ -1686,14 +1686,18 @@ setup_sprite_class :: proc(state: ^mrb.State) {
 
 	mrb.define_method(state, sprite_class, "initialize", sprite_new, mrb.args_req(1))
 	mrb.define_class_method(state, sprite_class, "create", sprite_create, mrb.args_key(2, 0))
+
 	mrb.define_method(state, sprite_class, "id", sprite_get_id, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "pos=", sprite_pos_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "pos", sprite_pos_get, mrb.args_none())
+
 	mrb.define_method(state, sprite_class, "texture=", sprite_texture_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "texture", sprite_texture_get, mrb.args_none())
+
 	mrb.define_method(state, sprite_class, "tint=", sprite_tint_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "tint", sprite_tint_get, mrb.args_none())
 	mrb.define_method(state, sprite_class, "valid?", sprite_is_valid, mrb.args_none())
+
 	mrb.define_method(state, sprite_class, "visible=", sprite_visible_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "visible?", sprite_visible_get, mrb.args_none())
 	mrb.define_method(state, sprite_class, "destroy", sprite_destroy, mrb.args_none())
