@@ -1084,6 +1084,7 @@ setup_draw :: proc(st: ^mrb.State) {
 	mrb.define_class_method(st, draw_module, "text", draw_draw_text, mrb.args_key(5, 0))
 	mrb.define_class_method(st, draw_module, "rect", draw_draw_rect, mrb.args_key(5, 0))
 	mrb.define_class_method(st, draw_module, "line", draw_draw_line, mrb.args_key(4, 0))
+	mrb.define_class_method(st, draw_module, "texture", draw_draw_texture, mrb.args_key(4, 0))
 	mrb.define_class_method(st, draw_module, "measure_text", draw_measure_text, mrb.args_key(4, 0))
 
 }
@@ -1202,6 +1203,8 @@ draw_draw_rect :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 			Vector2{},
 			Vector2{1, 1},
 		)
+	} else {
+		cmd.offset_p = {0.5, 0.5}
 	}
 
 	cmd.color = extract_color_from_value(state, values.color, rl.RED)
@@ -1269,6 +1272,54 @@ draw_draw_line :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	return mrb.nil_value()
 }
+
+@(private = "file")
+draw_draw_texture :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	KValues :: struct {
+		pos:               mrb.Value,
+		size:              mrb.Value,
+		texture:           mrb.Value,
+		offset_percentage: mrb.Value,
+		rotation:          mrb.Value,
+		tint:              mrb.Value,
+	}
+
+	values: KValues
+	load_kwargs(KValues, state, &values)
+
+	assert(!mrb.undef_p(values.pos), "Draw.texture requires `pos:`")
+	assert(!mrb.undef_p(values.texture), "Draw.texture requires `pos:`")
+	assert(
+		mrb.obj_is_kind_of(state, values.texture, engine_classes.texture_asset),
+		"expected `Draw.texture(texture:)` to be a Texture",
+	)
+	cmd: ImUiDrawTextureCmd
+	cmd.pos = vector_from_object(state, values.pos)
+	cmd.texture = texture_from_object(state, values.texture)
+	cmd.offset_p = Vector2{0.5, 0.5}
+	cmd.tint = rl.WHITE
+
+	if mrb.undef_p(values.size) {
+		txt_asset, txt_found := as_get_texture(&g.assets, cmd.texture)
+		assert(txt_found, "Texture is not valid")
+		cmd.size.x = txt_asset.src.width
+		cmd.size.y = txt_asset.src.height
+	} else {
+		cmd.size = vector_from_object(state, values.size)
+	}
+	if !mrb.undef_p(values.tint) {cmd.tint = color_from_object(state, values.tint)}
+	if !mrb.undef_p(values.rotation) {cmd.rotation = cast(f32)mrb.as_float(state, values.rotation)}
+	if !mrb.undef_p(values.offset_percentage) {
+		cmd.offset_p = vector_from_object(state, values.offset_percentage)
+	}
+
+	imui_add_cmd(&g.imui, cmd)
+
+	return mrb.nil_value()
+}
+
 
 // TODO: Font should not be required
 @(private = "file")
@@ -1686,7 +1737,6 @@ setup_sprite_class :: proc(state: ^mrb.State) {
 
 	mrb.define_method(state, sprite_class, "initialize", sprite_new, mrb.args_req(1))
 	mrb.define_class_method(state, sprite_class, "create", sprite_create, mrb.args_key(2, 0))
-
 	mrb.define_method(state, sprite_class, "id", sprite_get_id, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "pos=", sprite_pos_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "pos", sprite_pos_get, mrb.args_none())

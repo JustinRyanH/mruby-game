@@ -106,10 +106,7 @@ imui_draw :: proc(imui: ^ImUiState) {
 			asset, success := as_get_texture(&g.assets, c.texture)
 			assert(success, "We should not try to draw an invalid texture")
 
-			offset := rl.Vector2 {
-				c.pos.y - c.size.y * c.offset_p.y,
-				c.pos.x - c.size.x * c.offset_p.x,
-			}
+			offset := rl.Vector2{c.size.x * c.offset_p.x, c.size.y * c.offset_p.y}
 
 			dest := rl.Rectangle{c.pos.x, c.pos.y, c.size.x, c.size.y}
 
