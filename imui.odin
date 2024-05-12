@@ -40,6 +40,16 @@ ImuiDrawRectCmd :: struct {
 	mode:     DrawMode,
 }
 
+ImUiDrawTextureCmd :: struct {
+	pos:      Vector2,
+	size:     Vector2,
+	offset_p: Vector2,
+	texture:  TextureHandle,
+	rotation: f32,
+	tint:     Color,
+}
+
+
 ImuiDrawLineCmd :: struct {
 	start:     Vector2,
 	end:       Vector2,
@@ -51,6 +61,7 @@ ImuiCommand :: union {
 	ImuiDrawTextCmd,
 	ImuiDrawRectCmd,
 	ImuiDrawLineCmd,
+	ImUiDrawTextureCmd,
 }
 
 ImUiState :: struct {
@@ -91,6 +102,18 @@ imui_draw :: proc(imui: ^ImUiState) {
 			}
 		case ImuiDrawLineCmd:
 			rl.DrawLineEx(c.start, c.end, c.thickness, c.color)
+		case ImUiDrawTextureCmd:
+			asset, success := as_get_texture(&g.assets, c.texture)
+			assert(success, "We should not try to draw an invalid texture")
+
+			offset := rl.Vector2 {
+				c.pos.y - c.size.y * c.offset_p.y,
+				c.pos.x - c.size.x * c.offset_p.x,
+			}
+
+			dest := rl.Rectangle{c.pos.x, c.pos.y, c.size.x, c.size.y}
+
+			rl.DrawTexturePro(asset.texture, asset.src, dest, offset, c.rotation, c.tint)
 		}
 	}
 }
