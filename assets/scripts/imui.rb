@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'assets/scripts/common'
 require 'assets/scripts/engine_override'
 require 'assets/scripts/assets'
 
@@ -78,6 +79,7 @@ class Style
 end
 
 class ImElement
+  include Bounds
   # @param [Vector] pos
   attr_accessor :pos
 
@@ -102,6 +104,8 @@ class ImElement
   def dimensions
     raise 'All ImElements must provide `dimensions`'
   end
+
+  alias size dimensions
 
   def draw
     raise 'All ImElements must be able to draw'
