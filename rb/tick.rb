@@ -24,29 +24,26 @@ class Demo
     Engine.background_color = Color.crow_black_blue
 
     center = Vector.new(*FrameInput.screen_size) * 0.5
-    # main_style = Style.from_hash({ font_size: 60 })
-    # button_style = Style.from_hash({ background_color: Color.magic_spell })
-    # hover_style = Style.from_hash({ background_color: Color.blunt_violet, font_color: Color.magic_spell })
-    # down_style = Style.from_hash({
-    #                                background_color: Color.blunt_violet,
-    #                                font_color: Color.magic_spell,
-    #                                font_size: hover_style.font_size * 0.98
-    #                              })
-    #
-    # ImUI.container(:example, pos: center, style: main_style) do |ui|
-    #   ui.button('Button A', style: button_style, hover_style:, down_style:) do |btn|
-    #     puts 'The Mouse Button A was clicked!' if btn.clicked?
-    #   end
-    #   ui.button('Button B', style: button_style, hover_style:, down_style:) do |btn|
-    #     puts 'The Mouse Button B was clicked!' if btn.clicked?
-    #   end
-    # end
-    #
-    # ImUI.update
-    # ImUI.draw
+    main_style = Style.from_hash({ font_size: 60 })
+    button_style = Style.from_hash({ background_color: Color.magic_spell })
+    hover_style = Style.from_hash({ background_color: Color.blunt_violet, font_color: Color.magic_spell })
+    down_style = Style.from_hash({
+                                   background_color: Color.blunt_violet,
+                                   font_color: Color.magic_spell,
+                                   font_size: hover_style.font_size * 0.98
+                                 })
 
-    Draw.rect(pos: center, size: Vector.new(64, 64))
-    Draw.texture(pos: center, texture: Textures.copter, tint: Color.white, size: Vector.new(64, 64))
+    ImUI.container(:example, pos: center, style: main_style) do |ui|
+      ui.button('Button A', style: button_style, hover_style:, down_style:) do |btn|
+        puts 'The Mouse Button A was clicked!' if btn.clicked?
+      end
+      ui.button('Button B', style: button_style, hover_style:, down_style:) do |btn|
+        puts 'The Mouse Button B was clicked!' if btn.clicked?
+      end
+    end
+
+    ImUI.update
+    ImUI.draw
   end
 
   def setup
