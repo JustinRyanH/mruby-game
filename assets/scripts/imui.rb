@@ -141,6 +141,24 @@ class ImUiText < ImElement
   end
 end
 
+class ImUiIcon < ImElement
+  attr_accessor :size
+
+  attr_reader :texture
+
+  def initialize(size:, texture:, **)
+    super(**)
+    @size = size
+    @texture = texture
+  end
+
+  alias dimensions size
+
+  def draw
+    Draw.texture(texture:, size:, pos:)
+  end
+end
+
 class ImUiButton < ImElement
   attr_reader :message
 
@@ -253,6 +271,10 @@ class ImUiContainer < ImElement
       update
       @actions << UiAction.new(btn, &block)
     end
+  end
+
+  def <<(element)
+    @elements << element
   end
 
   def track

@@ -40,6 +40,12 @@ class Demo
       ui.button('Button B', style: button_style, hover_style:, down_style:) do |btn|
         puts 'The Mouse Button B was clicked!' if btn.clicked?
       end
+      ui << ImUiIcon.new(
+        id: :focus_icon,
+        texture: Textures.copter,
+        pos: Vector.new(100, 100),
+        size: Vector.new(32, 32),
+      )
     end
 
     ImUI.update
