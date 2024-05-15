@@ -284,10 +284,14 @@ class ImUiContainer < ImElement
   def track
     ctx.track_element(self)
     @elements.each(&:track)
+    @focus_element&.track
+  end
+
+  def perform
+    @actions.each(&:perform)
   end
 
   def draw
-    @actions.each(&:perform)
     Draw.rect(
       pos:,
       size: dimensions,
@@ -334,6 +338,17 @@ class TrackedElement
     handle_mouse_events
   end
 
+  def handle_position
+    if pos.nil?
+      self.pos = element.pos
+      self.last_pos = element.pos
+    end
+
+    return unless last_pos != element.pos
+
+    puts "#{last_pos.inspect}, #{pos.inspect}"
+  end
+
   def focus
     return unless @element.respond_to?(:focus)
 
@@ -357,6 +372,8 @@ class TrackedElement
   end
 
   private
+
+  attr_accessor :pos, :last_pos
 
   def handle_mouse_events
     handle_click
@@ -421,6 +438,8 @@ class ImUI
   def update
     @root_elements.each(&:track)
     focus_element
+    @root_elements.each(&:perform)
+    @tracked_elements.each_value(&:handle_position)
   end
 
   def draw
