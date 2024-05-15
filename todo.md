@@ -3,10 +3,10 @@
 ## Current
 
 * Start Menu
-  - NPatch Background
-  - Handle Position changing mid animation
+  - Better Animation with focus change
   - Better Animation (easing)
   - Scissor, and max size
+  - NPatch Background
 
 * Make the character move, use a camera to follow
 * Have the character/obstacle loop in world space
@@ -89,6 +89,7 @@
   - Scissor, and max size
   - Don't perform the "draw" till a ctx draw call
   - Create an update call that performs the lazy actions
+  - Handle Position changing mid animation
 
 ## AOR
 
