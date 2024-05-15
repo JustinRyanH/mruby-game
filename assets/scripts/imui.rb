@@ -251,11 +251,14 @@ class ImUiButton < ImElement
 end
 
 class ImUiContainer < ImElement
+  attr_accessor :focus_element
+
   def initialize(pos:, min_size: Vector.new(0, 0), **)
     super(pos:, **)
     @min_size = min_size
     @actions = []
     @elements = []
+    @focus_element = nil
   end
 
   def text(message, style: nil)
@@ -292,6 +295,7 @@ class ImUiContainer < ImElement
     )
 
     @elements.each(&:draw)
+    @focus_element&.draw
   end
 
   def dimensions

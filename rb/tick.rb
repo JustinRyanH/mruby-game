@@ -34,18 +34,19 @@ class Demo
                                  })
 
     ImUI.container(:example, pos: center, style: main_style) do |ui|
+      ui.focus_element = ImUiIcon.new(
+        id: :focus_icon,
+        texture: Textures.copter,
+        pos: Vector.new(100, 100),
+        size: Vector.new(32, 32),
+      )
+
       ui.button('Button A', style: button_style, hover_style:, down_style:) do |btn|
         puts 'The Button A was submitted!' if btn.clicked?
       end
       ui.button('Button B', style: button_style, hover_style:, down_style:) do |btn|
         puts 'The Button B was submitted!' if btn.clicked?
       end
-      # ui << ImUiIcon.new(
-      #   id: :focus_icon,
-      #   texture: Textures.copter,
-      #   pos: Vector.new(100, 100),
-      #   size: Vector.new(32, 32),
-      # )
     end
 
     ImUI.update
