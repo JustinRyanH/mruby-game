@@ -1107,7 +1107,7 @@ draw_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	// TODO: I can totally do this with generics and reflection
-	names: []mrb.Sym = {
+	names: []mrb.Sym =  {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
@@ -1336,7 +1336,7 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 		font: mrb.Value,
 	}
 
-	names: []mrb.Sym = {
+	names: []mrb.Sym =  {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "font"),
@@ -1665,6 +1665,7 @@ setup_engine :: proc(st: ^mrb.State) {
 		engine_get_bg_color,
 		mrb.args_none(),
 	)
+	mrb.define_class_method(st, engine_module, "exit", engine_exit, mrb.args_none())
 	mrb.define_class_method(st, engine_module, "debug?", engine_get_debug, mrb.args_none())
 	mrb.define_class_method(st, engine_module, "debug=", engine_set_debug, mrb.args_req(1))
 	mrb.define_class_method(st, engine_module, "hash_str", engine_hash_str, mrb.args_req(1))
@@ -1674,6 +1675,12 @@ setup_engine :: proc(st: ^mrb.State) {
 @(private = "file")
 engine_get_debug :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return mrb.bool_value(g.debug)
+}
+
+@(private = "file")
+engine_exit :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	g.should_exit = true
+	return mrb.nil_value()
 }
 
 @(private = "file")

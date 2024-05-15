@@ -147,7 +147,7 @@ main :: proc() {
 
 	rl.SetTargetFPS(TargetFPS)
 
-	for g.should_exit {
+	for !g.should_exit {
 		defer {
 			is_bad := track_bad_free_tracking_allocator(&tracking_allocator)
 			assert(!is_bad, "Double Free issue")
@@ -185,6 +185,8 @@ main :: proc() {
 		if input.frame_query_id(g.input) % TargetFPS == 0 {
 			as_check(&g.assets)
 		}
-		g.should_exit = rl.WindowShouldClose()
+		if rl.WindowShouldClose() {
+			g.should_exit = true
+		}
 	}
 }
