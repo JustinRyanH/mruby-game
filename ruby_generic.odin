@@ -46,7 +46,7 @@ require_fn :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	rbf, rbf_found := find_ruby_file(as, path)
-	assert(rbf_found, fmt.tprintf("Failed to found Ruby File: %s", path))
+	assert(rbf_found, fmt.tprintf("Failed to find Ruby File: %s", path))
 
 	if rbf_found {
 		handle, rbf_loaded := as_load_ruby(as, rbf)
