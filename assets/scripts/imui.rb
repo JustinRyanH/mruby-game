@@ -341,20 +341,30 @@ class Transition
 
   def target=(new_target)
     @target = new_target
-    @timer&.reset
+    return if timer.nil?
+
+    @origin = current_pos
+
+    timer.reset([0.2 + timer.time, 0.4].min)
   end
 
   def update
     return target if timer.nil?
 
     timer.tick
-    origin.lerp(target, timer.percentage)
+    current_pos
   end
 
   def finished?
     return true if timer.nil?
 
     timer.finished?
+  end
+
+  private
+
+  def current_pos
+    origin.lerp(target, timer.percentage)
   end
 end
 
