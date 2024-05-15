@@ -3,11 +3,8 @@
 ## Current
 
 * Start Menu
-  - Focus for Button (State)
   - NPatch Background
   - Scissor, and max size
-  - Don't perform the "draw" till a ctx draw call
-  - Create an update call that performs the lazy actions
 
 * Make the character move, use a camera to follow
 * Have the character/obstacle loop in world space
@@ -83,10 +80,13 @@
 * Sounds
 * ImUI
 * Start Menu
+  - Focus for Button (State)
   - Button
   - Hover
   - Active-Click
   - Scissor, and max size
+  - Don't perform the "draw" till a ctx draw call
+  - Create an update call that performs the lazy actions
 
 ## AOR
 
