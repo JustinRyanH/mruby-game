@@ -373,6 +373,7 @@ class TrackedElement
     self.pos = element.pos
 
     @pos_transition ||= Transition.new(last_pos, pos, time: 0.2)
+    puts 'New Target' if pos != @pos_transition.target
     element.pos = @pos_transition.update
 
     return unless @pos_transition.finished?
