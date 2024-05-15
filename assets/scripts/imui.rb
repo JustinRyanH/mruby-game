@@ -328,6 +328,30 @@ class ImUiContainer < ImElement
   attr_reader :pos, :min_size, :padding
 end
 
+class Transition
+  # @param [Timer] timer
+  attr_reader :origin, :target, :timer
+
+  def initialize(origin, target, time: nil)
+    @origin = origin
+    @target = target
+    @timer = time.nil? ? nil : Timer.new(time)
+  end
+
+  def update
+    return target if timer.nil?
+
+    timer.tick
+    origin.lerp(target, timer.percentage)
+  end
+
+  def finished?
+    return true if timer.nil?
+
+    timer.finished?
+  end
+end
+
 class TrackedElement
   attr_reader :element, :last_frame
 
@@ -348,14 +372,13 @@ class TrackedElement
 
     self.pos = element.pos
 
-    @timer ||= Timer.new(0.2)
-    @timer.tick
-    element.pos = last_pos.lerp(pos, @timer.percentage)
+    @transition ||= Transition.new(last_pos, pos, time: 0.05)
+    element.pos = @transition.update
 
-    return unless @timer.percentage >= 1
+    return unless @transition.finished?
 
     self.last_pos = pos
-    @timer = nil
+    @transition = nil
   end
 
   def focus
