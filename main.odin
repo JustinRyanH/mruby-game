@@ -80,7 +80,7 @@ track_bad_free_tracking_allocator :: proc(a: ^mem.Tracking_Allocator) -> (err: b
 	return
 }
 
-TargetFPS :: 90
+TargetFPS :: 30
 
 game_run_code :: proc(game: ^Game, handle: RubyCodeHandle, loc := #caller_location) {
 	code, found := as_find_ruby(&game.assets, handle)
