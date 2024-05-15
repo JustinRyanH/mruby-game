@@ -336,6 +336,7 @@ class Transition
   def initialize(origin, target, time: nil)
     @origin = origin
     @target = target
+    @time = time
     @timer = time.nil? ? nil : Timer.new(time)
   end
 
@@ -345,7 +346,7 @@ class Transition
 
     @origin = current_pos
 
-    timer.reset([0.2 + timer.time, 0.4].min)
+    timer.reset(@time)
   end
 
   def update
