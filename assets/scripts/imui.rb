@@ -271,14 +271,14 @@ class ImUiContainer < ImElement
   def text(message, style: nil)
     ImUiText.new(message:, style: style.dup || self.style.dup).tap do |txt|
       @elements << txt
-      update
+      update_positions
     end
   end
 
   def button(message, style: nil, **, &block)
     ImUiButton.new(message:, style: style.dup || self.style.dup, **).tap do |btn|
       @elements << btn
-      update
+      update_positions
       @actions << UiAction.new(btn, &block)
     end
   end
@@ -321,7 +321,7 @@ class ImUiContainer < ImElement
 
   private
 
-  def update
+  def update_positions
     rect = Rectangle.new(pos:, size: dimensions)
     y = rect.top + style.padding
     @elements.each do |el|
