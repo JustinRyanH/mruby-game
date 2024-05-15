@@ -3,8 +3,8 @@
 ## Current
 
 * Start Menu
-  - Better Animation with focus change
   - Better Animation (easing)
+  - Handle Jump when we are near done of tween
   - Scissor, and max size
   - NPatch Background
 
@@ -90,7 +90,7 @@
   - Don't perform the "draw" till a ctx draw call
   - Create an update call that performs the lazy actions
   - Handle Position changing mid animation
-
+  - Better Animation with focus change
 ## AOR
 
 ### Hot Reload
