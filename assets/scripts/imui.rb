@@ -190,16 +190,6 @@ class ImUiButton < ImElement
       size: current_style.font_size,
       halign: current_style.text_align,
     )
-
-    return unless focused?
-
-    Draw.rect(
-      pos:,
-      size: dimensions + Vector.new(8, 8),
-      anchor_percentage: Vector.new(0.5, 0.5),
-      color: Color.red,
-      mode: :outline,
-    )
   end
 
   def inside?(position)
