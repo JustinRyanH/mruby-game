@@ -795,10 +795,11 @@ vector_eq :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		"Vector can only equal another Vector",
 	)
 
-	entity := mrb.get_data_from_value(Vector2, self)^
-	other := mrb.get_data_from_value(Vector2, self)^
+	a := mrb.get_data_from_value(Vector2, self)^
+	b := mrb.get_data_from_value(Vector2, other_v)^
 
-	return mrb.bool_value(entity == other)
+
+	return mrb.bool_value(a == b)
 }
 
 
@@ -1107,7 +1108,7 @@ draw_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	// TODO: I can totally do this with generics and reflection
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
@@ -1336,7 +1337,7 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 		font: mrb.Value,
 	}
 
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "font"),
