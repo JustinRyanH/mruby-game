@@ -47,6 +47,7 @@ Game :: struct {
 	input:            input.FrameInput,
 	rand:             rand.Rand,
 	debug:            bool,
+	should_exit:      bool,
 
 	// Temp Data
 	collision_evts_t: map[ColliderHandle]CollisionTargets,
