@@ -144,7 +144,7 @@ class Rectangle
 end
 
 class Timer
-  attr_reader :time
+  attr_reader :time, :total_time
 
   def initialize(time = 0)
     @time = time
@@ -159,7 +159,7 @@ class Timer
 
   def reset(new_time = nil)
     @time = new_time unless new_time.nil?
-    @total_time = new_time || time
+    @total_time = new_time || total_time
   end
 
   def finished?
