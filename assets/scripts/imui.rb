@@ -79,6 +79,8 @@ class Style
 end
 
 class ImElement
+  include Bounds
+
   # @param [Vector] pos
   attr_accessor :pos
 
@@ -162,8 +164,6 @@ class ImUiIcon < ImElement
 end
 
 class ImUiButton < ImElement
-  include Bounds
-
   attr_reader :message
 
   attr_writer :down
@@ -346,7 +346,16 @@ class TrackedElement
 
     return unless last_pos != element.pos
 
-    puts "#{last_pos.inspect}, #{pos.inspect}"
+    self.pos = element.pos
+
+    @timer ||= Timer.new(0.2)
+    @timer.tick
+    element.pos = last_pos.lerp(pos, @timer.percentage)
+
+    return unless @timer.percentage >= 1
+
+    self.last_pos = pos
+    @timer = nil
   end
 
   def focus
