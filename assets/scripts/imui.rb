@@ -144,18 +144,19 @@ end
 class ImUiIcon < ImElement
   attr_accessor :size
 
-  attr_reader :texture
+  attr_reader :texture, :tint
 
-  def initialize(size:, texture:, **)
+  def initialize(size:, texture:, tint: Color.white, **)
     super(**)
     @size = size
     @texture = texture
+    @tint = tint
   end
 
   alias dimensions size
 
   def draw
-    Draw.texture(texture:, size:, pos:)
+    Draw.texture(texture:, size:, pos:, tint:)
   end
 end
 
@@ -253,6 +254,9 @@ end
 class ImUiContainer < ImElement
   attr_accessor :focus_element
 
+  # @param [Array<ImElement>] elements
+  attr_reader :elements
+
   def initialize(pos:, min_size: Vector.new(0, 0), **)
     super(pos:, **)
     @min_size = min_size
@@ -280,6 +284,10 @@ class ImUiContainer < ImElement
     @elements << element
   end
 
+  def focused?
+    @elements.select(&:focusable?).any?(&:focused?)
+  end
+
   def track
     ctx.track_element(self)
     @elements.each(&:track)
@@ -295,7 +303,7 @@ class ImUiContainer < ImElement
     )
 
     @elements.each(&:draw)
-    @focus_element&.draw
+    @focus_element&.draw if focused?
   end
 
   def dimensions
