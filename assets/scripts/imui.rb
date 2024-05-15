@@ -79,7 +79,6 @@ class Style
 end
 
 class ImElement
-  include Bounds
   # @param [Vector] pos
   attr_accessor :pos
 
@@ -105,7 +104,9 @@ class ImElement
     raise 'All ImElements must provide `dimensions`'
   end
 
-  alias size dimensions
+  def size
+    dimensions
+  end
 
   def draw
     raise 'All ImElements must be able to draw'
@@ -161,6 +162,8 @@ class ImUiIcon < ImElement
 end
 
 class ImUiButton < ImElement
+  include Bounds
+
   attr_reader :message
 
   attr_writer :down

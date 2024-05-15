@@ -42,12 +42,19 @@ class Demo
         tint: Color.red,
       )
 
-      ui.button('Button A', style: button_style, hover_style:, down_style:) do |btn|
+      ui.button('Play Game', style: button_style, hover_style:, down_style:) do |btn|
         ui.focus_element.pos.y = btn.pos.y if btn.focused?
+        ui.focus_element.pos.x = btn.left - 32 if btn.focused?
         puts 'The Button A was submitted!' if btn.clicked?
       end
-      ui.button('Button B', style: button_style, hover_style:, down_style:) do |btn|
+      ui.button('High Score', style: button_style, hover_style:, down_style:) do |btn|
         ui.focus_element.pos.y = btn.pos.y if btn.focused?
+        ui.focus_element.pos.x = btn.left - 32 if btn.focused?
+        puts 'The Button B was submitted!' if btn.clicked?
+      end
+      ui.button('Exit', style: button_style, hover_style:, down_style:) do |btn|
+        ui.focus_element.pos.y = btn.pos.y if btn.focused?
+        ui.focus_element.pos.x = btn.left - 32 if btn.focused?
         puts 'The Button B was submitted!' if btn.clicked?
       end
     end
