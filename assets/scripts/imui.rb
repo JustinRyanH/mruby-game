@@ -368,17 +368,17 @@ class TrackedElement
       self.last_pos = element.pos
     end
 
-    return unless last_pos != element.pos
+    return unless position_changed?
 
     self.pos = element.pos
 
-    @transition ||= Transition.new(last_pos, pos, time: 0.05)
-    element.pos = @transition.update
+    @pos_transition ||= Transition.new(last_pos, pos, time: 0.2)
+    element.pos = @pos_transition.update
 
-    return unless @transition.finished?
+    return unless @pos_transition.finished?
 
     self.last_pos = pos
-    @transition = nil
+    @pos_transition = nil
   end
 
   def focus
@@ -406,6 +406,10 @@ class TrackedElement
   private
 
   attr_accessor :pos, :last_pos
+
+  def position_changed?
+    last_pos != element.pos
+  end
 
   def handle_mouse_events
     handle_click
