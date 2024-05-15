@@ -43,9 +43,11 @@ class Demo
       )
 
       ui.button('Button A', style: button_style, hover_style:, down_style:) do |btn|
+        ui.focus_element.pos.y = btn.pos.y if btn.focused?
         puts 'The Button A was submitted!' if btn.clicked?
       end
       ui.button('Button B', style: button_style, hover_style:, down_style:) do |btn|
+        ui.focus_element.pos.y = btn.pos.y if btn.focused?
         puts 'The Button B was submitted!' if btn.clicked?
       end
     end
@@ -59,10 +61,12 @@ class Demo
       )
 
       ui.button('Button C', style: button_style, hover_style:, down_style:) do |btn|
+        ui.focus_element.pos.y = btn.pos.y if btn.focused?
         puts 'The Button C was submitted!' if btn.clicked?
       end
 
       ui.button('Button D', style: button_style, hover_style:, down_style:) do |btn|
+        ui.focus_element.pos.y = btn.pos.y if btn.focused?
         puts 'The Button D was submitted!' if btn.clicked?
       end
     end
