@@ -4,6 +4,8 @@
 
 * Start Menu
   - NPatch Background
+  - Handle Position changing mid animation
+  - Better Animation (easing)
   - Scissor, and max size
 
 * Make the character move, use a camera to follow
