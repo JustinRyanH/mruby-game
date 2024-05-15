@@ -231,6 +231,7 @@ class ImUiButton < ImElement
   def current_style
     return down_style if down?
     return hover_style if hover?
+    return hover_style if focused?
 
     style
   end
@@ -338,6 +339,11 @@ class Transition
     @timer = time.nil? ? nil : Timer.new(time)
   end
 
+  def target=(new_target)
+    @target = new_target
+    @timer&.reset
+  end
+
   def update
     return target if timer.nil?
 
@@ -373,7 +379,7 @@ class TrackedElement
     self.pos = element.pos
 
     @pos_transition ||= Transition.new(last_pos, pos, time: 0.2)
-    puts 'New Target' if pos != @pos_transition.target
+    @pos_transition.target = pos if pos != @pos_transition.target
     element.pos = @pos_transition.update
 
     return unless @pos_transition.finished?

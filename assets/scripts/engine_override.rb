@@ -157,9 +157,9 @@ class Timer
     @time -= FrameInput.delta_time
   end
 
-  def reset(time)
-    @time = time
-    @total_time = time
+  def reset(new_time = nil)
+    @time = new_time unless new_time.nil?
+    @total_time = new_time || time
   end
 
   def finished?
