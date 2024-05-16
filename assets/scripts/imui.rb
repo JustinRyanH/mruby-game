@@ -61,6 +61,10 @@ class Style
     merge_hash(style.to_h)
   end
 
+  def merge_new(hsh)
+    dup.tap { |s| s.merge_hash(hsh) }
+  end
+
   def merge_hash(hsh)
     hsh.keys
        .select { |k| respond_to?(:"#{k}=") }
