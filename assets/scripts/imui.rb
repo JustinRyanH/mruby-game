@@ -331,13 +331,14 @@ end
 
 class Transition
   # @param [Timer] timer
-  attr_reader :origin, :target, :timer
+  attr_reader :origin, :target, :timer, :ease
 
-  def initialize(origin, target, time: nil)
+  def initialize(origin, target, time: nil, ease: :linear)
     @origin = origin
     @target = target
     @time = time
     @timer = time.nil? ? nil : Timer.new(time)
+    @ease = ease
   end
 
   def target=(new_target)
@@ -353,7 +354,6 @@ class Transition
     return target if timer.nil?
 
     timer.tick
-    puts "Ease Test: #{timer.percentage.class} #{timer.percentage.respond_to?(:ease_in_sine)}  "
     current_pos
   end
 
@@ -366,7 +366,7 @@ class Transition
   private
 
   def current_pos
-    origin.lerp(target, timer.percentage)
+    origin.lerp(target, timer.percentage.ease(ease))
   end
 end
 
@@ -390,7 +390,7 @@ class TrackedElement
 
     self.pos = element.pos
 
-    @pos_transition ||= Transition.new(last_pos, pos, time: 0.2)
+    @pos_transition ||= Transition.new(last_pos, pos, time: 1, ease: :elastic_in_out)
     @pos_transition.target = pos if pos != @pos_transition.target
     element.pos = @pos_transition.update
 

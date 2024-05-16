@@ -1,6 +1,7 @@
 package main
 
 import "core:fmt"
+import "core:math/ease"
 import math "core:math/linalg"
 import "core:math/rand"
 import "core:reflect"
@@ -111,27 +112,31 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 }
 
 setup_easing :: proc(st: ^mrb.State) {
-
-	mrb.define_method(
-		st,
-		mrb.state_get_integer_class(st),
-		"ease_in_sine",
-		int_ease,
-		mrb.args_none(),
-	)
-	mrb.define_method(
-		st,
-		mrb.state_get_float_class(st),
-		"ease_in_sine",
-		float_ease,
-		mrb.args_none(),
-	)
+	mrb.define_method(st, mrb.state_get_integer_class(st), "ease", int_ease, mrb.args_req(1))
+	mrb.define_method(st, mrb.state_get_float_class(st), "ease", float_ease, mrb.args_req(1))
 
 }
 
 float_ease :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	ease_type_v: mrb.Sym
+	mrb.get_args(state, "n", &ease_type_v)
+
+	sym_name := mrb.sym_to_string(state, ease_type_v)
+	ease_string, ada_err := strings.to_ada_case(sym_name, context.temp_allocator)
+	assert(ada_err == .None, "Failed to convert symbol to AdaCase")
+	ease_type, success := reflect.enum_from_name(ease.Ease, ease_string)
+	assert(success, fmt.tprintf("Failed to convert %s to an ease", ease_string))
+
+	fmt.println("Ease Type", ease_type)
+
+
 	value := mrb.as_float(state, self)
-	return mrb.float_value(state, value)
+	new_value := ease.ease(ease_type, value)
+
+
+	return mrb.float_value(state, new_value)
 }
 
 int_ease :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
