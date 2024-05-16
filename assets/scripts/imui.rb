@@ -390,7 +390,7 @@ class TrackedElement
 
     self.pos = element.pos
 
-    @pos_transition ||= Transition.new(last_pos, pos, time: 1, ease: :elastic_in_out)
+    @pos_transition ||= Transition.new(last_pos, pos, time: 0.8, ease: :elastic_out)
     @pos_transition.target = pos if pos != @pos_transition.target
     element.pos = @pos_transition.update
 
