@@ -43,23 +43,19 @@ class Demo
       )
 
       ui.button('Play Game', style: button_style, hover_style:, down_style:) do |btn|
-        ui.focus_element.pos.y = btn.pos.y if btn.focused?
-        ui.focus_element.pos.x = ui.left - 32 if btn.focused?
+        ui.focus_element.pos = Vector.new(ui.left - 32, btn.pos.y) if btn.focused?
         puts 'Play Game' if btn.clicked?
       end
       ui.button('High Score', style: button_style, hover_style:, down_style:) do |btn|
-        ui.focus_element.pos.y = btn.pos.y if btn.focused?
-        ui.focus_element.pos.x = ui.left - 32 if btn.focused?
+        ui.focus_element.pos = Vector.new(ui.left - 32, btn.pos.y) if btn.focused?
         puts 'Show High Score' if btn.clicked?
       end
       ui.button('Options', style: button_style, hover_style:, down_style:) do |btn|
-        ui.focus_element.pos.y = btn.pos.y if btn.focused?
-        ui.focus_element.pos.x = ui.left - 32 if btn.focused?
+        ui.focus_element.pos = Vector.new(ui.left - 32, btn.pos.y) if btn.focused?
         puts 'Show High Score' if btn.clicked?
       end
       ui.button('Exit', style: button_style, hover_style:, down_style:) do |btn|
-        ui.focus_element.pos.y = btn.pos.y if btn.focused?
-        ui.focus_element.pos.x = ui.left - 32 if btn.focused?
+        ui.focus_element.pos = Vector.new(ui.left - 32, btn.pos.y) if btn.focused?
         if btn.clicked?
           puts 'The game should exit'
           Engine.exit
