@@ -122,6 +122,7 @@ class Rectangle
   include Bounds
 
   attr_reader :pos, :size
+  attr_accessor :anchor_percentage
 
   def self.zero
     Rectangle.new(pos: Vector.zero, size: Vector.zero)
@@ -142,6 +143,7 @@ class Rectangle
   def initialize(pos:, size:)
     @pos = pos
     @size = size
+    @anchor_percentage = Vector.new(0.5, 0.5)
   end
 
   def inside?(point)
