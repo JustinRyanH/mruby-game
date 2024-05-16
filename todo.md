@@ -9,6 +9,7 @@
 ## Nice to Have
 
 * UI
+  - Divider Element
   - Scrolling
   - Handle Jump when we are near done of tween
     we have a problem when we're near the end of a tween and we move it again we get a jump
