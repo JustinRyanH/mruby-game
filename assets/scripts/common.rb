@@ -2,7 +2,6 @@
 
 module Bounds
   def bottom
-    puts 1 - anchor_y
     pos.y + (size.y * (1 - anchor_y))
   end
 
