@@ -246,7 +246,14 @@ class ImUiButton < ImElement
   private
 
   def anchor_percentage
-    Vector.new(0.5, 0.5)
+    case style.text_align
+    when :left
+      Vector.new(0.0, 0.5)
+    when :right
+      Vector.new(0.1, 0.5)
+    else
+      Vector.new(0.5, 0.5)
+    end
   end
 end
 
