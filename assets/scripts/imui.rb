@@ -353,6 +353,7 @@ class Transition
     return target if timer.nil?
 
     timer.tick
+    puts "Ease Test: #{timer.percentage.class} #{timer.percentage.respond_to?(:ease_in_sine)}  "
     current_pos
   end
 

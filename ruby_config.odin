@@ -98,6 +98,7 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	st := game.ruby
 
 	engine_classes.set = mrb.class_get(st, "Set")
+	setup_easing(st)
 	setup_engine(st)
 	setup_assets(st)
 	setup_draw(st)
@@ -107,6 +108,34 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	setup_sprite_class(st)
 	setup_vector_class(st)
 	setup_color_class(st)
+}
+
+setup_easing :: proc(st: ^mrb.State) {
+
+	mrb.define_method(
+		st,
+		mrb.state_get_integer_class(st),
+		"ease_in_sine",
+		int_ease,
+		mrb.args_none(),
+	)
+	mrb.define_method(
+		st,
+		mrb.state_get_float_class(st),
+		"ease_in_sine",
+		float_ease,
+		mrb.args_none(),
+	)
+
+}
+
+float_ease :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	value := mrb.as_float(state, self)
+	return mrb.float_value(state, value)
+}
+
+int_ease :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return self
 }
 
 
@@ -1108,7 +1137,7 @@ draw_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	// TODO: I can totally do this with generics and reflection
-	names: []mrb.Sym = {
+	names: []mrb.Sym =  {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
@@ -1337,7 +1366,7 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 		font: mrb.Value,
 	}
 
-	names: []mrb.Sym = {
+	names: []mrb.Sym =  {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "font"),
