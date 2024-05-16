@@ -57,21 +57,6 @@ class Demo
         ui.focus_element.pos.x = ui.left - 32 if btn.focused?
         puts 'Show High Score' if btn.clicked?
       end
-      ui.button('A 1', style: button_style, hover_style:, down_style:) do |btn|
-        ui.focus_element.pos.y = btn.pos.y if btn.focused?
-        ui.focus_element.pos.x = ui.left - 32 if btn.focused?
-        puts 'Show High Score' if btn.clicked?
-      end
-      ui.button('A 2', style: button_style, hover_style:, down_style:) do |btn|
-        ui.focus_element.pos.y = btn.pos.y if btn.focused?
-        ui.focus_element.pos.x = ui.left - 32 if btn.focused?
-        puts 'Show High Score' if btn.clicked?
-      end
-      ui.button('A 3', style: button_style, hover_style:, down_style:) do |btn|
-        ui.focus_element.pos.y = btn.pos.y if btn.focused?
-        ui.focus_element.pos.x = ui.left - 32 if btn.focused?
-        puts 'Show High Score' if btn.clicked?
-      end
       ui.button('Exit', style: button_style, hover_style:, down_style:) do |btn|
         ui.focus_element.pos.y = btn.pos.y if btn.focused?
         ui.focus_element.pos.x = ui.left - 32 if btn.focused?
