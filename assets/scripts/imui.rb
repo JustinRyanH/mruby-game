@@ -86,16 +86,18 @@ class ImElement
   include Bounds
 
   # @param [Vector] pos
-  attr_accessor :pos
+  # @param [Vector] anchor_percentage
+  attr_accessor :pos, :anchor_percentage
 
   # @return [Integer] id
   # @return [Style] style
   attr_reader :id, :style
 
-  def initialize(id:, pos:, style: Style.new)
+  def initialize(id:, pos:, anchor_percentage: Vector.new(0.5, 0.5), style: Style.new)
     @id = Engine.hash_str(id.to_s)
     @style = style
     @pos = pos
+    @anchor_percentage = anchor_percentage
   end
 
   def track
