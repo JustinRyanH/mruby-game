@@ -129,9 +129,6 @@ float_ease :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	ease_type, success := reflect.enum_from_name(ease.Ease, ease_string)
 	assert(success, fmt.tprintf("Failed to convert %s to an ease", ease_string))
 
-	fmt.println("Ease Type", ease_type)
-
-
 	value := mrb.as_float(state, self)
 	new_value := ease.ease(ease_type, value)
 
