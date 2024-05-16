@@ -30,7 +30,7 @@ module Bounds
   end
 end
 
-module FieldAccessor
+module DefinedAttribute
   def self.included(klass)
     klass.extend(ClassMethods)
     klass.include(InstanceMethods)
@@ -44,20 +44,20 @@ module FieldAccessor
     end
 
     def to_h
-      self.class.all_fields.each_with_object({}) do |field, out|
-        out[field] = send(field)
+      self.class.all_attrs.each_with_object({}) do |attr, out|
+        out[attr] = send(attr)
       end
     end
   end
 
   module ClassMethods
-    def field(method_name, default: nil)
-      all_fields << method_name
+    def define_attr(method_name, default: nil)
+      all_attrs << method_name
       create_getter(method_name, default)
     end
 
-    def all_fields
-      @all_fields ||= []
+    def all_attrs
+      @all_attrs ||= []
     end
 
     def create_getter(method_name, default_value)
