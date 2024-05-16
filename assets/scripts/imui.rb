@@ -251,9 +251,10 @@ class ImUiContainer < ImElement
   # @param [Array<ImElement>] elements
   attr_reader :elements
 
-  def initialize(pos:, min_size: Vector.new(0, 0), **)
+  def initialize(pos:, min_size: Vector.new(0, 0), max_size: Vector.new(*FrameInput.screen_size), **)
     super(pos:, **)
     @min_size = min_size
+    @max_size = max_size
     @actions = []
     @elements = []
     @focus_element = nil
@@ -307,9 +308,9 @@ class ImUiContainer < ImElement
   def dimensions
     dimensions = @elements.map(&:dimensions)
     height = dimensions.inject(0) { |sum, dim| sum + dim.y + style.gap }
-    height = [min_size.y, height].max
+    height = height.clamp(min_size.y, max_size.y)
     width = dimensions.inject(0) { |max, dim| [max, dim.x].max } + (style.padding * 2)
-    width = [min_size.x, width].max
+    width = width.clamp(min_size.x, max_size.x)
 
     Vector.new(width, height)
   end
@@ -326,7 +327,7 @@ class ImUiContainer < ImElement
     end
   end
 
-  attr_reader :pos, :min_size, :padding
+  attr_reader :pos, :min_size, :max_size, :padding
 end
 
 class Transition

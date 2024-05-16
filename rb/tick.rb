@@ -33,7 +33,7 @@ class Demo
                                    font_size: hover_style.font_size * 0.98
                                  })
 
-    ImUI.container(:example, pos: center, style: main_style) do |ui|
+    ImUI.container(:example, pos: center, max_size: Vector.new(500, 300), style: main_style) do |ui|
       ui.focus_element = ImUiIcon.new(
         id: :focus_icon,
         texture: Textures.copter,
