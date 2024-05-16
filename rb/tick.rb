@@ -28,58 +28,54 @@ class Demo
     @rect_pos.x -= 1 if FrameInput.key_down?(:a)
     puts @rect_pos.inspect
 
-    Draw.clip(200, 200, 200, 200) do
-      Draw.rect(pos: @rect_pos, size: Vector.new(100, 100))
+    center = Vector.new(*FrameInput.screen_size) * 0.5
+    main_style = Style.from_hash({ font_size: 60 })
+    button_style = Style.from_hash({ background_color: Color.magic_spell })
+    hover_style = Style.from_hash({ background_color: Color.blunt_violet, font_color: Color.magic_spell })
+    down_style = Style.from_hash({
+                                   background_color: Color.blunt_violet,
+                                   font_color: Color.magic_spell,
+                                   font_size: hover_style.font_size * 0.98
+                                 })
+
+    ImUI.container(:example, pos: center, max_size: Vector.new(500, 300), style: main_style) do |ui|
+      ui.focus_element = ImUiIcon.new(
+        id: :focus_icon,
+        texture: Textures.copter,
+        pos: Vector.new(100, 100),
+        size: Vector.new(32, 32),
+        tint: Color.red,
+      )
+
+      ui.button('Play Game', style: button_style, hover_style:, down_style:) do |btn|
+        ui.focus_element.pos = Vector.new(ui.left - 32, btn.pos.y) if btn.focused?
+        puts 'Play Game' if btn.clicked?
+      end
+      ui.button('High Score', style: button_style, hover_style:, down_style:) do |btn|
+        ui.focus_element.pos = Vector.new(ui.left - 32, btn.pos.y) if btn.focused?
+        puts 'Show High Score' if btn.clicked?
+      end
+      ui.button('Options', style: button_style, hover_style:, down_style:) do |btn|
+        ui.focus_element.pos = Vector.new(ui.left - 32, btn.pos.y) if btn.focused?
+        puts 'Show High Score' if btn.clicked?
+      end
+      10.times.each do |i|
+        ui.button("Example #{i}", style: button_style, hover_style:, down_style:) do |btn|
+          ui.focus_element.pos = Vector.new(ui.left - 32, btn.pos.y) if btn.focused?
+          puts 'Show High Score' if btn.clicked?
+        end
+      end
+      ui.button('Exit', style: button_style, hover_style:, down_style:) do |btn|
+        ui.focus_element.pos = Vector.new(ui.left - 32, btn.pos.y) if btn.focused?
+        if btn.clicked?
+          puts 'The game should exit'
+          Engine.exit
+        end
+      end
     end
 
-    # center = Vector.new(*FrameInput.screen_size) * 0.5
-    # main_style = Style.from_hash({ font_size: 60 })
-    # button_style = Style.from_hash({ background_color: Color.magic_spell })
-    # hover_style = Style.from_hash({ background_color: Color.blunt_violet, font_color: Color.magic_spell })
-    # down_style = Style.from_hash({
-    #                                background_color: Color.blunt_violet,
-    #                                font_color: Color.magic_spell,
-    #                                font_size: hover_style.font_size * 0.98
-    #                              })
-
-    # ImUI.container(:example, pos: center, max_size: Vector.new(500, 300), style: main_style) do |ui|
-    #   ui.focus_element = ImUiIcon.new(
-    #     id: :focus_icon,
-    #     texture: Textures.copter,
-    #     pos: Vector.new(100, 100),
-    #     size: Vector.new(32, 32),
-    #     tint: Color.red,
-    #   )
-    #
-    #   ui.button('Play Game', style: button_style, hover_style:, down_style:) do |btn|
-    #     ui.focus_element.pos = Vector.new(ui.left - 32, btn.pos.y) if btn.focused?
-    #     puts 'Play Game' if btn.clicked?
-    #   end
-    #   ui.button('High Score', style: button_style, hover_style:, down_style:) do |btn|
-    #     ui.focus_element.pos = Vector.new(ui.left - 32, btn.pos.y) if btn.focused?
-    #     puts 'Show High Score' if btn.clicked?
-    #   end
-    #   ui.button('Options', style: button_style, hover_style:, down_style:) do |btn|
-    #     ui.focus_element.pos = Vector.new(ui.left - 32, btn.pos.y) if btn.focused?
-    #     puts 'Show High Score' if btn.clicked?
-    #   end
-    #   10.times.each do |i|
-    #     ui.button("Example #{i}", style: button_style, hover_style:, down_style:) do |btn|
-    #       ui.focus_element.pos = Vector.new(ui.left - 32, btn.pos.y) if btn.focused?
-    #       puts 'Show High Score' if btn.clicked?
-    #     end
-    #   end
-    #   ui.button('Exit', style: button_style, hover_style:, down_style:) do |btn|
-    #     ui.focus_element.pos = Vector.new(ui.left - 32, btn.pos.y) if btn.focused?
-    #     if btn.clicked?
-    #       puts 'The game should exit'
-    #       Engine.exit
-    #     end
-    #   end
-    # end
-    #
-    # ImUI.update
-    # ImUI.draw
+    ImUI.update
+    ImUI.draw
   end
 
   def setup

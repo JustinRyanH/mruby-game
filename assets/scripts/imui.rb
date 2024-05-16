@@ -294,15 +294,18 @@ class ImUiContainer < ImElement
   end
 
   def draw
-    Draw.rect(
-      pos:,
-      size: dimensions,
-      color: Color.regal_blue,
-      anchor_percentage: Vector.new(0.5, 0.5),
-    )
+    dimensions = self.dimensions
+    Draw.clip(left, top, dimensions.x, dimensions.y) do
+      Draw.rect(
+        pos:,
+        size: dimensions,
+        color: Color.regal_blue,
+        anchor_percentage: Vector.new(0.5, 0.5),
+      )
 
-    @elements.each(&:draw)
-    @focus_element&.draw if focused?
+      @elements.each(&:draw)
+      @focus_element&.draw if focused?
+    end
   end
 
   def dimensions
