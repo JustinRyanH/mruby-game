@@ -3,12 +3,6 @@
 ## Current
 
 * Start Menu
-  - Handle Jump when we are near done of tween
-    we have a problem when we're near the end of a tween and we move it again we get a jump
-  we need to be able to get handle it in some way
-  - Scissor, and max size
-  - NPatch Background
-
 * Make the character move, use a camera to follow
 * Have the character/obstacle loop in world space
 
@@ -16,6 +10,10 @@
 
 * UI
   - Scrolling
+  - Handle Jump when we are near done of tween
+    we have a problem when we're near the end of a tween and we move it again we get a jump
+  - NPatch Background
+
 * Swap out to use Odin log context
 * Texture Packing
  - Maybe using Ruby scropts
@@ -94,6 +92,7 @@
   - Handle Position changing mid animation
   - Better Animation with focus change
   - Better Animation (easing)
+  - Scissor, and max size
 * Click on Press?
 ## AOR
 
