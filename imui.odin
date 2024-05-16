@@ -79,7 +79,7 @@ ImUiState :: struct {
 	cmd_buffer_t: [dynamic]ImuiCommand,
 }
 
-imui_beign :: proc(imui: ^ImUiState) {
+imui_begin :: proc(imui: ^ImUiState) {
 	imui.cmd_buffer_t = make([dynamic]ImuiCommand, 32, context.temp_allocator)
 }
 
