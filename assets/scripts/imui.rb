@@ -183,7 +183,7 @@ class ImUiButton < ImElement
     Draw.rect(pos:, size: dimensions, anchor_percentage:, color: current_style.background_color)
     Draw.text(
       text: message,
-      pos:,
+      pos: background_pos,
       font: current_style.font,
       color: current_style.font_color,
       size: current_style.font_size,
@@ -245,12 +245,21 @@ class ImUiButton < ImElement
 
   private
 
+  def background_pos
+    case style.text_align
+    when :left
+      pos + Vector.new(style.padding, 0)
+    when :right
+      pos - Vector.new(style.padding, 0)
+    end
+  end
+
   def anchor_percentage
     case style.text_align
     when :left
-      Vector.new(0.0, 0.5)
+      Vector.new(0, 0.5)
     when :right
-      Vector.new(0.1, 0.5)
+      Vector.new(1, 0.5)
     else
       Vector.new(0.5, 0.5)
     end

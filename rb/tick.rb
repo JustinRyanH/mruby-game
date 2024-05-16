@@ -29,7 +29,7 @@ class Demo
 
     center = Vector.new(*FrameInput.screen_size) * 0.5
     main_style = Style.from_hash({ font_size: 60 })
-    button_style = Style.from_hash({ background_color: Color.magic_spell, text_align: :left })
+    button_style = Style.from_hash({ background_color: Color.magic_spell, text_align: :right })
     hover_style = button_style.merge_new({ background_color: Color.blunt_violet, font_color: Color.magic_spell })
     down_style =  hover_style.merge_new({ font_size: hover_style.font_size * 0.98 })
 
