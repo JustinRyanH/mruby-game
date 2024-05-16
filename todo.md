@@ -3,7 +3,6 @@
 ## Current
 
 * Start Menu
-  - Better Animation (easing)
   - Handle Jump when we are near done of tween
     we have a problem when we're near the end of a tween and we move it again we get a jump
   we need to be able to get handle it in some way
@@ -93,6 +92,7 @@
   - Create an update call that performs the lazy actions
   - Handle Position changing mid animation
   - Better Animation with focus change
+  - Better Animation (easing)
 ## AOR
 
 ### Hot Reload
