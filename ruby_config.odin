@@ -1118,6 +1118,8 @@ setup_draw :: proc(st: ^mrb.State) {
 	mrb.define_class_method(st, draw_module, "line", draw_draw_line, mrb.args_key(4, 0))
 	mrb.define_class_method(st, draw_module, "texture", draw_draw_texture, mrb.args_key(4, 0))
 	mrb.define_class_method(st, draw_module, "measure_text", draw_measure_text, mrb.args_key(4, 0))
+	mrb.define_class_method(st, draw_module, "scissor_begin", draw_scissor_begin, mrb.args_req(4))
+	mrb.define_class_method(st, draw_module, "scissor_end", draw_scissor_end, mrb.args_none())
 
 }
 
@@ -1401,6 +1403,27 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(out_values))
 }
 
+@(private = "file")
+draw_scissor_begin :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	left, top, width, height: mrb.Int
+	mrb.get_args(state, "iiii", &left, &top, &width, &height)
+
+	out := ImuiScissorBegin{cast(i32)left, cast(i32)top, cast(i32)width, cast(i32)height}
+
+	imui_add_cmd(&g.imui, out)
+
+	return mrb.nil_value()
+}
+
+@(private = "file")
+draw_scissor_end :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	imui_add_cmd(&g.imui, ImuiScissorEnd{})
+	return mrb.nil_value()
+}
 
 @(private = "file")
 extract_color_from_value :: proc(

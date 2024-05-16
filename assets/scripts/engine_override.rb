@@ -28,6 +28,16 @@ Color.class_eval do
   end
 end
 
+Draw.class_eval do
+  class << self
+    def clip(left, top, width, height)
+      Draw.scissor_begin(left, top, width, height)
+      yield
+      Draw.scissor_end
+    end
+  end
+end
+
 Collider.class_eval do
   include Bounds
 
