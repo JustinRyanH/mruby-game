@@ -2,19 +2,32 @@
 
 module Bounds
   def bottom
-    pos.y + (size.y * 0.5)
+    puts 1 - anchor_y
+    pos.y + (size.y * (1 - anchor_y))
   end
 
   def top
-    pos.y - (size.y * 0.5)
+    pos.y - (size.y * anchor_y)
   end
 
   def left
-    pos.x - (size.x * 0.5)
+    pos.x - (size.x * anchor_x)
   end
 
   def right
-    pos.x + (size.x * 0.5)
+    pos.x + (size.x * (1 - anchor_x))
+  end
+
+  def anchor_x
+    anchor_percentage.x
+  end
+
+  def anchor_y
+    anchor_percentage.y
+  end
+
+  def anchor_percentage
+    Vector.new(0.5, 0.5)
   end
 end
 
