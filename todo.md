@@ -14,7 +14,8 @@
 
 ## Nice to Have
 
-* Click on Press?
+* UI
+  - Scrolling
 * Swap out to use Odin log context
 * Texture Packing
  - Maybe using Ruby scropts
@@ -93,6 +94,7 @@
   - Handle Position changing mid animation
   - Better Animation with focus change
   - Better Animation (easing)
+* Click on Press?
 ## AOR
 
 ### Hot Reload
