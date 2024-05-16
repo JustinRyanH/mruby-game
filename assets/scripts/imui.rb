@@ -180,12 +180,7 @@ class ImUiButton < ImElement
   end
 
   def draw
-    Draw.rect(
-      pos:,
-      size: dimensions,
-      anchor_percentage: Vector.new(0.5, 0.5),
-      color: current_style.background_color,
-    )
+    Draw.rect(pos:, size: dimensions, anchor_percentage:, color: current_style.background_color)
     Draw.text(
       text: message,
       pos:,
@@ -246,6 +241,12 @@ class ImUiButton < ImElement
 
   def down_style
     @down_style ||= hover_style
+  end
+
+  private
+
+  def anchor_percentage
+    Vector.new(0.5, 0.5)
   end
 end
 
