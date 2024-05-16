@@ -104,3 +104,7 @@ So the hot reload ended up being cleaner than I thought. That said we will see i
 
 I do wonder if I actually want/need hot reloading for Odin or no. I also wonder if my asset system is going
 to pollute my Package/Prod build
+
+#### Known Issue
+
+- Changing a module won't trigger a reload if files that use that Module. Not important enough to address
