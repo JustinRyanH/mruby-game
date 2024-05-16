@@ -15,6 +15,17 @@ class UiAction
   end
 end
 
+class Flex
+  include DefinedAttribute
+
+  # @param [Symbol] direction `:row`, `:column`
+  define_attr :direction, default: :column
+  # @param [Symbol] justify `:center`, `:start`, `:end`
+  define_attr :justify, default: :center
+  # @param [Symbol] align `:center`, `:start`, `:end`, `:stretch`
+  define_attr :align, default: :center
+end
+
 class Style
   # @param [Float] padding
   # @param [Font] font
