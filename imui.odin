@@ -57,11 +57,22 @@ ImuiDrawLineCmd :: struct {
 	color:     Color,
 }
 
+ImuiScissorBegin :: struct {
+	left:   i32,
+	top:    i32,
+	width:  i32,
+	height: i32,
+}
+
+ImuiScissorEnd :: struct {}
+
 ImuiCommand :: union {
 	ImuiDrawTextCmd,
 	ImuiDrawRectCmd,
 	ImuiDrawLineCmd,
 	ImUiDrawTextureCmd,
+	ImuiScissorBegin,
+	ImuiScissorEnd,
 }
 
 ImUiState :: struct {
@@ -111,6 +122,10 @@ imui_draw :: proc(imui: ^ImUiState) {
 			dest := rl.Rectangle{c.pos.x, c.pos.y, c.size.x, c.size.y}
 
 			rl.DrawTexturePro(asset.texture, asset.src, dest, offset, c.rotation, c.tint)
+		case ImuiScissorBegin:
+			rl.BeginScissorMode(c.left, c.top, c.width, c.height)
+		case ImuiScissorEnd:
+			rl.EndScissorMode()
 		}
 	}
 }
