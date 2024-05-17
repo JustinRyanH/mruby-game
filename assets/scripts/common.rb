@@ -5,16 +5,32 @@ module Bounds
     pos.y + (size.y * (1 - anchor_y))
   end
 
+  def bottom=(value)
+    pos.y = value - (size.y * (1 - anchor_y))
+  end
+
   def top
     pos.y - (size.y * anchor_y)
+  end
+
+  def top=(value)
+    pos.y = value + (size.y * anchor_y)
   end
 
   def left
     pos.x - (size.x * anchor_x)
   end
 
+  def left=(value)
+    pos.x = value + (size.x * anchor_x)
+  end
+
   def right
     pos.x + (size.x * (1 - anchor_x))
+  end
+
+  def right=(value)
+    pos.x = value - (size.x * (1 - anchor_x))
   end
 
   def anchor_x
