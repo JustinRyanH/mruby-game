@@ -285,7 +285,13 @@ class ImUiContainer < ImElement
   # @param [Array<ImElement>] elements
   attr_reader :elements
 
-  def initialize(pos:, min_size: Vector.new(0, 0), max_size: Vector.new(*FrameInput.screen_size), **)
+  def initialize(
+      pos:,
+      min_size: Vector.new(0, 0),
+      max_size: Vector.new(*FrameInput.screen_size),
+      flex: Flex.new,
+      **
+  )
     super(pos:, **)
     @min_size = min_size
     @max_size = max_size

@@ -23,17 +23,14 @@ class Demo
     @timer.tick
     Engine.background_color = Color.crow_black_blue
 
-    @rect_pos ||= Vector.new(300, 300)
-    @rect_pos.x += 1 if FrameInput.key_down?(:d)
-    @rect_pos.x -= 1 if FrameInput.key_down?(:a)
-
     center = Vector.new(*FrameInput.screen_size) * 0.5
     main_style = Style.from_hash({ font_size: 60 })
     button_style = Style.from_hash({ background_color: Color.magic_spell, text_align: :right })
     hover_style = button_style.merge_new({ background_color: Color.blunt_violet, font_color: Color.magic_spell })
     down_style =  hover_style.merge_new({ font_size: hover_style.font_size * 0.98 })
+    flex = Flex.new
 
-    ImUI.container(:example, pos: center, max_size: Vector.new(500, 300), style: main_style) do |ui|
+    ImUI.container(:example, pos: center, flex:, max_size: Vector.new(500, 300), style: main_style) do |ui|
       ui.focus_element = ImUiIcon.new(
         id: :focus_icon,
         texture: Textures.copter,
