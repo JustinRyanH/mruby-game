@@ -691,6 +691,7 @@ setup_vector_class :: proc(st: ^mrb.State) {
 	mrb.define_method(st, vector_class, "angle_between", vector_angle_between, mrb.args_req(1))
 	mrb.define_method(st, vector_class, "length", vector_length, mrb.args_none())
 	mrb.define_method(st, vector_class, "normalize", vector_normalize, mrb.args_none())
+	mrb.define_method(st, vector_class, "dup", vector_dup, mrb.args_none())
 	engine_classes.vector = vector_class
 }
 
@@ -932,6 +933,13 @@ vector_length :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return mrb.float_value(state, cast(mrb.Float)math.length(v))
 }
 
+@(private = "file")
+vector_dup :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+	old := vector_from_object(state, self)
+	return vector_obj_from_vec(state, old)
+}
+
 //////////////////////////////
 //// Color
 //////////////////////////////
@@ -1141,7 +1149,7 @@ draw_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	// TODO: I can totally do this with generics and reflection
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
@@ -1370,7 +1378,7 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 		font: mrb.Value,
 	}
 
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "font"),
