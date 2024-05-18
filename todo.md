@@ -4,13 +4,13 @@
 
 * Start Menu
   - Flexbox
+  - Transitions Defined in Style
 * Make the character move, use a camera to follow
 * Have the character/obstacle loop in world space
 
 ## Nice to Have
 
 * UI
-  - Transitions Defined in Style
   - Divider Element
   - Scrolling
   - Handle Jump when we are near done of tween
