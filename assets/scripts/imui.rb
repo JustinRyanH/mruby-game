@@ -339,7 +339,7 @@ class ImUiContainer < ImElement
 
   def dimensions
     dimensions = @elements.map(&:dimensions)
-    height = dimensions.inject(0) { |sum, dim| sum + dim.y + style.gap }
+    height = dimensions.inject(0) { |sum, dim| sum + dim.y + style.gap } + style.padding
     height = height.clamp(min_size.y, max_size.y)
     width = dimensions.inject(0) { |max, dim| [max, dim.x].max } + (style.padding * 2)
     width = width.clamp(min_size.x, max_size.x)

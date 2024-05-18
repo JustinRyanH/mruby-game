@@ -56,11 +56,11 @@ class StartState
   private
 
   def main_style
-    @main_style ||= Style.from_hash({ font_size: 96 })
+    @main_style ||= Style.from_hash({ font_size: 120, padding: 8 })
   end
 
   def button_style
-    @button_style ||= Style.from_hash({ background_color: Color.magic_spell, text_align: :right, font_size: 72 })
+    @button_style ||= Style.from_hash({ background_color: Color.magic_spell, text_align: :right, font_size: 74 })
   end
 
   def hover_style
