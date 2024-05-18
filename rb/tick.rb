@@ -28,19 +28,21 @@ class Demo
     button_style = Style.from_hash({ background_color: Color.magic_spell, text_align: :right })
     hover_style = button_style.merge_new({ background_color: Color.blunt_violet, font_color: Color.magic_spell })
     down_style =  hover_style.merge_new({ font_size: hover_style.font_size * 0.98 })
-    flex = Flex.new(justify: :center)
+    flex = Flex.new(justify: :start)
 
-    ImUI.container(:example, pos: center, flex:, max_size: Vector.new(500, 300), style: main_style) do |ui|
+    ImUI.ctx.default_transitions = Transitions.new(pos: DefineLerpTransition.new)
+
+    ImUI.container(:example, pos: center, flex:, style: main_style) do |ui|
       ui.focus_element = ImUiIcon.new(
         id: :focus_icon,
         texture: Textures.copter,
+        transitions: Transitions.new(pos: DefineLerpTransition.new(time: 0.5, ease: :quadratic_out)),
         pos: Vector.new(100, 100),
         size: Vector.new(32, 32),
         tint: Color.red,
       )
 
       ui.text('Ruby Game')
-
       ui.button('Play Game', style: button_style, hover_style:, down_style:) do |btn|
         ui.focus_element.pos = Vector.new(ui.left - 32, btn.pos.y) if btn.focused?
         puts 'Play Game' if btn.clicked?

@@ -170,8 +170,8 @@ class Timer
   end
 
   def reset(new_time = nil)
-    @time = new_time unless new_time.nil?
     @total_time = new_time || total_time
+    @time = total_time
   end
 
   def finished?

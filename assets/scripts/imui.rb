@@ -107,13 +107,13 @@ class ImElement
     pos:,
     anchor_percentage: Vector.new(0.5, 0.5),
     style: Style.new,
-    transitions: Transitions.new
+    transitions: nil
   )
     @id = Engine.hash_str(id.to_s)
     @style = style
     @pos = pos
     @anchor_percentage = anchor_percentage
-    @transitions = transitions
+    @transitions = transitions || ImUI.ctx.default_transitions
   end
 
   def track
@@ -237,6 +237,7 @@ class ImUiButton < ImElement
     @clicked || false
   end
 
+  # TODO: Context sets this not itself
   def hover?
     inside?(FrameInput.mouse_pos)
   end
@@ -329,8 +330,9 @@ class ImUiContainer < ImElement
       )
 
       @elements.each(&:draw)
-      @focus_element&.draw if focused?
     end
+    # NOTE: This doesn't seem right.
+    @focus_element&.draw if focused?
   end
 
   def dimensions
@@ -385,7 +387,7 @@ class TrackedElement
       self.last_pos = element.pos
     end
 
-    return unless position_changed?
+    return if !position_changed? && @pos_transition.nil?
 
     self.pos = element.pos
 
@@ -455,7 +457,8 @@ end
 
 class ImUI
   # @return [TrackedElement, nil] focused_element
-  attr_accessor :focused_element
+  # @return [Transitions] default_transition
+  attr_accessor :focused_element, :default_transitions
   attr_reader :root_elements
 
   # @return [TrackedElement, nil] focused_element
@@ -482,6 +485,7 @@ class ImUI
     @tracked_elements = {}
     @root_elements = []
     @focused_element = nil
+    @default_transitions = Transitions.new
   end
 
   def track_element(element)
