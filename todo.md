@@ -10,6 +10,7 @@
 ## Nice to Have
 
 * UI
+  - Transitions Defined in Style
   - Divider Element
   - Scrolling
   - Handle Jump when we are near done of tween
