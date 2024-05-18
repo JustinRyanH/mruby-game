@@ -12,10 +12,9 @@
 
 * Implement a version of lua's init for require
 * UI
+  - Fix: Padding is broken
   - Divider Element
   - Scrolling
-  - Handle Jump when we are near done of tween
-    we have a problem when we're near the end of a tween and we move it again we get a jump
   - NPatch Background
 
 * Swap out to use Odin log context
@@ -97,6 +96,8 @@
   - Better Animation with focus change
   - Better Animation (easing)
   - Scissor, and max size
+  - Handle Jump when we are near done of tween
+    we have a problem when we're near the end of a tween and we move it again we get a jump
 * Click on Press?
 ## AOR
 
