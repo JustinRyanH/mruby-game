@@ -31,6 +31,7 @@
 * Modules?
 * Delegate to the Style
 * WASM build
+* Debug Console/IMGUI
 
 ## Juice
 
