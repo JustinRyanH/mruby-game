@@ -39,7 +39,7 @@ class StartState
       ui.button('Start', style: button_style, hover_style:, down_style:) do |btn|
         puts 'CLICKED START' if btn.clicked?
       end
-      ui.button('End', style: button_style, hover_style:, down_style:) do |btn|
+      ui.button('Quit', style: button_style, hover_style:, down_style:) do |btn|
         puts 'CLICKED END' if btn.clicked?
       end
     end
@@ -56,15 +56,15 @@ class StartState
   private
 
   def main_style
-    @main_style ||= Style.from_hash({ font_size: 60 })
+    @main_style ||= Style.from_hash({ font_size: 96 })
   end
 
   def button_style
-    @button_style ||= Style.from_hash({ background_color: Color.magic_spell, text_align: :right })
+    @button_style ||= Style.from_hash({ background_color: Color.magic_spell, text_align: :right, font_size: 72 })
   end
 
   def hover_style
-    @hover_style ||= Style.from_hash({ background_color: Color.blunt_violet, font_color: Color.magic_spell })
+    @hover_style ||= button_style.merge_new({ background_color: Color.blunt_violet, font_color: Color.magic_spell })
   end
 
   def down_style
