@@ -15,6 +15,60 @@ class UiAction
   end
 end
 
+class LerpTransition
+  # @param [Timer] timer
+  attr_reader :origin, :target, :timer, :ease
+
+  def initialize(origin, target, time: nil, ease: :linear)
+    @origin = origin
+    @target = target
+    @time = time
+    @timer = time.nil? ? nil : Timer.new(time)
+    @ease = ease
+  end
+
+  def target=(new_target)
+    @target = new_target
+    return if timer.nil?
+
+    @origin = current_pos
+
+    timer.reset(@time)
+  end
+
+  def update
+    return target if timer.nil?
+
+    timer.tick
+    current_pos
+  end
+
+  def finished?
+    return true if timer.nil?
+
+    timer.finished?
+  end
+
+  private
+
+  def current_pos
+    origin.lerp(target, timer.percentage.ease(ease))
+  end
+end
+
+class TransitionDefinition
+  include DefinedAttribute
+
+  # @param [Float] time
+  define_attr :time, default: 0.2
+  # @param [Symbol] ease
+  define_attr :time, default: :linear
+
+  def build_transition(origin, target)
+    LerpTransition.new(origin, target, time:, ease:)
+  end
+end
+
 class Flex
   include DefinedAttribute
 
@@ -360,47 +414,6 @@ class ImUiContainer < ImElement
   attr_reader :pos, :min_size, :max_size, :padding
 end
 
-class Transition
-  # @param [Timer] timer
-  attr_reader :origin, :target, :timer, :ease
-
-  def initialize(origin, target, time: nil, ease: :linear)
-    @origin = origin
-    @target = target
-    @time = time
-    @timer = time.nil? ? nil : Timer.new(time)
-    @ease = ease
-  end
-
-  def target=(new_target)
-    @target = new_target
-    return if timer.nil?
-
-    @origin = current_pos
-
-    timer.reset(@time)
-  end
-
-  def update
-    return target if timer.nil?
-
-    timer.tick
-    current_pos
-  end
-
-  def finished?
-    return true if timer.nil?
-
-    timer.finished?
-  end
-
-  private
-
-  def current_pos
-    origin.lerp(target, timer.percentage.ease(ease))
-  end
-end
-
 class TrackedElement
   attr_reader :element, :last_frame
 
@@ -421,7 +434,7 @@ class TrackedElement
 
     self.pos = element.pos
 
-    @pos_transition ||= Transition.new(last_pos, pos, time: 0.8, ease: :elastic_out)
+    @pos_transition ||= LerpTransition.new(last_pos, pos, time: 0.8, ease: :elastic_out)
     @pos_transition.target = pos if pos != @pos_transition.target
     element.pos = @pos_transition.update
 
