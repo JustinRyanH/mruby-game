@@ -34,7 +34,7 @@ class StartState
   end
 
   def tick
-    ImUI.container(:example, pos: container_pos, flex: Flex.new(justify: :start)) do |ui|
+    ImUI.container(:example, pos: container_pos, flex: Flex.new(justify: :start), style: main_style) do |ui|
       ui.text('Areoaural')
       ui.button('Start')
       ui.button('Exit')
@@ -50,6 +50,22 @@ class StartState
   end
 
   private
+
+  def main_style
+    @main_style ||= Style.from_hash({ font_size: 60 })
+  end
+
+  def button_style
+    @button_style ||= Style.from_hash({ background_color: Color.magic_spell, text_align: :right })
+  end
+
+  def hover_style
+    @hover_style ||= Style.from_hash({ background_color: Color.blunt_violet, font_color: Color.magic_spell })
+  end
+
+  def down_style
+    @down_style ||= hover_style.merge_new({ font_size: hover_style.font_size * 0.98 })
+  end
 
   attr_reader :container_pos
 
