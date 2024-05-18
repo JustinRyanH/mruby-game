@@ -3,8 +3,7 @@
 ## Current
 
 * Start Menu
-  - Flexbox
-  - Transitions Defined in Style
+  - Begins the Game
 * Make the character move, use a camera to follow
 * Have the character/obstacle loop in world space
 
@@ -13,6 +12,8 @@
 * Implement a version of lua's init for require
 * UI
   - Fix: Padding is broken
+  - Rotation (Transitions)
+  - Scaling/Stretch (Transitions)
   - Divider Element
   - Scrolling
   - NPatch Background
@@ -98,6 +99,8 @@
   - Scissor, and max size
   - Handle Jump when we are near done of tween
     we have a problem when we're near the end of a tween and we move it again we get a jump
+  - Flexbox
+  - Transitions Defined in Style
 * Click on Press?
 ## AOR
 
