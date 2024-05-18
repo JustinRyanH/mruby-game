@@ -18,10 +18,10 @@
   - Scrolling
   - NPatch Background
 
+* add `require_relative`
 * Swap out to use Odin log context
 * Texture Packing
  - Maybe using Ruby scropts
-* Debug ImUI
 * Implement Debug Tooling
 * Fix windows floating point position errors
 * Introduce Better errors for assets
