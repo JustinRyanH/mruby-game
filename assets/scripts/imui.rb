@@ -12,6 +12,8 @@ class UiAction
   end
 
   def perform
+    return if @block.nil?
+
     @block.call(@element)
   end
 end
