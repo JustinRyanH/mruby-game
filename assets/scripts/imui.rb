@@ -15,9 +15,26 @@ class UiAction
   end
 end
 
+class JumpTransition
+  attr_reader :origin, :target
+
+  def initialize(origin, target)
+    @origin = origin
+    @target = target
+  end
+
+  def update
+    target
+  end
+
+  def finished?
+    true
+  end
+end
+
 class LerpTransition
   # @param [Timer] timer
-  attr_reader :origin, :target, :timer, :ease
+  attr_reader :origin, :target
 
   def initialize(origin, target, time: nil, ease: :linear)
     @origin = origin
@@ -56,7 +73,15 @@ class LerpTransition
   end
 end
 
-class TransitionDefinition
+class DefineJumpTransition
+  include DefinedAttribute
+
+  def build_transition(origin, target)
+    JumpTransition.new(origin, target)
+  end
+end
+
+class DefineLerpTransition
   include DefinedAttribute
 
   # @param [Float] time
@@ -67,6 +92,12 @@ class TransitionDefinition
   def build_transition(origin, target)
     LerpTransition.new(origin, target, time:, ease:)
   end
+end
+
+class Transitions
+  include DefinedAttribute
+
+  define_attr :pos, default: DefineJumpTransition.new
 end
 
 class Flex
@@ -148,17 +179,25 @@ class ImElement
 
   # @param [Vector] pos
   # @param [Vector] anchor_percentage
-  attr_accessor :pos, :anchor_percentage
+  # @param [Transitions] transitions
+  attr_accessor :pos, :anchor_percentage, :transitions
 
   # @return [Integer] id
   # @return [Style] style
   attr_reader :id, :style
 
-  def initialize(id:, pos:, anchor_percentage: Vector.new(0.5, 0.5), style: Style.new)
+  def initialize(
+    id:,
+    pos:,
+    anchor_percentage: Vector.new(0.5, 0.5),
+    style: Style.new,
+    transitions: Transitions.new
+  )
     @id = Engine.hash_str(id.to_s)
     @style = style
     @pos = pos
     @anchor_percentage = anchor_percentage
+    @transitions = transitions
   end
 
   def track
@@ -434,7 +473,7 @@ class TrackedElement
 
     self.pos = element.pos
 
-    @pos_transition ||= LerpTransition.new(last_pos, pos, time: 0.8, ease: :elastic_out)
+    @pos_transition ||= element.transitions.pos.build_transition(last_pos, pos)
     @pos_transition.target = pos if pos != @pos_transition.target
     element.pos = @pos_transition.update
 

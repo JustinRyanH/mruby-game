@@ -28,7 +28,7 @@ class Demo
     button_style = Style.from_hash({ background_color: Color.magic_spell, text_align: :right })
     hover_style = button_style.merge_new({ background_color: Color.blunt_violet, font_color: Color.magic_spell })
     down_style =  hover_style.merge_new({ font_size: hover_style.font_size * 0.98 })
-    flex = Flex.new(justify: :end)
+    flex = Flex.new(justify: :center)
 
     ImUI.container(:example, pos: center, flex:, max_size: Vector.new(500, 300), style: main_style) do |ui|
       ui.focus_element = ImUiIcon.new(
