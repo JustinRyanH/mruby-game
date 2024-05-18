@@ -196,11 +196,11 @@ class ImUiButton < ImElement
     Draw.rect(pos:, size: dimensions, anchor_percentage:, color: current_style.background_color)
     Draw.text(
       text: message,
-      pos: background_pos,
+      pos:,
       font: current_style.font,
       color: current_style.font_color,
       size: current_style.font_size,
-      halign: current_style.text_align,
+      halign: :center,
     )
   end
 
@@ -255,42 +255,21 @@ class ImUiButton < ImElement
   def down_style
     @down_style ||= hover_style
   end
-
-  private
-
-  def background_pos
-    case style.text_align
-    when :left
-      pos + Vector.new(style.padding, 0)
-    when :right
-      pos - Vector.new(style.padding, 0)
-    end
-  end
-
-  def anchor_percentage
-    case style.text_align
-    when :left
-      Vector.new(0, 0.5)
-    when :right
-      Vector.new(1, 0.5)
-    else
-      Vector.new(0.5, 0.5)
-    end
-  end
 end
 
 class ImUiContainer < ImElement
   attr_accessor :focus_element
 
   # @param [Array<ImElement>] elements
-  attr_reader :elements
+  # @param [Flex] flex
+  attr_reader :elements, :flex
 
   def initialize(
-      pos:,
-      min_size: Vector.new(0, 0),
-      max_size: Vector.new(*FrameInput.screen_size),
-      flex: Flex.new,
-      **
+    pos:,
+    min_size: Vector.new(0, 0),
+    max_size: Vector.new(*FrameInput.screen_size),
+    flex: Flex.new,
+    **
   )
     super(pos:, **)
     @min_size = min_size
@@ -298,6 +277,7 @@ class ImUiContainer < ImElement
     @actions = []
     @elements = []
     @focus_element = nil
+    @flex = flex
   end
 
   def text(message, style: nil)
@@ -365,7 +345,18 @@ class ImUiContainer < ImElement
     y = rect.top + style.padding
     @elements.each do |el|
       dimensions = el.dimensions
-      el.pos = Vector.new(@pos.x, (dimensions.y * 0.5) + y)
+      new_y = (dimensions.y * 0.5) + y
+      case flex.justify
+      when :start
+        el.pos = Vector.new(0, new_y)
+        el.left = left + style.padding
+      when :end
+        el.pos = Vector.new(0, new_y)
+        el.right = right - style.padding
+      else
+        el.pos = Vector.new(@pos.x, (dimensions.y * 0.5) + y)
+      end
+
       y += dimensions.y + style.gap
     end
   end
