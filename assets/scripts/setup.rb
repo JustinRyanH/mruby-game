@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'assets/scripts/imui'
 require 'assets/scripts/objects'
 require 'assets/scripts/animation'
 require 'assets/scripts/assets'
@@ -29,45 +30,28 @@ class StartState
 
   def initialize(game)
     @game = game
+    @container_pos = Vector.new(*FrameInput.screen_size) * 0.5
   end
 
   def tick
-    width, height = FrameInput.screen_size
-
-    text_args = {
-      text: 'PRESS `Space`',
-      font: Fonts.kenney_future,
-      size: 96
-    }
-
-    text_size = Draw.measure_text(**text_args) + Vector.new(32, 0)
-    Draw.rect(pos: Vector.new(width / 2, height / 2), size: text_size,
-              anchor_percentage: Vector.new(0.5, 0.5), color: Color.blue)
-    Draw.text(
-      **text_args,
-      pos: Vector.new(width / 2, height / 2),
-      font: Fonts.kenney_future,
-      color: Color.white,
-      halign: :center,
-    )
-
-    return unless FrameInput.key_just_pressed?(:space)
-
-    GameplayState.new(game)
+    ImUI.container(:example, pos: container_pos, flex: Flex.new(justify: :start)) do |ui|
+      ui.text('Areoaural')
+      ui.button('Start')
+      ui.button('Exit')
+    end
+    nil
   end
 
   def enter
     game.clear_map
-    if game.player.nil?
-      create_player
-    else
-      game.player.pos = starting_position
-    end
   end
 
-  def exit; end
+  def exit
+  end
 
   private
+
+  attr_reader :container_pos
 
   def starting_position
     @starting_position ||= begin
@@ -126,7 +110,8 @@ class DeathState
     @restart_timer.reset(1.2)
   end
 
-  def exit; end
+  def exit
+  end
 end
 
 class GameplayState
@@ -183,7 +168,8 @@ class GameplayState
     game.player.animation = Animation.new([Textures.copter, Textures.copter3])
   end
 
-  def exit; end
+  def exit
+  end
 
   private
 
@@ -311,7 +297,7 @@ class Game
   end
 
   def initialize
-    @scene = GameplayState.new(self)
+    @scene = StartState.new(self)
     @ready = false
     @events = []
     @obstacles = []
@@ -338,6 +324,9 @@ class Game
 
     process_events
     cleanup
+
+    ImUI.update
+    ImUI.draw
   end
 
   def add_event(event)
