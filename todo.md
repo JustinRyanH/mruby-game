@@ -10,6 +10,7 @@
 
 ## Nice to Have
 
+* Implement a version of lua's init for require
 * UI
   - Divider Element
   - Scrolling
