@@ -36,8 +36,12 @@ class StartState
   def tick
     ImUI.container(:example, pos: container_pos, flex: Flex.new(justify: :start), style: main_style) do |ui|
       ui.text('Areoaural')
-      ui.button('Start')
-      ui.button('Exit')
+      ui.button('Start', style: button_style, hover_style:, down_style:) do |btn|
+        puts 'CLICKED START' if btn.clicked?
+      end
+      ui.button('End', style: button_style, hover_style:, down_style:) do |btn|
+        puts 'CLICKED END' if btn.clicked?
+      end
     end
     nil
   end
