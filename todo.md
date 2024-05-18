@@ -12,6 +12,7 @@
 * Implement a version of lua's init for require
 * UI
   - Fix: Padding is broken
+  - Global Style
   - Rotation (Transitions)
   - Scaling/Stretch (Transitions)
   - Divider Element
