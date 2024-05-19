@@ -26,15 +26,19 @@ class DestroyObstacle
 end
 
 class StartState
+  attr_accessor :container_pos
   attr_reader :game
 
   def initialize(game)
     @game = game
-    @container_pos = Vector.new(*FrameInput.screen_size) * 0.5
+    @container_pos = (Vector.new(*FrameInput.screen_size) * 0.5) + Vector.new(300, 0)
   end
 
   def tick
-    ImUI.container(:example, pos: container_pos, flex: Flex.new(justify: :start), style: main_style) do |ui|
+    @container_pos = Vector.new(0, FrameInput.screen_size[1] * 0.5) if FrameInput.key_down?(:d)
+    @container_pos = (Vector.new(*FrameInput.screen_size) * 0.5) + Vector.new(300, 0) if FrameInput.key_down?(:a)
+    ImUI.container(:example, pos: container_pos, flex: Flex.new(justify: :start),
+                             transitions:, style: main_style) do |ui|
       ui.text('Areoaural')
       ui.button('Start', style: button_style, hover_style:, down_style:) do |btn|
         puts 'CLICKED START' if btn.clicked?
@@ -54,6 +58,12 @@ class StartState
   end
 
   private
+
+  def transitions
+    Transitions.new(
+      pos: DefineLerpTransition.new,
+    )
+  end
 
   def main_style
     @main_style ||= Style.from_hash({ font_size: 120, padding: 8 })

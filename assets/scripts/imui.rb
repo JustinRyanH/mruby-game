@@ -211,10 +211,6 @@ class ImUiButton < ImElement
     )
   end
 
-  def inside?(position)
-    Rectangle.new(pos:, size: dimensions).inside?(position)
-  end
-
   def dimensions
     Draw.measure_text(text: message, size: style.font_size, font: style.font) + (Vector.new(1, 1) * style.padding * 2)
   end
@@ -291,14 +287,12 @@ class ImUiContainer < ImElement
   def text(message, style: nil)
     ImUiText.new(message:, style: style.dup || self.style.dup).tap do |txt|
       @elements << txt
-      update_positions
     end
   end
 
   def button(message, style: nil, **, &block)
     ImUiButton.new(message:, style: style.dup || self.style.dup, **).tap do |btn|
       @elements << btn
-      update_positions
       @actions << UiAction.new(btn, &block)
     end
   end
@@ -312,6 +306,7 @@ class ImUiContainer < ImElement
   end
 
   def track
+    update_positions
     ctx.track_element(self)
     @elements.each(&:track)
     @focus_element&.track
@@ -345,6 +340,11 @@ class ImUiContainer < ImElement
     width = width.clamp(min_size.x, max_size.x)
 
     Vector.new(width, height)
+  end
+
+  def pos=(new_pos)
+    super
+    update_positions
   end
 
   private
