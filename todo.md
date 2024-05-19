@@ -11,7 +11,6 @@
 
 * Implement a version of lua's init for require
 * UI
-  - Fix: Padding is broken
   - Global Style
   - Rotation (Transitions)
   - Scaling/Stretch (Transitions)
@@ -19,6 +18,7 @@
   - Scrolling
   - NPatch Background
   - Allow Tracking Transitions
+  - Relative Transitions
 
 * add `require_relative`
 * Swap out to use Odin log context
@@ -104,6 +104,7 @@
     we have a problem when we're near the end of a tween and we move it again we get a jump
   - Flexbox
   - Transitions Defined in Style
+  - Fix: Padding is broken
 * Click on Press?
 ## AOR
 
