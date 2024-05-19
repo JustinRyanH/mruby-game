@@ -113,3 +113,23 @@ class Timer
     [1 - (@time / @total_time), 1].min
   end
 end
+
+class Stopwatch
+  attr_reader :time
+
+  def initialize
+    @time = 0
+  end
+
+  def tick
+    @time += FrameInput.delta_time
+  end
+
+  def reset
+    @time = 0
+  end
+
+  def finished?
+    false
+  end
+end
