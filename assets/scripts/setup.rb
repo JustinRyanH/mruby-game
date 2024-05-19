@@ -35,13 +35,15 @@ class StartState
   end
 
   def tick
+    started = false
     ImUI.container(:example, pos: container_pos, flex:, transitions:, style: main_style) do |ui|
       ui.text('Areoaural')
       ui.button('Start', style: button_style, transitions:, hover_style:, down_style:) do |btn|
         puts 'CLICKED START' if btn.clicked?
       end
       ui.button('Quit', style: button_style, transitions:, hover_style:, down_style:) do |btn|
-        puts 'CLICKED END' if btn.clicked?
+        # TODO: Do a Exit Transition
+        Engine.exit if btn.clicked?
       end
     end
     nil
