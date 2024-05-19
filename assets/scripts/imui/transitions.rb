@@ -92,7 +92,6 @@ class DistanceTransition
   attr_reader :stopwatch, :length, :pixels_per_second, :ease
 
   def current_pos
-    puts percentage
     @origin.lerp(@target, percentage.ease(ease))
   end
 

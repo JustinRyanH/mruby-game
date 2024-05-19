@@ -379,8 +379,6 @@ class TrackedElement
   def track(el)
     @element = el
     @last_frame = FrameInput.id
-
-    handle_mouse_events
   end
 
   def handle_position
@@ -425,6 +423,13 @@ class TrackedElement
     @element.focusable?
   end
 
+  def handle_mouse_events
+    handle_click
+
+    @mouse_down_frame = nil unless FrameInput.mouse_down?(:left)
+    down if @mouse_down_frame&.positive?
+  end
+
   private
 
   attr_accessor :pos, :last_pos
@@ -433,22 +438,16 @@ class TrackedElement
     last_pos != element.pos
   end
 
-  def handle_mouse_events
-    handle_click
-
-    @mouse_down_frame = nil unless FrameInput.mouse_down?(:left)
-    element.down = true if @mouse_down_frame&.positive?
-  end
-
   def handle_click
     return unless element.respond_to?(:inside?)
     return unless element.inside?(FrameInput.mouse_pos)
 
     if FrameInput.mouse_down?(:left)
+
       @mouse_down_frame = FrameInput.id
       ctx.focused_element = self if ctx.focused_element != self
     end
-    element.click if FrameInput.mouse_was_down?(:left) && @mouse_down_frame == FrameInput.id - 1
+    click if FrameInput.mouse_was_down?(:left) && @mouse_down_frame == FrameInput.id - 1
   end
 
   # @return [ImUI]
@@ -498,8 +497,10 @@ class ImUI
   def update
     @root_elements.each(&:track)
     focus_element
-    @root_elements.each(&:perform)
     @tracked_elements.each_value(&:handle_position)
+    @tracked_elements.each_value(&:handle_mouse_events)
+
+    @root_elements.each(&:perform)
   end
 
   def draw
