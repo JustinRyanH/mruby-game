@@ -57,6 +57,45 @@ class LerpTransition
   end
 end
 
+class DistanceTransition
+  # @param [Timer] timer
+  attr_reader :origin, :target
+
+  def initialize(origin, target, pixels_per_second: 20)
+    @origin = origin
+    @target = target
+    @pixels_per_second = pixels_per_second
+    @length = (origin - target).length
+    @stopwatch = Stopwatch.new
+  end
+
+  def target=(new_target)
+    @origin = current_pos
+    @target = new_target
+    @length = (origin - target).length
+
+    stopwatch.reset
+  end
+
+  def update
+    stopwatch.tick
+    current_pos
+  end
+
+  def finished?
+    current_pos == target
+  end
+
+  private
+
+  attr_reader :stopwatch, :length, :pixels_per_second
+
+  def current_pos
+    percentage = (stopwatch.time * pixels_per_second) / length
+    @origin.lerp(@target, percentage)
+  end
+end
+
 class DefineJumpTransition
   include DefinedAttribute
 
@@ -75,6 +114,17 @@ class DefineLerpTransition
 
   def build_transition(origin, target)
     LerpTransition.new(origin, target, time:, ease:)
+  end
+end
+
+class DefineDistanceTransition
+  include DefinedAttribute
+
+  # @param [Float] time
+  define_attr :pixels_per_second, default: 20
+
+  def build_transition(origin, target)
+    DistanceTransition.new(origin, target, pixels_per_second:)
   end
 end
 

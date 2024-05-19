@@ -35,15 +35,13 @@ class StartState
   end
 
   def tick
-    @container_pos = Vector.new(0, FrameInput.screen_size[1] * 0.5) if FrameInput.key_down?(:d)
-    @container_pos = (Vector.new(*FrameInput.screen_size) * 0.5) + Vector.new(300, 0) if FrameInput.key_down?(:a)
-    ImUI.container(:example, pos: container_pos, flex: Flex.new(justify: :start),
-                             transitions:, style: main_style) do |ui|
+    handle_input
+    ImUI.container(:example, pos: container_pos, flex:, transitions:, style: main_style) do |ui|
       ui.text('Areoaural')
-      ui.button('Start', style: button_style, hover_style:, down_style:) do |btn|
+      ui.button('Start', style: button_style, transitions:, hover_style:, down_style:) do |btn|
         puts 'CLICKED START' if btn.clicked?
       end
-      ui.button('Quit', style: button_style, hover_style:, down_style:) do |btn|
+      ui.button('Quit', style: button_style, transitions:, hover_style:, down_style:) do |btn|
         puts 'CLICKED END' if btn.clicked?
       end
     end
@@ -59,9 +57,24 @@ class StartState
 
   private
 
+  def handle_input
+    if FrameInput.key_down?(:d)
+      @container_pos = Vector.new(0, FrameInput.screen_size[1] * 0.5)
+      @flex = Flex.new(justify: :end)
+    end
+    return unless FrameInput.key_down?(:a)
+
+    @flex = Flex.new(justify: :start)
+    @container_pos = (Vector.new(*FrameInput.screen_size) * 0.5) + Vector.new(300, 0)
+  end
+
+  def flex
+    @flex ||= Flex.new(justify: :start)
+  end
+
   def transitions
     Transitions.new(
-      pos: DefineLerpTransition.new,
+      pos: DefineDistanceTransition.new,
     )
   end
 
@@ -80,8 +93,6 @@ class StartState
   def down_style
     @down_style ||= hover_style.merge_new({ font_size: hover_style.font_size * 0.98 })
   end
-
-  attr_reader :container_pos
 
   def starting_position
     @starting_position ||= begin
