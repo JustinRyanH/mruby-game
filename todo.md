@@ -18,6 +18,7 @@
   - Divider Element
   - Scrolling
   - NPatch Background
+  - Allow Tracking Transitions
 
 * add `require_relative`
 * Swap out to use Odin log context
