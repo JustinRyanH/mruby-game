@@ -31,11 +31,10 @@ class StartState
 
   def initialize(game)
     @game = game
-    @container_pos = (Vector.new(*FrameInput.screen_size) * 0.5) + Vector.new(300, 0)
+    @container_pos = (Vector.new(*FrameInput.screen_size) * 0.5)
   end
 
   def tick
-    handle_input
     ImUI.container(:example, pos: container_pos, flex:, transitions:, style: main_style) do |ui|
       ui.text('Areoaural')
       ui.button('Start', style: button_style, transitions:, hover_style:, down_style:) do |btn|
@@ -56,17 +55,6 @@ class StartState
   end
 
   private
-
-  def handle_input
-    if FrameInput.key_down?(:d)
-      @container_pos = Vector.new(0, FrameInput.screen_size[1] * 0.5)
-      @flex = Flex.new(justify: :end)
-    end
-    return unless FrameInput.key_down?(:a)
-
-    @flex = Flex.new(justify: :start)
-    @container_pos = (Vector.new(*FrameInput.screen_size) * 0.5) + Vector.new(300, 0)
-  end
 
   def flex
     @flex ||= Flex.new(justify: :start)
