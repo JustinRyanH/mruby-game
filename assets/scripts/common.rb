@@ -33,6 +33,10 @@ module Bounds
     pos.x = value - (size.x * (1 - anchor_x))
   end
 
+  def inside?(point)
+    point.x > left && point.x < right && point.y > top && point.y < bottom
+  end
+
   def anchor_x
     anchor_percentage.x
   end
