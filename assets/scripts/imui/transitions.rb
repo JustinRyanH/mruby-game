@@ -61,11 +61,12 @@ class DistanceTransition
   # @param [Timer] timer
   attr_reader :origin, :target
 
-  def initialize(origin, target, pixels_per_second: 20)
+  def initialize(origin, target, pixels_per_second: 20, ease: :linear)
     @origin = origin
     @target = target
     @pixels_per_second = pixels_per_second
     @length = (origin - target).length
+    @ease = ease
     @stopwatch = Stopwatch.new
   end
 
@@ -83,16 +84,20 @@ class DistanceTransition
   end
 
   def finished?
-    current_pos == target
+    percentage >= 1
   end
 
   private
 
-  attr_reader :stopwatch, :length, :pixels_per_second
+  attr_reader :stopwatch, :length, :pixels_per_second, :ease
 
   def current_pos
-    percentage = (stopwatch.time * pixels_per_second) / length
-    @origin.lerp(@target, percentage)
+    puts percentage
+    @origin.lerp(@target, percentage.ease(ease))
+  end
+
+  def percentage
+    ((stopwatch.time * pixels_per_second) / length).clamp(0, 1)
   end
 end
 
@@ -122,9 +127,11 @@ class DefineDistanceTransition
 
   # @param [Float] time
   define_attr :pixels_per_second, default: 20
+  # @param [Symbol] ease
+  define_attr :ease, default: :linear
 
   def build_transition(origin, target)
-    DistanceTransition.new(origin, target, pixels_per_second:)
+    DistanceTransition.new(origin, target, pixels_per_second:, ease:)
   end
 end
 
