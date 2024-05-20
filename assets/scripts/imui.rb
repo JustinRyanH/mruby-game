@@ -403,13 +403,13 @@ class TrackedElement
 
   def handle_position
     if pos.nil?
-      self.pos = element.pos
-      self.last_pos = element.pos
+      self.pos = element.pos.dup
+      self.last_pos = element.pos.dup
     end
 
     return if !position_changed? && @pos_transition.nil?
 
-    self.pos = element.pos
+    self.pos = element.pos.dup
 
     if @pos_transition.nil?
       @pos_transition = element.transitions.pos.build_transition(last_pos, pos)
@@ -424,7 +424,7 @@ class TrackedElement
 
     action = TransitionAction.new(element.id, :pos, :end)
     ImUI.ctx.notify_transition_change(action)
-    self.last_pos = pos
+    self.last_pos = pos.dup
     @pos_transition = nil
   end
 
