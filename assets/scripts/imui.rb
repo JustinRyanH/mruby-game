@@ -5,6 +5,24 @@ require 'assets/scripts/engine_override'
 require 'assets/scripts/assets'
 require 'assets/scripts/imui/transitions'
 
+class TransitionAction
+  attr_reader :id, :state, :transition
+
+  def initialize(id, transition, state)
+    @id = id
+    @transition = transition
+    @state = state
+  end
+
+  def kind
+    :transition
+  end
+
+  def inspect
+    { id:, state:, transition: }
+  end
+end
+
 class UiAction
   def initialize(element, &block)
     @element = element
@@ -374,6 +392,8 @@ class ImUiContainer < ImElement
 end
 
 class TrackedElement
+  # @return [ImElement] element
+  # @return [ImElement] last_frame
   attr_reader :element, :last_frame
 
   def track(el)
@@ -391,12 +411,19 @@ class TrackedElement
 
     self.pos = element.pos
 
-    @pos_transition ||= element.transitions.pos.build_transition(last_pos, pos)
+    if @pos_transition.nil?
+      @pos_transition = element.transitions.pos.build_transition(last_pos, pos)
+      action = TransitionAction.new(element.id, :pos, :start)
+      ImUI.ctx.notify_transition_change(action)
+    end
+
     @pos_transition.target = pos if pos != @pos_transition.target
     element.pos = @pos_transition.update
 
     return unless @pos_transition.finished?
 
+    action = TransitionAction.new(element.id, :pos, :end)
+    ImUI.ctx.notify_transition_change(action)
     self.last_pos = pos
     @pos_transition = nil
   end
@@ -460,10 +487,9 @@ class ImUI
   # @return [TrackedElement, nil] focused_element
   # @return [Transitions] default_transition
   attr_accessor :focused_element, :default_transitions
-  attr_reader :root_elements
+  attr_reader :root_elements, :transition_observers
 
-  # @return [TrackedElement, nil] focused_element
-
+  # @return [ImUI]
   def self.ctx
     @@ctx ||= ImUI.new
   end
@@ -476,6 +502,7 @@ class ImUI
     ctx.draw
   end
 
+  # @yieldparam [ImUiContainer]
   def self.container(id, **)
     c = ImUiContainer.new(id:, **)
     yield c
@@ -487,6 +514,7 @@ class ImUI
     @root_elements = []
     @focused_element = nil
     @default_transitions = Transitions.new
+    @transition_observers = []
   end
 
   def track_element(element)
@@ -506,6 +534,18 @@ class ImUI
   def draw
     @root_elements.each(&:draw)
     @root_elements.clear
+  end
+
+  def add_transition_observer(observer)
+    @transition_observers << observer
+  end
+
+  def remove_transition_observer(observer)
+    @transition_observers.delete(observer)
+  end
+
+  def notify_transition_change(action)
+    transition_observers.each { |to| to.notify(action) }
   end
 
   private

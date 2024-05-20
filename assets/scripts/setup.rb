@@ -35,8 +35,9 @@ class StartState
   end
 
   def tick
-    started = false
+    @container_pos = Vector.new(0, 0) if FrameInput.key_was_down?(:d)
     ImUI.container(:example, pos: container_pos, flex:, transitions:, style: main_style) do |ui|
+      @container_id ||= ui.id
       ui.text('Areoaural')
       ui.button('Start', style: button_style, transitions:, hover_style:, down_style:) do |btn|
         puts 'CLICKED START' if btn.clicked?
@@ -51,9 +52,20 @@ class StartState
 
   def enter
     game.clear_map
+    ImUI.ctx.add_transition_observer(self)
   end
 
   def exit
+    ImUI.ctx.remove_transition_observer(self)
+  end
+
+  def notify(event)
+    return unless event.kind == :transition
+    return unless @container_id
+    return unless @container_id == event.id
+    return unless event.state == :end
+
+    puts "Event: #{event.inspect}"
   end
 
   private
