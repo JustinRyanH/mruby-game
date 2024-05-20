@@ -25,6 +25,37 @@ class DestroyObstacle
   end
 end
 
+class StartToGameplayState
+  attr_reader :game, :start
+
+  def initialize(game, start)
+    @game = game
+    @start = start
+  end
+
+  def tick
+    start.tick
+    width, _height = FrameInput.screen_size
+    Draw.text(
+      text: 'StartToGameplayState',
+      pos: Vector.new(width * 0.5, 78),
+      size: 64,
+      color: Color.red,
+      halign: :center,
+    )
+
+    nil
+  end
+
+  def enter
+    # start.container_pos = Vector.new(-2000, start.container_pos.y)
+    start.container_pos.x = -2000
+  end
+
+  def exit
+  end
+end
+
 class StartState
   attr_accessor :container_pos
   attr_reader :game
@@ -40,13 +71,16 @@ class StartState
       @container_id ||= ui.id
       ui.text('Areoaural')
       ui.button('Start', style: button_style, transitions:, hover_style:, down_style:) do |btn|
-        puts 'CLICKED START' if btn.clicked?
+        @started = true if btn.clicked?
       end
       ui.button('Quit', style: button_style, transitions:, hover_style:, down_style:) do |btn|
         # TODO: Do a Exit Transition
         Engine.exit if btn.clicked?
       end
     end
+
+    return StartToGameplayState.new(game, self) if started?
+
     nil
   end
 
@@ -69,6 +103,10 @@ class StartState
   end
 
   private
+
+  def started?
+    @started || false
+  end
 
   def flex
     @flex ||= Flex.new(justify: :start)
