@@ -9,6 +9,7 @@
 
 ## Nice to Have
 
+* Handle how-reload failures elegantly
 * Implement a version of lua's init for require
 * UI
   - Global Style
