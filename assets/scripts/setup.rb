@@ -49,7 +49,7 @@ class StartToGameplayState
 
   def enter
     # start.container_pos = Vector.new(-2000, start.container_pos.y)
-    start.container_pos.x = -2000
+    start.container_pos.y = -2000
   end
 
   def exit
@@ -114,7 +114,7 @@ class StartState
 
   def transitions
     Transitions.new(
-      pos: DefineDistanceTransition.new(pixels_per_second: 300, ease: :cubic_out),
+      pos: DefineDistanceTransition.new(pixels_per_second: 1500, ease: :cubic_in),
     )
   end
 
