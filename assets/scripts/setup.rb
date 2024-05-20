@@ -61,9 +61,9 @@ class StartState
 
   def notify(event)
     return unless event.kind == :transition
+    return unless event.state == :end
     return unless @container_id
     return unless @container_id == event.id
-    return unless event.state == :end
 
     puts "Event: #{event.inspect}"
   end
