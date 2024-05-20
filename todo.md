@@ -21,6 +21,7 @@
   - NPatch Background
   - Allow Tracking Transitions
   - Relative Transitions
+  - Disable Buttons
 
 * add `require_relative`
 * Swap out to use Odin log context
