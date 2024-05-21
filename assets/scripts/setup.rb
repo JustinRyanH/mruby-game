@@ -184,7 +184,7 @@ class GameplayState
     game.debug_draw_obstacles
 
     all_on_screen = game.obstacles.all?(&:onscreen?)
-    generate_obstacles(5) if all_on_screen
+    game.generate_obstacles(5) if all_on_screen
 
     return DeathState.new(game) if game.player.offscreen_top? || game.player.offscreen_bottom?
 
@@ -205,7 +205,7 @@ class GameplayState
     obs = game.random_obstcle(width)
     game.add_obstacle(obs)
 
-    generate_obstacles(5)
+    game.generate_obstacles(5)
 
     game.player_velocity = Vector.zero
     game.score = 0
@@ -216,23 +216,6 @@ class GameplayState
   end
 
   private
-
-  def generate_obstacles(count)
-    count.times do
-      last = game.obstacles.last
-      random_offset = FrameInput.random_int(200..500)
-      obs = game.random_obstcle(last.right_most + random_offset)
-      game.add_obstacle(obs)
-
-      og_challenge = obs.challenge_angle.abs
-
-      offset = game.challenge_factor(og_challenge) * FrameInput.random_int(100..150)
-
-      obs.x += offset
-      new = obs.challenge_angle.abs
-      Log.info("Likely Impossible Extend it: #{og_challenge.round(2)} -> #{new}") if offset.positive?
-    end
-  end
 
   def check_for_score
     leave_score = game.obstacles
@@ -411,6 +394,23 @@ class Game
     gap = Rectangle.new(pos:, size:)
 
     Obstacle.create(gap)
+  end
+
+  def generate_obstacles(count)
+    count.times do
+      last = obstacles.last
+      random_offset = FrameInput.random_int(200..500)
+      obs = random_obstcle(last.right_most + random_offset)
+      add_obstacle(obs)
+
+      og_challenge = obs.challenge_angle.abs
+
+      offset = challenge_factor(og_challenge) * FrameInput.random_int(100..150)
+
+      obs.x += offset
+      new = obs.challenge_angle.abs
+      Log.info("Likely Impossible Extend it: #{og_challenge.round(2)} -> #{new}") if offset.positive?
+    end
   end
 
   private
