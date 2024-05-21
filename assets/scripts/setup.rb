@@ -169,7 +169,11 @@ class GameplayLoadState
   end
 
   def tick
-    # GameplayState.new(game)
+    return unless FrameInput.key_just_pressed?(:space)
+
+    next_state = GameplayState.new(game)
+    next_state.flap_player
+    next_state
   end
 
   def enter
@@ -252,6 +256,11 @@ class GameplayState
   def exit
   end
 
+  def flap_player
+    game.player_velocity.y -= 4.5
+    Sounds.explosion.play(volume: 0.2, pitch: 2)
+  end
+
   private
 
   def check_for_score
@@ -276,11 +285,6 @@ class GameplayState
     flap_player if FrameInput.key_just_pressed?(:space)
     game.player_velocity.y = game.player_velocity.y.clamp(-5, 5)
     game.player.pos += game.player_velocity
-  end
-
-  def flap_player
-    game.player_velocity.y -= 4.5
-    Sounds.explosion.play(volume: 0.2, pitch: 2)
   end
 
   def move_world
