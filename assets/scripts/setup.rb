@@ -51,19 +51,10 @@ class StartToGameplayState
   end
 
   def enter
-    ImUI.ctx.add_transition_observer(self)
     start.container_pos.y = -2000
   end
 
   def exit
-  end
-
-  # @param [TransitionAction] action
-  def notify(action)
-    return unless action.id == start.container_id
-    return unless action.state == :end
-
-    @transition_ended = true
   end
 
   private
@@ -80,15 +71,15 @@ class StartState
   def initialize(game)
     @game = game
     @container_pos = (Vector.new(*FrameInput.screen_size) * 0.5)
+    @ready_for_gameplay = false
   end
 
   def tick
-    @container_pos = Vector.new(0, 0) if FrameInput.key_was_down?(:d)
     ImUI.container(:example, pos: container_pos, flex:, transitions:, style: main_style) do |ui|
       @container_id ||= ui.id
       ui.text('Areoaural')
       ui.button('Start', style: button_style, transitions:, hover_style:, down_style:) do |btn|
-        @started = true if btn.clicked?
+        @container_pos.x = -2000 if btn.clicked?
       end
       ui.button('Quit', style: button_style, transitions:, hover_style:, down_style:) do |btn|
         # TODO: Do a Exit Transition
@@ -96,23 +87,29 @@ class StartState
       end
     end
 
-    return StartToGameplayState.new(game, self) if started?
+    return GameplayState.new(game) if @ready_for_gameplay
 
     nil
   end
 
   def enter
     game.clear_map
+    ImUI.ctx.add_transition_observer(self)
   end
 
   def exit
+    ImUI.ctx.remove_transition_observer(self)
+  end
+
+  # @param [TransitionAction] action
+  def notify(action)
+    return unless action.id == @container_id
+    return unless action.state == :end
+
+    @ready_for_gameplay = true
   end
 
   private
-
-  def started?
-    @started || false
-  end
 
   def flex
     @flex ||= Flex.new(justify: :start)
