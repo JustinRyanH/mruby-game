@@ -31,6 +31,7 @@ class StartToGameplayState
   def initialize(game, start)
     @game = game
     @start = start
+    @transition_ended = false
   end
 
   def tick
@@ -44,21 +45,37 @@ class StartToGameplayState
       halign: :center,
     )
 
+    return GameplayState.new(game) if transition_ended?
+
     nil
   end
 
   def enter
-    # start.container_pos = Vector.new(-2000, start.container_pos.y)
+    ImUI.ctx.add_transition_observer(self)
     start.container_pos.y = -2000
   end
 
   def exit
   end
+
+  # @param [TransitionAction] action
+  def notify(action)
+    return unless action.id == start.container_id
+    return unless action.state == :end
+
+    @transition_ended = true
+  end
+
+  private
+
+  def transition_ended?
+    @transition_ended || false
+  end
 end
 
 class StartState
   attr_accessor :container_pos
-  attr_reader :game
+  attr_reader :game, :container_id
 
   def initialize(game)
     @game = game
@@ -86,20 +103,9 @@ class StartState
 
   def enter
     game.clear_map
-    ImUI.ctx.add_transition_observer(self)
   end
 
   def exit
-    ImUI.ctx.remove_transition_observer(self)
-  end
-
-  def notify(event)
-    return unless event.kind == :transition
-    return unless event.state == :end
-    return unless @container_id
-    return unless @container_id == event.id
-
-    puts "Event: #{event.inspect}"
   end
 
   private

@@ -545,7 +545,7 @@ class ImUI
   end
 
   def notify_transition_change(action)
-    transition_observers.each { |to| to.notify(action) }
+    @transition_observers.each { |to| to.notify(action) }
   end
 
   private
