@@ -6,6 +6,8 @@
   - Begins the Game
 * Make the character move, use a camera to follow
 * Have the character/obstacle loop in world space
+* Texture Packing
+ - Maybe using Ruby scripts
 
 ## Nice to Have
 
@@ -25,8 +27,6 @@
 
 * add `require_relative`
 * Swap out to use Odin log context
-* Texture Packing
- - Maybe using Ruby scropts
 * Implement Debug Tooling
 * Fix windows floating point position errors
 * Introduce Better errors for assets
