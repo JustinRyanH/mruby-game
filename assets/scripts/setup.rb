@@ -125,7 +125,7 @@ class StartState
   end
 
   def main_style
-    @main_style ||= Style.from_hash({ font_size: 120, padding: 8 })
+    @main_style ||= Style.from_hash({ font_size: 120, padding: 8, background_color: Color.crow_black_blue })
   end
 
   def button_style
@@ -236,7 +236,6 @@ class GameplayState
   end
 
   def enter
-    Engine.background_color = Color.regal_blue
     game.clear_map
     if game.player.nil?
       create_player
@@ -403,6 +402,8 @@ class Game
   end
 
   def tick
+    Engine.background_color = Color.regal_blue
+
     setup unless ready?
     toggle_debug if FrameInput.key_was_down?(:f1)
 

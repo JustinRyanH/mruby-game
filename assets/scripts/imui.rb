@@ -340,7 +340,7 @@ class ImUiContainer < ImElement
       Draw.rect(
         pos:,
         size: dimensions,
-        color: Color.regal_blue,
+        color: style.background_color,
         anchor_percentage: Vector.new(0.5, 0.5),
       )
 
