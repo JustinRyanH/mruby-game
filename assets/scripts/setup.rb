@@ -48,7 +48,7 @@ class StartState
       end
     end
 
-    return GameplayState.new(game) if @ready_for_gameplay
+    return GameplayLoadState.new(game) if @ready_for_gameplay
 
     nil
   end
@@ -153,6 +153,26 @@ class DeathState
 
     @death_timer.reset(1)
     @restart_timer.reset(1.2)
+  end
+
+  def exit
+  end
+end
+
+class GameplayLoadState
+  # @return [Game]
+  attr_reader :game
+
+  # @param [Game] game
+  def initialize(game)
+    @game = game
+  end
+
+  def tick
+    GameplayState.new(game)
+  end
+
+  def enter
   end
 
   def exit
