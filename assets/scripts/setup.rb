@@ -169,13 +169,46 @@ class GameplayLoadState
   end
 
   def tick
-    GameplayState.new(game)
+    # GameplayState.new(game)
   end
 
   def enter
+    game.clear_map
+    if game.player.nil?
+      create_player
+    else
+      game.player.pos = starting_position
+    end
+
+    width, = FrameInput.screen_size
+    obs = game.random_obstcle(width)
+    game.add_obstacle(obs)
+
+    game.generate_obstacles(5)
+
+    game.player_velocity = Vector.zero
+    game.score = 0
+    game.player.animation = Animation.new([Textures.copter, Textures.copter3])
   end
 
   def exit
+  end
+
+  private
+
+  def create_player
+    collider = Collider.create(
+      pos: game.starting_position,
+      size: Vector.new(45, 45),
+    )
+    sprite = Sprite.create(
+      pos: game.starting_position,
+      size: Vector.new(45, 45),
+      tint: Color.blunt_violet,
+      texture: Textures.copter,
+    )
+
+    game.player = GameObject.new(collider:, sprite:)
   end
 end
 
@@ -214,22 +247,6 @@ class GameplayState
   end
 
   def enter
-    game.clear_map
-    if game.player.nil?
-      create_player
-    else
-      game.player.pos = starting_position
-    end
-
-    width, = FrameInput.screen_size
-    obs = game.random_obstcle(width)
-    game.add_obstacle(obs)
-
-    game.generate_obstacles(5)
-
-    game.player_velocity = Vector.zero
-    game.score = 0
-    game.player.animation = Animation.new([Textures.copter, Textures.copter3])
   end
 
   def exit
@@ -250,28 +267,6 @@ class GameplayState
 
   def obstacle_collision
     game.player.collisions.any? { |c| game.collider_to_obstacle[c.id].obstacle?(c) }
-  end
-
-  def create_player
-    collider = Collider.create(
-      pos: starting_position,
-      size: Vector.new(45, 45),
-    )
-    sprite = Sprite.create(
-      pos: starting_position,
-      size: Vector.new(45, 45),
-      tint: Color.blunt_violet,
-      texture: Textures.copter,
-    )
-
-    game.player = GameObject.new(collider:, sprite:)
-  end
-
-  def starting_position
-    @starting_position ||= begin
-      width, height = FrameInput.screen_size
-      Vector.new(width * 0.2, height * 0.5)
-    end
   end
 
   def move_player
@@ -430,6 +425,13 @@ class Game
       obs.x += offset
       new = obs.challenge_angle.abs
       Log.info("Likely Impossible Extend it: #{og_challenge.round(2)} -> #{new}") if offset.positive?
+    end
+  end
+
+  def starting_position
+    @starting_position ||= begin
+      width, height = FrameInput.screen_size
+      Vector.new(width * 0.2, height * 0.5)
     end
   end
 
