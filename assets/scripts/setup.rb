@@ -39,10 +39,10 @@ class StartState
     ImUI.container(:example, pos: container_pos, flex:, transitions:, style: main_style) do |ui|
       @container_id ||= ui.id
       ui.text('Areoaural')
-      ui.button('Start', style: button_style, transitions:, hover_style:, down_style:) do |btn|
-        @container_pos.x = -2000 if btn.clicked?
+      ui.button('Start', style: button_style, hover_style:, down_style:) do |btn|
+        @container_pos.x = -1500 if btn.clicked?
       end
-      ui.button('Quit', style: button_style, transitions:, hover_style:, down_style:) do |btn|
+      ui.button('Quit', style: button_style, hover_style:, down_style:) do |btn|
         # TODO: Do a Exit Transition
         Engine.exit if btn.clicked?
       end
@@ -202,9 +202,9 @@ class GameplayLoadState
   def enter
     game.clear_map
     create_player if game.player.nil?
-    game.player.pos = game.starting_position - Vector.new(200, 0)
+    game.player.pos = game.starting_position - Vector.new(75, 0)
 
-    definition = DefineDistanceTransition.new(pixels_per_second: 500)
+    definition = DefineDistanceTransition.new(pixels_per_second: 150, ease: :elastic_out)
     @trans = ObjectTransition.new(game.player, field: :pos, transition_definition: definition,
                                                to: game.starting_position)
 
