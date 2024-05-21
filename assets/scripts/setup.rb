@@ -78,7 +78,7 @@ class StartState
 
   def transitions
     Transitions.new(
-      pos: DefineDistanceTransition.new(pixels_per_second: 2500, ease: :cubic_in),
+      pos: DefineDistanceTransition.new(pixels_per_second: 1500, ease: :cubic_in),
     )
   end
 
@@ -159,6 +159,28 @@ class DeathState
   end
 end
 
+class ObjectTransition
+  def initialize(obj, field:, to:, transition_definition: DefineJumpTransition.new)
+    @obj = obj
+    @field = field
+    @to = to
+    @from = obj.send(field)
+    @transition = transition_definition.build_transition(from, to)
+  end
+
+  def update
+    obj.send("#{field}=", transition.update)
+  end
+
+  def finished?
+    transition.finished?
+  end
+
+  private
+
+  attr_reader :obj, :field, :transition, :to, :from
+end
+
 class GameplayLoadState
   # @return [Game]
   attr_reader :game
@@ -169,6 +191,7 @@ class GameplayLoadState
   end
 
   def tick
+    @trans.update
     return unless FrameInput.key_just_pressed?(:space)
 
     next_state = GameplayState.new(game)
@@ -178,11 +201,12 @@ class GameplayLoadState
 
   def enter
     game.clear_map
-    if game.player.nil?
-      create_player
-    else
-      game.player.pos = starting_position
-    end
+    create_player if game.player.nil?
+    game.player.pos = game.starting_position - Vector.new(200, 0)
+
+    definition = DefineDistanceTransition.new(pixels_per_second: 500)
+    @trans = ObjectTransition.new(game.player, field: :pos, transition_definition: definition,
+                                               to: game.starting_position)
 
     width, = FrameInput.screen_size
     obs = game.random_obstcle(width)
