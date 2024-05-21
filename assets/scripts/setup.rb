@@ -25,45 +25,6 @@ class DestroyObstacle
   end
 end
 
-class StartToGameplayState
-  attr_reader :game, :start
-
-  def initialize(game, start)
-    @game = game
-    @start = start
-    @transition_ended = false
-  end
-
-  def tick
-    start.tick
-    width, _height = FrameInput.screen_size
-    Draw.text(
-      text: 'StartToGameplayState',
-      pos: Vector.new(width * 0.5, 78),
-      size: 64,
-      color: Color.red,
-      halign: :center,
-    )
-
-    return GameplayState.new(game) if transition_ended?
-
-    nil
-  end
-
-  def enter
-    start.container_pos.y = -2000
-  end
-
-  def exit
-  end
-
-  private
-
-  def transition_ended?
-    @transition_ended || false
-  end
-end
-
 class StartState
   attr_accessor :container_pos
   attr_reader :game, :container_id
