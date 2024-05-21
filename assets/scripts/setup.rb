@@ -78,7 +78,7 @@ class StartState
 
   def transitions
     Transitions.new(
-      pos: DefineDistanceTransition.new(pixels_per_second: 1500, ease: :cubic_in),
+      pos: DefineDistanceTransition.new(pixels_per_second: 2500, ease: :cubic_in),
     )
   end
 
