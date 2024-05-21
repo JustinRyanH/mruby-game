@@ -202,7 +202,7 @@ class GameplayState
     end
 
     width, = FrameInput.screen_size
-    obs = random_obstcle(width)
+    obs = game.random_obstcle(width)
     game.add_obstacle(obs)
 
     generate_obstacles(5)
@@ -217,26 +217,11 @@ class GameplayState
 
   private
 
-  def random_obstcle(x)
-    _, height = FrameInput.screen_size
-
-    gap_width = FrameInput.random_int(40...60)
-    gap_size = FrameInput.random_int(150...450)
-    size = Vector.new(gap_width, gap_size)
-    x += (size.x * 0.5)
-
-    gap_center_y = FrameInput.random_int(((gap_size * 0.5) + 25)...(height - (gap_size * 0.5) - 25))
-    pos = Vector.new(x, gap_center_y)
-    gap = Rectangle.new(pos:, size:)
-
-    Obstacle.create(gap)
-  end
-
   def generate_obstacles(count)
     count.times do
       last = game.obstacles.last
       random_offset = FrameInput.random_int(200..500)
-      obs = random_obstcle(last.right_most + random_offset)
+      obs = game.random_obstcle(last.right_most + random_offset)
       game.add_obstacle(obs)
 
       og_challenge = obs.challenge_angle.abs
@@ -411,6 +396,21 @@ class Game
     when 40..180 then return 2
     end
     0
+  end
+
+  def random_obstcle(x)
+    _, height = FrameInput.screen_size
+
+    gap_width = FrameInput.random_int(40...60)
+    gap_size = FrameInput.random_int(150...450)
+    size = Vector.new(gap_width, gap_size)
+    x += (size.x * 0.5)
+
+    gap_center_y = FrameInput.random_int(((gap_size * 0.5) + 25)...(height - (gap_size * 0.5) - 25))
+    pos = Vector.new(x, gap_center_y)
+    gap = Rectangle.new(pos:, size:)
+
+    Obstacle.create(gap)
   end
 
   private
