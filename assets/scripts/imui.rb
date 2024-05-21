@@ -525,10 +525,10 @@ class ImUI
   def update
     @root_elements.each(&:track)
     focus_element
-    @tracked_elements.each_value(&:handle_position)
     @tracked_elements.each_value(&:handle_mouse_events)
-
     @root_elements.each(&:perform)
+
+    @tracked_elements.each_value(&:handle_position)
   end
 
   def draw
