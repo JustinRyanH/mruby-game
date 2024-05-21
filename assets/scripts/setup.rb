@@ -232,15 +232,6 @@ class GameplayState
     Obstacle.create(gap)
   end
 
-  def challenge_factor(angle)
-    case angle
-    when 30...35 then return 1.25
-    when 35..40 then return 1.5
-    when 40..180 then return 2
-    end
-    0
-  end
-
   def generate_obstacles(count)
     count.times do
       last = game.obstacles.last
@@ -250,7 +241,7 @@ class GameplayState
 
       og_challenge = obs.challenge_angle.abs
 
-      offset = challenge_factor(og_challenge) * FrameInput.random_int(100..150)
+      offset = game.challenge_factor(og_challenge) * FrameInput.random_int(100..150)
 
       obs.x += offset
       new = obs.challenge_angle.abs
@@ -411,6 +402,15 @@ class Game
 
       current = after
     end
+  end
+
+  def challenge_factor(angle)
+    case angle
+    when 30...35 then return 1.25
+    when 35..40 then return 1.5
+    when 40..180 then return 2
+    end
+    0
   end
 
   private
