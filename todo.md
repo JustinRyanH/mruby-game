@@ -23,7 +23,8 @@
   - Allow Tracking Transitions
   - Relative Transitions
   - Disable Buttons
-
+* Game Start Flashier
+  - Have all of the elements come onto the screen
 * add `require_relative`
 * Swap out to use Odin log context
 * Implement Debug Tooling
