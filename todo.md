@@ -2,14 +2,15 @@
 
 ## Current
 
+* Implement Spring
 * Make the character move, use a camera to follow
 * Have the character/obstacle loop in world space
+* Engine.screen returns a screen object
 * Texture Packing
  - Maybe using Ruby scripts
 
 ## Nice to Have
 
-* Engine.screen returns a screen object
 * All Draw Commands go to Draw Command Stack
 * Handle how-reload failures elegantly
 * Implement a version of lua's init for require
@@ -24,7 +25,7 @@
   - Relative Transitions
   - Disable Buttons
 * Game Start Flashier
-  - Have all of the elements come onto the screen
+  - Have all of the elements come onto the screen sft
 * add `require_relative`
 * Swap out to use Odin log context
 * Implement Debug Tooling
