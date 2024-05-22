@@ -61,7 +61,7 @@ class SpringParams
       e1 = Math.exp(z1 * dt)
       e2 = Math.exp(z2 * dt)
 
-      inv_two_zb = 1 / (2.0 * zb)
+      inv_two_zb = 1.0 / (2.0 * zb)
 
       e1_over_two_zb = e1 * inv_two_zb
       e2_over_two_zb = e2 * inv_two_zb
@@ -72,7 +72,7 @@ class SpringParams
       self.pos_pos_coef = (e1_over_two_zb * z2) - z2e2_over_two_zb + e2
       self.pos_vel_coef = -e1_over_two_zb + e2_over_two_zb
 
-      self.vel_pos_coef = (z1e1_over_two_zb - z2e2_over_two_zb) * z2
+      self.vel_pos_coef = (z1e1_over_two_zb - z2e2_over_two_zb + e2) * z2
       self.vel_vel_coef = -z1e1_over_two_zb + z2e2_over_two_zb
     elsif damping < 1 - epsilon
       omega_zeta = freq * damping
@@ -143,7 +143,7 @@ class SpringEpxeriment
     @spring_velocity ||= Vector.new(0, 0)
     @spring_min ||= 100
     @spring_max ||= width - 100
-    @spring_pos.x, @spring_velocity.x = calc_damped_spring_motion(@spring_pos.x, @spring_velocity.x, @target_x, 5, 0.5)
+    @spring_pos.x, @spring_velocity.x = calc_damped_spring_motion(@spring_pos.x, @spring_velocity.x, @target_x, 10, 0.5)
 
     Draw.rect(pos: Vector.new(width / 2, height / 2), size: Vector.new(@spring_max - @spring_min, 8),
               color: Color.white)
