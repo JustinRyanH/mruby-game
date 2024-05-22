@@ -50,16 +50,16 @@ class SpringParams
     damping = [damping, 0.0].max.to_f
 
     epsilon = 0.0001
-    return unless freq < epsilon
+    return if freq < epsilon
 
     if damping > 1 + epsilon
       za = -freq * damping
-      zb = freq * ((damping * damping) - 1.0).sqrt
+      zb = freq * Math.sqrt((damping * damping) - 1.0)
       z1 = za - zb
       z2 = za + zb
 
-      e1 = (z1 * dt).exp
-      e2 = (z2 * dt).exp
+      e1 = Math.exp(z1 * dt)
+      e2 = Math.exp(z2 * dt)
 
       inv_two_zb = 1 / (2.0 * zb)
 
@@ -76,17 +76,17 @@ class SpringParams
       self.vel_vel_coef = -z1e1_over_two_zb + z2e2_over_two_zb
     elsif damping < 1 - epsilon
       omega_zeta = freq * damping
-      alpha = freq * (1 - (damping * damping)).sqrt
+      alpha = freq * Math.sqrt(1 - (damping * damping))
 
-      exp_term = (-omega_zeta * dt).exp
-      cos_term = (alpha * dt).cos
-      sin_term = (alpha * dt).sin
+      exp_term = Math.exp(-omega_zeta * dt)
+      cos_term = Math.cos(alpha * dt)
+      sin_term = Math.sin(alpha * dt)
 
       inv_alpha = 1.0 / alpha
 
       exp_sin = exp_term * sin_term
       exp_cos = exp_term * cos_term
-      exp_omega_zeta_sin_over_alpha = exp_term * omega_zeta * inv_alpha
+      exp_omega_zeta_sin_over_alpha = exp_term * omega_zeta * sin_term * inv_alpha
 
       self.pos_pos_coef = exp_cos + exp_omega_zeta_sin_over_alpha
       self.pos_vel_coef = exp_sin * inv_alpha
@@ -94,16 +94,25 @@ class SpringParams
       self.vel_pos_coef = (-exp_sin * alpha) - (omega_zeta * exp_omega_zeta_sin_over_alpha)
       self.vel_vel_coef = exp_cos - exp_omega_zeta_sin_over_alpha
     else
-      exp_term = (-freq * dt).exp
+      exp_term = Math.exp(-freq * dt)
       time_exp = dt * exp_term
       time_exp_freq = time_exp * freq
 
       self.pos_pos_coef = time_exp_freq + exp_term
       self.pos_vel_coef = time_exp
 
-      self.vel_pos_coef = -(freq * time_exp_freq)
+      self.vel_pos_coef = -freq * time_exp_freq
       self.vel_vel_coef = -time_exp_freq + exp_term
     end
+  end
+
+  def inspect
+    {
+      pos_pos_coef:,
+      pos_vel_coef:,
+      vel_pos_coef:,
+      vel_vel_coef:
+    }
   end
 
   private
@@ -111,8 +120,17 @@ class SpringParams
   attr_writer :pos_pos_coef, :pos_vel_coef, :vel_pos_coef, :vel_vel_coef
 end
 
-def calc_damped_spring_motion(_pos, vel, goal_pos, _freq, _damping)
-  [goal_pos, vel]
+def calc_damped_spring_motion(pos, vel, goal_pos, freq, damping)
+  params = SpringParams.new
+  params.setup(freq, damping)
+
+  old_pos = pos - goal_pos
+  old_vel = vel
+
+  out_pos = (old_pos * params.pos_pos_coef) + (old_vel * params.pos_vel_coef) + goal_pos
+  out_vel = (old_pos * params.vel_pos_coef) + (old_vel * params.vel_vel_coef)
+
+  [out_pos, out_vel]
 end
 
 class SpringEpxeriment
@@ -125,10 +143,7 @@ class SpringEpxeriment
     @spring_velocity ||= Vector.new(0, 0)
     @spring_min ||= 100
     @spring_max ||= width - 100
-
-    x_pos, x_vel = calc_damped_spring_motion(@spring_pos.x, @spring_pos.y, @target_x, 5, 1.0)
-    @spring_pos.x = x_pos
-    @spring_velocity.x = x_vel
+    @spring_pos.x, @spring_velocity.x = calc_damped_spring_motion(@spring_pos.x, @spring_velocity.x, @target_x, 5, 0.5)
 
     Draw.rect(pos: Vector.new(width / 2, height / 2), size: Vector.new(@spring_max - @spring_min, 8),
               color: Color.white)
