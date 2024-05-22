@@ -138,13 +138,8 @@ mouse_btn_to_check :: [?]RlToGameMouseMap {
 }
 
 // Returns the current user input, frame id is zero
-get_current_user_input :: proc() -> (new_input: UserInput) {
-	new_input.meta = FrameMeta {
-		0,
-		rl.GetFrameTime(),
-		cast(f32)rl.GetScreenWidth(),
-		cast(f32)rl.GetScreenHeight(),
-	}
+get_current_user_input :: proc(dt: f32) -> (new_input: UserInput) {
+	new_input.meta = FrameMeta{0, dt, cast(f32)rl.GetScreenWidth(), cast(f32)rl.GetScreenHeight()}
 
 
 	key_pressed := rl.GetKeyPressed()
@@ -164,8 +159,8 @@ get_current_user_input :: proc() -> (new_input: UserInput) {
 	return new_input
 }
 
-update_input :: proc(frame_input: ^FrameInput) {
-	next_frame: UserInput = get_current_user_input()
+update_input :: proc(frame_input: ^FrameInput, dt: f32) {
+	next_frame: UserInput = get_current_user_input(dt)
 	next_frame.meta.frame_id = frame_input.current_frame.meta.frame_id + 1
 	frame_input.last_frame = frame_input.current_frame
 	frame_input.current_frame = next_frame

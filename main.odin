@@ -160,7 +160,7 @@ main :: proc() {
 
 		game_setup_temp(g)
 
-		input.update_input(&g.input)
+		input.update_input(&g.input, rl.GetFrameTime())
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
 
