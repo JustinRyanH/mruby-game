@@ -2,8 +2,6 @@
 
 ## Current
 
-* Start Menu
-  - Begins the Game
 * Make the character move, use a camera to follow
 * Have the character/obstacle loop in world space
 * Texture Packing
@@ -109,6 +107,7 @@
   - Flexbox
   - Transitions Defined in Style
   - Fix: Padding is broken
+  - Begins the Game
 * Click on Press?
 ## AOR
 
