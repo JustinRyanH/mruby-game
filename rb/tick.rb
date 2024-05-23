@@ -52,40 +52,49 @@ class Spring
     setup
   end
 
+  def set_near_zero_coefficient
+    @ppc = 1.0
+    @pvc = 0.0
+
+    @vpc = 0.0
+    @vvc = 1.0
+  end
+
+  def over_zero_coefficient
+    za = -frequency * damping
+    zb = frequency * Math.sqrt((damping * damping) - 1.0)
+    z1 = za - zb
+    z2 = za + zb
+
+    e1 = Math.exp(z1 * dt)
+    e2 = Math.exp(z2 * dt)
+
+    inv_two_zb = 1.0 / (2.0 * zb)
+
+    e1_over_two_zb = e1 * inv_two_zb
+    e2_over_two_zb = e2 * inv_two_zb
+
+    z1e1_over_two_zb = z1 * e1_over_two_zb
+    z2e2_over_two_zb = z2 * e2_over_two_zb
+
+    @ppc = (e1_over_two_zb * z2) - z2e2_over_two_zb + e2
+    @pvc = -e1_over_two_zb + e2_over_two_zb
+
+    @vpc = (z1e1_over_two_zb - z2e2_over_two_zb + e2) * z2
+    @vvc = -z1e1_over_two_zb + z2e2_over_two_zb
+  end
+
   def setup
     dt = FrameInput.delta_time
 
     epsilon = 0.0001
     if frequency < epsilon
-      @ppc = 1.0
-      @pvc = 0.0
-
-      @vpc = 0.0
-      @vvc = 1.0
+      set_near_zero_coefficient
+      return
     end
 
     if damping > 1 + epsilon
-      za = -frequency * damping
-      zb = frequency * Math.sqrt((damping * damping) - 1.0)
-      z1 = za - zb
-      z2 = za + zb
-
-      e1 = Math.exp(z1 * dt)
-      e2 = Math.exp(z2 * dt)
-
-      inv_two_zb = 1.0 / (2.0 * zb)
-
-      e1_over_two_zb = e1 * inv_two_zb
-      e2_over_two_zb = e2 * inv_two_zb
-
-      z1e1_over_two_zb = z1 * e1_over_two_zb
-      z2e2_over_two_zb = z2 * e2_over_two_zb
-
-      @ppc = (e1_over_two_zb * z2) - z2e2_over_two_zb + e2
-      @pvc = -e1_over_two_zb + e2_over_two_zb
-
-      @vpc = (z1e1_over_two_zb - z2e2_over_two_zb + e2) * z2
-      @vvc = -z1e1_over_two_zb + z2e2_over_two_zb
+      over_zero_coefficient
     elsif damping < 1 - epsilon
       omega_zeta = frequency * damping
       alpha = frequency * Math.sqrt(1 - (damping * damping))
