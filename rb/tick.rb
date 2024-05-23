@@ -52,6 +52,22 @@ class Spring
     setup
   end
 
+  def setup
+    epsilon = 0.0001
+    if frequency < epsilon
+      set_near_zero_coefficient
+      return
+    end
+
+    if damping > 1 + epsilon
+      over_one_coefficient
+    elsif damping < 1 - epsilon
+      under_one_coefficient
+    else
+      at_one_coefficient
+    end
+  end
+
   def set_near_zero_coefficient
     @ppc = 1.0
     @pvc = 0.0
@@ -121,22 +137,6 @@ class Spring
 
     @vpc = -frequency * time_exp_freq
     @vvc = -time_exp_freq + exp_term
-  end
-
-  def setup
-    epsilon = 0.0001
-    if frequency < epsilon
-      set_near_zero_coefficient
-      return
-    end
-
-    if damping > 1 + epsilon
-      over_one_coefficient
-    elsif damping < 1 - epsilon
-      under_one_coefficient
-    else
-      at_one_coefficient
-    end
   end
 end
 
