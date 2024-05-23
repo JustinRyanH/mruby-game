@@ -31,8 +31,8 @@ class Spring
     old_pos = current_pos - target_pos
     old_vel = current_vel
 
-    out_pos = (old_pos * params.pos_pos_coef) + (old_vel * params.pos_vel_coef) + target_pos
-    out_vel = (old_pos * params.vel_pos_coef) + (old_vel * params.vel_vel_coef)
+    out_pos = (old_pos * ppc) + (old_vel * pvc) + target_pos
+    out_vel = (old_pos * vpc) + (old_vel * vvc)
 
     [out_pos, out_vel]
   end
@@ -40,8 +40,30 @@ class Spring
   private
 
   def update_params
+    @pos_pos_coef = 1.0
+    @pos_vel_coef = 0.0
+
+    @vel_pos_coef = 0.0
+    @vel_vel_coef = 1.0
+
     @params = SpringParams.new
     @params.setup(frequency, damping)
+  end
+
+  def ppc
+    @params.pos_pos_coef
+  end
+
+  def pvc
+    @params.pos_vel_coef
+  end
+
+  def vpc
+    @params.vel_pos_coef
+  end
+
+  def vvc
+    @params.vel_vel_coef
   end
 end
 
