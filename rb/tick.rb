@@ -17,7 +17,16 @@ class Spring
   end
 
   def motion(current_pos, current_vel, target_pos)
-    calc_damped_spring_motion(current_pos, current_vel, target_pos, frequency, damping)
+    params = SpringParams.new
+    params.setup(frequency, damping)
+
+    old_pos = current_pos - target_pos
+    old_vel = current_vel
+
+    out_pos = (old_pos * params.pos_pos_coef) + (old_vel * params.pos_vel_coef) + target_pos
+    out_vel = (old_pos * params.vel_pos_coef) + (old_vel * params.vel_vel_coef)
+
+    [out_pos, out_vel]
   end
 end
 
@@ -131,19 +140,6 @@ class SpringParams
   private
 
   attr_writer :pos_pos_coef, :pos_vel_coef, :vel_pos_coef, :vel_vel_coef
-end
-
-def calc_damped_spring_motion(pos, vel, goal_pos, freq, damping)
-  params = SpringParams.new
-  params.setup(freq, damping)
-
-  old_pos = pos - goal_pos
-  old_vel = vel
-
-  out_pos = (old_pos * params.pos_pos_coef) + (old_vel * params.pos_vel_coef) + goal_pos
-  out_vel = (old_pos * params.vel_pos_coef) + (old_vel * params.vel_vel_coef)
-
-  [out_pos, out_vel]
 end
 
 class SpringEpxeriment
