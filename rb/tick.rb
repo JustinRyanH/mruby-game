@@ -60,7 +60,32 @@ class Spring
     @vvc = 1.0
   end
 
-  def over_zero_coefficient
+  def under_one_coefficient
+    dt = FrameInput.delta_time
+
+    omega_zeta = frequency * damping
+    alpha = frequency * Math.sqrt(1 - (damping * damping))
+
+    exp_term = Math.exp(-omega_zeta * dt)
+    cos_term = Math.cos(alpha * dt)
+    sin_term = Math.sin(alpha * dt)
+
+    inv_alpha = 1.0 / alpha
+
+    exp_sin = exp_term * sin_term
+    exp_cos = exp_term * cos_term
+    exp_omega_zeta_sin_over_alpha = exp_term * omega_zeta * sin_term * inv_alpha
+
+    @ppc = exp_cos + exp_omega_zeta_sin_over_alpha
+    @pvc = exp_sin * inv_alpha
+
+    @vpc = (-exp_sin * alpha) - (omega_zeta * exp_omega_zeta_sin_over_alpha)
+    @vvc = exp_cos - exp_omega_zeta_sin_over_alpha
+  end
+
+  def over_one_coefficient
+    dt = FrameInput.delta_time
+
     za = -frequency * damping
     zb = frequency * Math.sqrt((damping * damping) - 1.0)
     z1 = za - zb
@@ -94,26 +119,9 @@ class Spring
     end
 
     if damping > 1 + epsilon
-      over_zero_coefficient
+      over_one_coefficient
     elsif damping < 1 - epsilon
-      omega_zeta = frequency * damping
-      alpha = frequency * Math.sqrt(1 - (damping * damping))
-
-      exp_term = Math.exp(-omega_zeta * dt)
-      cos_term = Math.cos(alpha * dt)
-      sin_term = Math.sin(alpha * dt)
-
-      inv_alpha = 1.0 / alpha
-
-      exp_sin = exp_term * sin_term
-      exp_cos = exp_term * cos_term
-      exp_omega_zeta_sin_over_alpha = exp_term * omega_zeta * sin_term * inv_alpha
-
-      @ppc = exp_cos + exp_omega_zeta_sin_over_alpha
-      @pvc = exp_sin * inv_alpha
-
-      @vpc = (-exp_sin * alpha) - (omega_zeta * exp_omega_zeta_sin_over_alpha)
-      @vvc = exp_cos - exp_omega_zeta_sin_over_alpha
+      under_one_coefficient
     else
       exp_term = Math.exp(-frequency * dt)
       time_exp = dt * exp_term
