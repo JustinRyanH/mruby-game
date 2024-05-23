@@ -12,8 +12,8 @@ class Spring
   attr_reader :frequency, :damping, :params
 
   def initialize(frequency, damping)
-    @frequency = frequency
-    @damping = damping
+    @frequency = [frequency, 0.0].max.to_f
+    @damping = [damping, 0.0].max.to_f
 
     @ppc = 1.0
     @pvc = 0.0
@@ -25,12 +25,12 @@ class Spring
   end
 
   def frequency=(value)
-    @frequency = value
+    @frequency = [value, 0.0].max.to_f
     update_params
   end
 
   def damping=(value)
-    @dampign = value
+    @damping = [value, 0.0].max.to_f
     update_params
   end
 
@@ -55,15 +55,12 @@ class Spring
   def setup
     dt = FrameInput.delta_time
 
-    freq = [frequency, 0.0].max.to_f
-    damp = [damping, 0.0].max.to_f
-
     epsilon = 0.0001
-    return if freq < epsilon
+    return if frequency < epsilon
 
-    if damp > 1 + epsilon
-      za = -freq * damp
-      zb = freq * Math.sqrt((damp * damp) - 1.0)
+    if damping > 1 + epsilon
+      za = -frequency * damping
+      zb = frequency * Math.sqrt((damping * damping) - 1.0)
       z1 = za - zb
       z2 = za + zb
 
@@ -83,9 +80,9 @@ class Spring
 
       @vpc = (z1e1_over_two_zb - z2e2_over_two_zb + e2) * z2
       @vvc = -z1e1_over_two_zb + z2e2_over_two_zb
-    elsif damp < 1 - epsilon
-      omega_zeta = freq * damp
-      alpha = freq * Math.sqrt(1 - (damp * damp))
+    elsif damping < 1 - epsilon
+      omega_zeta = frequency * damping
+      alpha = frequency * Math.sqrt(1 - (damping * damping))
 
       exp_term = Math.exp(-omega_zeta * dt)
       cos_term = Math.cos(alpha * dt)
@@ -103,14 +100,14 @@ class Spring
       @vpc = (-exp_sin * alpha) - (omega_zeta * exp_omega_zeta_sin_over_alpha)
       @vvc = exp_cos - exp_omega_zeta_sin_over_alpha
     else
-      exp_term = Math.exp(-freq * dt)
+      exp_term = Math.exp(-frequency * dt)
       time_exp = dt * exp_term
-      time_exp_freq = time_exp * freq
+      time_exp_freq = time_exp * frequency
 
       @ppc = time_exp_freq + exp_term
       @pvc = time_exp
 
-      @vpc = -freq * time_exp_freq
+      @vpc = -frequency * time_exp_freq
       @vvc = -time_exp_freq + exp_term
     end
   end
