@@ -141,7 +141,7 @@ class SpringEpxeriment
     width, height = FrameInput.screen_size
 
     @frequency = 20
-    @damping = 0.4
+    @damping = 0.9
 
     Draw.text(text: 'Spring Example', size: 64, pos: Vector.new(width / 2, 70), color: Color.red, halign: :center)
     Draw.text(text: "FREQ: #{@frequency} DAMP: #{@damping}", size: 48, pos: Vector.new(width / 2, 150),
@@ -161,7 +161,7 @@ class SpringEpxeriment
               color: Color.white)
     Draw.rect(pos: @spring_pos, size: Vector.new(75, 75))
 
-    @target.x = FrameInput.mouse_pos.x.clamp(@spring_min, @spring_max) if FrameInput.mouse_just_pressed?(:left)
+    @target = FrameInput.mouse_pos if FrameInput.mouse_just_pressed?(:left)
   end
 end
 
