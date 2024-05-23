@@ -2,7 +2,6 @@
 
 ## Current
 
-* Implement Spring
 * Make the character move, use a camera to follow
 * Have the character/obstacle loop in world space
 * Engine.screen returns a screen object
@@ -112,6 +111,7 @@
   - Fix: Padding is broken
   - Begins the Game
 * Click on Press?
+* Implement Spring
 ## AOR
 
 ### Hot Reload
