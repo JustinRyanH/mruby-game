@@ -136,6 +136,10 @@ end
 class SpringEpxeriment
   def tick
     width, height = FrameInput.screen_size
+
+    @frequence ||= 10
+    @damping ||= 0.5
+
     Draw.text(text: 'Spring Example', size: 64, pos: Vector.new(width / 2, 70), color: Color.red, halign: :center)
 
     @spring_pos ||= Vector.new(width / 2, height / 2)
@@ -143,7 +147,8 @@ class SpringEpxeriment
     @spring_velocity ||= Vector.new(0, 0)
     @spring_min ||= 100
     @spring_max ||= width - 100
-    @spring_pos.x, @spring_velocity.x = calc_damped_spring_motion(@spring_pos.x, @spring_velocity.x, @target_x, 10, 0.5)
+    @spring_pos.x, @spring_velocity.x = calc_damped_spring_motion(@spring_pos.x, @spring_velocity.x, @target_x,
+                                                                  @frequence, @damping)
 
     Draw.rect(pos: Vector.new(width / 2, height / 2), size: Vector.new(@spring_max - @spring_min, 8),
               color: Color.white)
