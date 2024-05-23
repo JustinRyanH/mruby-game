@@ -49,21 +49,21 @@ class Spring
   attr_reader :ppc, :pvc, :vpc, :vvc
 
   def update_params
-    setup(frequency, damping)
+    setup
   end
 
-  def setup(freq, damping)
+  def setup
     dt = FrameInput.delta_time
 
-    freq = [freq, 0.0].max.to_f
-    damping = [damping, 0.0].max.to_f
+    freq = [frequency, 0.0].max.to_f
+    damp = [damping, 0.0].max.to_f
 
     epsilon = 0.0001
     return if freq < epsilon
 
-    if damping > 1 + epsilon
-      za = -freq * damping
-      zb = freq * Math.sqrt((damping * damping) - 1.0)
+    if damp > 1 + epsilon
+      za = -freq * damp
+      zb = freq * Math.sqrt((damp * damp) - 1.0)
       z1 = za - zb
       z2 = za + zb
 
@@ -83,9 +83,9 @@ class Spring
 
       @vpc = (z1e1_over_two_zb - z2e2_over_two_zb + e2) * z2
       @vvc = -z1e1_over_two_zb + z2e2_over_two_zb
-    elsif damping < 1 - epsilon
-      omega_zeta = freq * damping
-      alpha = freq * Math.sqrt(1 - (damping * damping))
+    elsif damp < 1 - epsilon
+      omega_zeta = freq * damp
+      alpha = freq * Math.sqrt(1 - (damp * damp))
 
       exp_term = Math.exp(-omega_zeta * dt)
       cos_term = Math.cos(alpha * dt)
