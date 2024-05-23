@@ -9,17 +9,15 @@
 # $game.tick
 
 class Spring
-  attr_reader :frequency, :damping
+  attr_reader :frequency, :damping, :params
 
   def initialize(frequency, damping)
     @frequency = frequency
     @damping = damping
+    update_params
   end
 
   def motion(current_pos, current_vel, target_pos)
-    params = SpringParams.new
-    params.setup(frequency, damping)
-
     old_pos = current_pos - target_pos
     old_vel = current_vel
 
@@ -27,6 +25,13 @@ class Spring
     out_vel = (old_pos * params.vel_pos_coef) + (old_vel * params.vel_vel_coef)
 
     [out_pos, out_vel]
+  end
+
+  private
+
+  def update_params
+    @params = SpringParams.new
+    @params.setup(frequency, damping)
   end
 end
 
