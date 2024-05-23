@@ -148,20 +148,20 @@ class SpringEpxeriment
               color: Color.white, halign: :center)
 
     @spring_pos ||= Vector.new(width / 2, height / 2)
-    @target_x ||= @spring_pos.x
+    @target ||= @spring_pos.dup
     @spring_velocity ||= Vector.new(0, 0)
     @spring_min ||= 100
     @spring_max ||= width - 100
     @spring ||= Spring.new(@frequency, @damping)
     @spring.frequency = @frequency unless @frequency == @spring.frequency
     @spring.damping = @damping unless @damping == @spring.damping
-    @spring_pos.x, @spring_velocity.x = @spring.motion(@spring_pos.x, @spring_velocity.x, @target_x)
+    @spring_pos.x, @spring_velocity.x = @spring.motion(@spring_pos.x, @spring_velocity.x, @target.x)
 
     Draw.rect(pos: Vector.new(width / 2, height / 2), size: Vector.new(@spring_max - @spring_min, 8),
               color: Color.white)
     Draw.rect(pos: @spring_pos, size: Vector.new(75, 75))
 
-    @target_x = FrameInput.mouse_pos.x.clamp(@spring_min, @spring_max) if FrameInput.mouse_just_pressed?(:left)
+    @target.x = FrameInput.mouse_pos.x.clamp(@spring_min, @spring_max) if FrameInput.mouse_just_pressed?(:left)
   end
 end
 
