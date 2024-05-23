@@ -56,7 +56,13 @@ class Spring
     dt = FrameInput.delta_time
 
     epsilon = 0.0001
-    return if frequency < epsilon
+    if frequency < epsilon
+      @ppc = 1.0
+      @pvc = 0.0
+
+      @vpc = 0.0
+      @vvc = 1.0
+    end
 
     if damping > 1 + epsilon
       za = -frequency * damping
