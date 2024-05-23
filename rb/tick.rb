@@ -116,7 +116,6 @@ class Spring
   end
 end
 
-
 class SpringEpxeriment
   def tick
     width, height = FrameInput.screen_size
