@@ -45,6 +45,7 @@ class Spring
 
     @vel_pos_coef = 0.0
     @vel_vel_coef = 1.0
+    setup(frequency, damping)
 
     @params = SpringParams.new
     @params.setup(frequency, damping)
@@ -64,6 +65,69 @@ class Spring
 
   def vvc
     @params.vel_vel_coef
+  end
+
+  def setup(freq, damping)
+    dt = FrameInput.delta_time
+
+    freq = [freq, 0.0].max.to_f
+    damping = [damping, 0.0].max.to_f
+
+    epsilon = 0.0001
+    return if freq < epsilon
+
+    if damping > 1 + epsilon
+      za = -freq * damping
+      zb = freq * Math.sqrt((damping * damping) - 1.0)
+      z1 = za - zb
+      z2 = za + zb
+
+      e1 = Math.exp(z1 * dt)
+      e2 = Math.exp(z2 * dt)
+
+      inv_two_zb = 1.0 / (2.0 * zb)
+
+      e1_over_two_zb = e1 * inv_two_zb
+      e2_over_two_zb = e2 * inv_two_zb
+
+      z1e1_over_two_zb = z1 * e1_over_two_zb
+      z2e2_over_two_zb = z2 * e2_over_two_zb
+
+      @pos_pos_coef = (e1_over_two_zb * z2) - z2e2_over_two_zb + e2
+      @pos_vel_coef = -e1_over_two_zb + e2_over_two_zb
+
+      @vel_pos_coef = (z1e1_over_two_zb - z2e2_over_two_zb + e2) * z2
+      @vel_vel_coef = -z1e1_over_two_zb + z2e2_over_two_zb
+    elsif damping < 1 - epsilon
+      omega_zeta = freq * damping
+      alpha = freq * Math.sqrt(1 - (damping * damping))
+
+      exp_term = Math.exp(-omega_zeta * dt)
+      cos_term = Math.cos(alpha * dt)
+      sin_term = Math.sin(alpha * dt)
+
+      inv_alpha = 1.0 / alpha
+
+      exp_sin = exp_term * sin_term
+      exp_cos = exp_term * cos_term
+      exp_omega_zeta_sin_over_alpha = exp_term * omega_zeta * sin_term * inv_alpha
+
+      @pos_pos_coef = exp_cos + exp_omega_zeta_sin_over_alpha
+      @pos_vel_coef = exp_sin * inv_alpha
+
+      @vel_pos_coef = (-exp_sin * alpha) - (omega_zeta * exp_omega_zeta_sin_over_alpha)
+      @vel_vel_coef = exp_cos - exp_omega_zeta_sin_over_alpha
+    else
+      exp_term = Math.exp(-freq * dt)
+      time_exp = dt * exp_term
+      time_exp_freq = time_exp * freq
+
+      @pos_pos_coef = time_exp_freq + exp_term
+      @pos_vel_coef = time_exp
+
+      @vel_pos_coef = -freq * time_exp_freq
+      @vel_vel_coef = -time_exp_freq + exp_term
+    end
   end
 end
 
