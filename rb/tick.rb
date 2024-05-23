@@ -8,6 +8,19 @@
 # $game ||= Game.new
 # $game.tick
 
+class Spring
+  attr_reader :frequency, :damping
+
+  def initialize(frequency, damping)
+    @frequency = frequency
+    @damping = damping
+  end
+
+  def motion(current_pos, current_vel, target_pos)
+    calc_damped_spring_motion(current_pos, current_vel, target_pos, frequency, damping)
+  end
+end
+
 class SpringParams
   ##  /******************************************************************************
   ##  Copyright (c) 2008-2012 Ryan Juckett
@@ -137,18 +150,20 @@ class SpringEpxeriment
   def tick
     width, height = FrameInput.screen_size
 
-    @frequence ||= 10
-    @damping ||= 0.5
+    @frequency = 25
+    @damping = 0.4
 
     Draw.text(text: 'Spring Example', size: 64, pos: Vector.new(width / 2, 70), color: Color.red, halign: :center)
+    Draw.text(text: "FREQ: #{@frequency} DAMP: #{@damping}", size: 48, pos: Vector.new(width / 2, 150),
+              color: Color.white, halign: :center)
 
     @spring_pos ||= Vector.new(width / 2, height / 2)
     @target_x ||= @spring_pos.x
     @spring_velocity ||= Vector.new(0, 0)
     @spring_min ||= 100
     @spring_max ||= width - 100
-    @spring_pos.x, @spring_velocity.x = calc_damped_spring_motion(@spring_pos.x, @spring_velocity.x, @target_x,
-                                                                  @frequence, @damping)
+    @spring = Spring.new(@frequency, @damping)
+    @spring_pos.x, @spring_velocity.x = @spring.motion(@spring_pos.x, @spring_velocity.x, @target_x)
 
     Draw.rect(pos: Vector.new(width / 2, height / 2), size: Vector.new(@spring_max - @spring_min, 8),
               color: Color.white)
