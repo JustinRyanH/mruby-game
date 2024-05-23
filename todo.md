@@ -11,6 +11,7 @@
 
 ## Nice to Have
 
+* Timestamp on Hotreload Loads
 * All Draw Commands go to Draw Command Stack
 * Handle how-reload failures elegantly
 * Implement a version of lua's init for require
