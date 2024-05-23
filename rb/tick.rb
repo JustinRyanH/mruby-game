@@ -17,6 +17,16 @@ class Spring
     update_params
   end
 
+  def frequency=(value)
+    @frequency = value
+    update_params
+  end
+
+  def damping=(value)
+    @dampign = value
+    update_params
+  end
+
   def motion(current_pos, current_vel, target_pos)
     old_pos = current_pos - target_pos
     old_vel = current_vel
@@ -151,7 +161,7 @@ class SpringEpxeriment
   def tick
     width, height = FrameInput.screen_size
 
-    @frequency = 25
+    @frequency = 20
     @damping = 0.4
 
     Draw.text(text: 'Spring Example', size: 64, pos: Vector.new(width / 2, 70), color: Color.red, halign: :center)
@@ -163,7 +173,9 @@ class SpringEpxeriment
     @spring_velocity ||= Vector.new(0, 0)
     @spring_min ||= 100
     @spring_max ||= width - 100
-    @spring = Spring.new(@frequency, @damping)
+    @spring ||= Spring.new(@frequency, @damping)
+    @spring.frequency = @frequency unless @frequency == @spring.frequency
+    @spring.damping = @damping unless @damping == @spring.damping
     @spring_pos.x, @spring_velocity.x = @spring.motion(@spring_pos.x, @spring_velocity.x, @target_x)
 
     Draw.rect(pos: Vector.new(width / 2, height / 2), size: Vector.new(@spring_max - @spring_min, 8),
