@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'assets/scripts/spring'
 require 'assets/scripts/imui'
 require 'assets/scripts/objects'
 require 'assets/scripts/animation'
@@ -188,10 +189,12 @@ class GameplayLoadState
   # @param [Game] game
   def initialize(game)
     @game = game
+    @spring = Spring.new(20, 0.2)
   end
 
   def tick
-    @trans.update
+    # @trans.update
+    game.player.pos, @player_vel = @spring.motion(game.player.pos, @player_vel, game.starting_position)
     return unless FrameInput.key_just_pressed?(:space)
 
     next_state = GameplayState.new(game)
@@ -203,6 +206,7 @@ class GameplayLoadState
     game.clear_map
     create_player if game.player.nil?
     game.player.pos = game.starting_position - Vector.new(75, 0)
+    @player_vel = Vector.zero
 
     definition = DefineDistanceTransition.new(pixels_per_second: 150, ease: :elastic_out)
     @trans = ObjectTransition.new(game.player, field: :pos, transition_definition: definition,
