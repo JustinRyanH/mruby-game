@@ -155,7 +155,7 @@ class SpringEpxeriment
     @spring ||= Spring.new(@frequency, @damping)
     @spring.frequency = @frequency unless @frequency == @spring.frequency
     @spring.damping = @damping unless @damping == @spring.damping
-    @spring_pos.x, @spring_velocity.x = @spring.motion(@spring_pos.x, @spring_velocity.x, @target.x)
+    @spring_pos, @spring_velocity = @spring.motion(@spring_pos, @spring_velocity, @target)
 
     Draw.rect(pos: Vector.new(width / 2, height / 2), size: Vector.new(@spring_max - @spring_min, 8),
               color: Color.white)
