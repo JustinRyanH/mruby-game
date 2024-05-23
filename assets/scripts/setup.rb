@@ -208,10 +208,6 @@ class GameplayLoadState
     game.player.pos = game.starting_position - Vector.new(75, 0)
     @player_vel = Vector.zero
 
-    definition = DefineDistanceTransition.new(pixels_per_second: 150, ease: :elastic_out)
-    @trans = ObjectTransition.new(game.player, field: :pos, transition_definition: definition,
-                                               to: game.starting_position)
-
     width, = FrameInput.screen_size
     obs = game.random_obstcle(width)
     game.add_obstacle(obs)
