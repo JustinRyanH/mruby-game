@@ -49,10 +49,6 @@ class Spring
   attr_reader :ppc, :pvc, :vpc, :vvc
 
   def update_params
-    setup
-  end
-
-  def setup
     epsilon = 0.0001
     if frequency < epsilon
       set_near_zero_coefficient
