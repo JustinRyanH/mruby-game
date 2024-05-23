@@ -109,9 +109,21 @@ class Spring
     @vvc = -z1e1_over_two_zb + z2e2_over_two_zb
   end
 
-  def setup
+  def at_one_coefficient
     dt = FrameInput.delta_time
 
+    exp_term = Math.exp(-frequency * dt)
+    time_exp = dt * exp_term
+    time_exp_freq = time_exp * frequency
+
+    @ppc = time_exp_freq + exp_term
+    @pvc = time_exp
+
+    @vpc = -frequency * time_exp_freq
+    @vvc = -time_exp_freq + exp_term
+  end
+
+  def setup
     epsilon = 0.0001
     if frequency < epsilon
       set_near_zero_coefficient
@@ -123,15 +135,7 @@ class Spring
     elsif damping < 1 - epsilon
       under_one_coefficient
     else
-      exp_term = Math.exp(-frequency * dt)
-      time_exp = dt * exp_term
-      time_exp_freq = time_exp * frequency
-
-      @ppc = time_exp_freq + exp_term
-      @pvc = time_exp
-
-      @vpc = -frequency * time_exp_freq
-      @vvc = -time_exp_freq + exp_term
+      at_one_coefficient
     end
   end
 end
