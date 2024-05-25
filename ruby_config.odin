@@ -2089,11 +2089,6 @@ camera_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 }
 
 @(private = "file")
-camera_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	return mrb.nil_value()
-}
-
-@(private = "file")
 camera_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return mrb.nil_value()
 }
