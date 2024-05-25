@@ -108,6 +108,7 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	setup_log_class(st)
 	setup_entity_class(st)
 	setup_sprite_class(st)
+	setup_camera_class(st)
 	setup_vector_class(st)
 	setup_color_class(st)
 }
@@ -2045,9 +2046,7 @@ setup_camera_class :: proc(state: ^mrb.State) {
 	mrb.set_data_type(camera_class, .CData)
 	engine_classes.camera = camera_class
 
-	mrb.define_method(state, camera_class, "initialize", camera_new, mrb.args_req(1))
-	mrb.define_class_method(state, camra_class, "create", camera_create, mrb.args_key(2, 0))
-	mrb.define_method(state, camera_class, "id", camera_get_id, mrb.args_req(1))
+	mrb.define_method(state, camera_class, "initialize", camera_new, mrb.args_none())
 	mrb.define_method(state, camera_class, "pos=", camera_pos_set, mrb.args_req(1))
 	mrb.define_method(state, camera_class, "pos", camera_pos_get, mrb.args_none())
 	mrb.define_method(state, camera_class, "valid?", camera_is_valid, mrb.args_none())
@@ -2059,12 +2058,34 @@ setup_camera_class :: proc(state: ^mrb.State) {
 
 @(private = "file")
 camera_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	return mrb.nil_value()
-}
+	context = load_context(state)
 
-@(private = "file")
-camera_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	return mrb.nil_value()
+	KValues :: struct {
+		target:   mrb.Value,
+		offset:   mrb.Value,
+		rotation: mrb.Value,
+		zoom:     mrb.Value,
+	}
+	values: KValues
+	load_kwargs(KValues, state, &values)
+
+	i := mrb.get_data_from_value(rl.Camera2D, self)
+	if (i == nil) {
+		mrb.data_init(self, nil, &mrb_collider_type)
+		v := mrb.malloc(state, size_of(rl.Camera2D))
+		i = cast(^rl.Camera2D)v
+		mrb.data_init(self, i, &mrb_collider_type)
+	}
+	if (!mrb.undef_p(values.target) &&
+		   mrb.obj_is_kind_of(state, values.target, engine_classes.vector)) {
+		i.target = vector_from_object(state, values.target)
+	}
+	if (!mrb.undef_p(values.offset) &&
+		   mrb.obj_is_kind_of(state, values.target, engine_classes.vector)) {
+		i.offset = vector_from_object(state, values.offset)
+	}
+
+	return self
 }
 
 @(private = "file")

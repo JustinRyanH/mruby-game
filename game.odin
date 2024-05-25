@@ -53,6 +53,7 @@ Game :: struct {
 	collision_evts_t: map[ColliderHandle]CollisionTargets,
 
 	// Game Data
+	camera:           ^rl.Camera2D,
 	bg_color:         rl.Color,
 	colliders:        ColliderPool,
 	active_sounds:    ActiveSoundPool,
