@@ -70,16 +70,17 @@ get_curent_game :: proc "contextless" (state: ^mrb.State) -> mrb.Value {
 	return current
 }
 
-mrb_frame_input_type: mrb.DataType = {"FrameInput", mrb.free}
 mrb_collider_type: mrb.DataType = {"Collider", mrb.free}
-
-mrb_font_handle_type: mrb.DataType = {"Font", mrb.free}
-mrb_vector_type: mrb.DataType = {"Vector", mrb.free}
 mrb_color_type: mrb.DataType = {"Color", mrb.free}
+mrb_camera_tpye: mrb.DataType = {"Camera", mrb.free}
+mrb_font_handle_type: mrb.DataType = {"Font", mrb.free}
+mrb_frame_input_type: mrb.DataType = {"FrameInput", mrb.free}
 mrb_sprite_type: mrb.DataType = {"Sprite", mrb.free}
+mrb_vector_type: mrb.DataType = {"Vector", mrb.free}
 
 EngineRClass :: struct {
 	as:            ^mrb.RClass,
+	camera:        ^mrb.RClass,
 	collider:      ^mrb.RClass,
 	color:         ^mrb.RClass,
 	draw_module:   ^mrb.RClass,
@@ -2033,4 +2034,70 @@ sprite_destroy :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 	success := dp.remove(&g.sprites, hnd)
 	return mrb.bool_value(success)
+}
+
+//////////////////////////////
+//// Camera
+//////////////////////////////
+
+setup_camera_class :: proc(state: ^mrb.State) {
+	camera_class := mrb.define_class(state, "Camera", mrb.state_get_object_class(state))
+	mrb.set_data_type(camera_class, .CData)
+	engine_classes.camera = camera_class
+
+	mrb.define_method(state, camera_class, "initialize", camera_new, mrb.args_req(1))
+	mrb.define_class_method(state, camra_class, "create", camera_create, mrb.args_key(2, 0))
+	mrb.define_method(state, camera_class, "id", camera_get_id, mrb.args_req(1))
+	mrb.define_method(state, camera_class, "pos=", camera_pos_set, mrb.args_req(1))
+	mrb.define_method(state, camera_class, "pos", camera_pos_get, mrb.args_none())
+	mrb.define_method(state, camera_class, "valid?", camera_is_valid, mrb.args_none())
+	mrb.define_method(state, camera_class, "destroy", camera_destroy, mrb.args_none())
+
+	mrb.define_class_method(state, camera_class, "current", camera_current_get, mrb.args_none())
+	mrb.define_class_method(state, camera_class, "current=", camera_current_set, mrb.args_req(1))
+}
+
+@(private = "file")
+camera_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return mrb.nil_value()
+}
+
+@(private = "file")
+camera_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return mrb.nil_value()
+}
+
+@(private = "file")
+camera_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return mrb.nil_value()
+}
+
+@(private = "file")
+camera_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return mrb.nil_value()
+}
+
+@(private = "file")
+camera_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return mrb.nil_value()
+}
+
+@(private = "file")
+camera_is_valid :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return mrb.nil_value()
+}
+
+@(private = "file")
+camera_destroy :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return mrb.nil_value()
+}
+
+@(private = "file")
+camera_current_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return mrb.nil_value()
+}
+
+@(private = "file")
+camera_current_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return mrb.nil_value()
 }
