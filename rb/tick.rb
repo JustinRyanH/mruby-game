@@ -28,6 +28,7 @@ class TestGame
       texture: Textures.copter,
     )
     @camera = Camera.new
+    @camera.pos = Vector.new(30, 15)
   end
 end
 

@@ -2050,7 +2050,8 @@ setup_camera_class :: proc(state: ^mrb.State) {
 	mrb.define_method(state, camera_class, "initialize", camera_new, mrb.args_none())
 	mrb.define_method(state, camera_class, "pos=", camera_pos_set, mrb.args_req(1))
 	mrb.define_method(state, camera_class, "pos", camera_pos_get, mrb.args_none())
-	mrb.define_method(state, camera_class, "valid?", camera_is_valid, mrb.args_none())
+	mrb.define_method(state, camera_class, "offset=", camera_offset_set, mrb.args_req(1))
+	mrb.define_method(state, camera_class, "offset", camera_offset_get, mrb.args_none())
 	mrb.define_method(state, camera_class, "destroy", camera_destroy, mrb.args_none())
 
 	mrb.define_class_method(state, camera_class, "current", camera_current_get, mrb.args_none())
@@ -2091,16 +2092,40 @@ camera_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 camera_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	return mrb.nil_value()
+	camera := mrb.get_data_from_value(rl.Camera2D, self)^
+
+	pos := []mrb.Value {
+		mrb.float_value(state, cast(mrb.Float)camera.target.x),
+		mrb.float_value(state, cast(mrb.Float)camera.target.y),
+	}
+	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(pos))
 }
 
 @(private = "file")
 camera_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	vector_v: mrb.Value
+	mrb.get_args(state, "o", &vector_v)
+
+	target := vector_from_object(state, vector_v)
+	camera := mrb.get_data_from_value(rl.Camera2D, self)
+	camera.target = target
+
+	return mrb.nil_value()
+}
+
+
+@(private = "file")
+camera_offset_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	vector_v: mrb.Value
+	mrb.get_args(state, "o", &vector_v)
+
 	return mrb.nil_value()
 }
 
 @(private = "file")
-camera_is_valid :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+camera_offset_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return mrb.nil_value()
 }
 
