@@ -1,10 +1,11 @@
 package main
 
+import "base:runtime"
+
 import "core:fmt"
 import "core:math/rand"
 import "core:os"
 import "core:path/filepath"
-import "core:runtime"
 
 import rl "vendor:raylib"
 
