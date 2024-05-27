@@ -29,6 +29,7 @@ class TestGame
     )
     @camera = Camera.new
     @camera.pos = Vector.new(30, 15)
+    Camera.current = @camera
   end
 end
 

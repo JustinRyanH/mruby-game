@@ -2136,6 +2136,10 @@ camera_destroy :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 camera_current_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+	camera := mrb.get_data_from_value(rl.Camera2D, self)
+	g.camera = camera
+
 	return mrb.nil_value()
 }
 
