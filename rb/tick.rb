@@ -22,13 +22,13 @@ class TestGame
     width, height = FrameInput.screen_size
 
     @spr = Sprite.create(
-      pos: Vector.new(width / 2, height / 2),
+      pos: Vector.zero,
       size: Vector.new(64, 64),
       tint: Color.blunt_violet,
       texture: Textures.copter,
     )
     @camera = Camera.new
-    @camera.pos = Vector.new(30, 15)
+    @camera.pos = @spr.pos
     Camera.current = @camera
   end
 end

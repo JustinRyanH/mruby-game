@@ -130,7 +130,6 @@ game_alias_sound :: proc(game: ^Game, sh: SoundHandle) -> (ActiveSoundHandle, rl
 	ah, success := dp.add(&game.active_sounds, alias)
 	assert(success, "Failed to create a Sound Alias")
 
-
 	return ah, alias
 }
 

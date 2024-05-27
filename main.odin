@@ -1,6 +1,7 @@
 package main
 
 import "base:runtime"
+
 import "core:fmt"
 import "core:math"
 import "core:mem"
@@ -169,15 +170,20 @@ main :: proc() {
 		game_check_collisions(g)
 		game_run_code(g, tick_handle)
 
-		sprt_iter := dp.new_iter(&g.sprites)
-		for spr in dp.iter_next(&sprt_iter) {
-			if !spr.visible {continue}
-			dest: rl.Rectangle = {spr.pos.x, spr.pos.y, spr.size.x, spr.size.y}
-			asset, success := as_get_texture(&g.assets, spr.texture)
-			assert(success, "We should always have a texture here")
-			rl.DrawTexturePro(asset.texture, asset.src, dest, spr.size * 0.5, 0, spr.tint)
+		{
+			rl.BeginMode2D(g.camera^)
+			fmt.println("Camera ", g.camera)
+			defer rl.EndMode2D()
+			sprt_iter := dp.new_iter(&g.sprites)
+			for spr in dp.iter_next(&sprt_iter) {
+				if !spr.visible {continue}
+				dest: rl.Rectangle = {spr.pos.x, spr.pos.y, spr.size.x, spr.size.y}
+				asset, success := as_get_texture(&g.assets, spr.texture)
+				assert(success, "We should always have a texture here")
+				rl.DrawTexturePro(asset.texture, asset.src, dest, spr.size * 0.5, 0, spr.tint)
+			}
+			game_debug_draw(g)
 		}
-		game_debug_draw(g)
 
 		imui_draw(&g.imui)
 

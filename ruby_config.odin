@@ -2078,6 +2078,9 @@ camera_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		i = cast(^rl.Camera2D)v
 		mrb.data_init(self, i, &mrb_collider_type)
 	}
+	i.zoom = 1
+
+
 	if (!mrb.undef_p(values.target) &&
 		   mrb.obj_is_kind_of(state, values.target, engine_classes.vector)) {
 		i.target = vector_from_object(state, values.target)
@@ -2137,7 +2140,11 @@ camera_destroy :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 @(private = "file")
 camera_current_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
-	camera := mrb.get_data_from_value(rl.Camera2D, self)
+	camera_v: mrb.Value
+	mrb.get_args(state, "o", &camera_v)
+
+	camera := mrb.get_data_from_value(rl.Camera2D, camera_v)
+	fmt.println("Camera ", camera)
 	g.camera = camera
 
 	return mrb.nil_value()
