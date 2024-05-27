@@ -29,6 +29,7 @@ class TestGame
     )
     @camera = Camera.new
     @camera.pos = @spr.pos
+    @camera.offset = Vector.new(width / 2, height / 2)
     Camera.current = @camera
   end
 end

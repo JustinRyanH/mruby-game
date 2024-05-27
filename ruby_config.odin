@@ -2121,14 +2121,26 @@ camera_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 camera_offset_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	vector_v: mrb.Value
-	mrb.get_args(state, "o", &vector_v)
+	camera := mrb.get_data_from_value(rl.Camera2D, self)^
 
-	return mrb.nil_value()
+	pos := []mrb.Value {
+		mrb.float_value(state, cast(mrb.Float)camera.offset.x),
+		mrb.float_value(state, cast(mrb.Float)camera.offset.y),
+	}
+	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(pos))
 }
 
 @(private = "file")
 camera_offset_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	offset_v: mrb.Value
+	mrb.get_args(state, "o", &offset_v)
+
+	target := vector_from_object(state, offset_v)
+	camera := mrb.get_data_from_value(rl.Camera2D, self)
+	camera.offset = target
+
 	return mrb.nil_value()
 }
 
@@ -2144,7 +2156,6 @@ camera_current_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 	mrb.get_args(state, "o", &camera_v)
 
 	camera := mrb.get_data_from_value(rl.Camera2D, camera_v)
-	fmt.println("Camera ", camera)
 	g.camera = camera
 
 	return mrb.nil_value()
