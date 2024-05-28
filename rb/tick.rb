@@ -15,6 +15,8 @@ class TestGame
 
   def tick
     setup unless @started
+    @camera.pos, @camera_velocity = @spring.motion(@camera.pos, @camera_velocity, @camera_pos)
+    @camera_velocity = Vector.new(100, 0) if FrameInput.key_just_pressed?(:d)
   end
 
   def setup
@@ -29,7 +31,10 @@ class TestGame
     )
     @camera = Camera.create
     @camera.pos = @spr.pos
+    @camera_pos = @spr.pos
     @camera.offset = Vector.new(width / 2, height / 2)
+    @camera_velocity = Vector.zero
+    @spring = Spring.new(25, 0.1)
     Camera.current = @camera
   end
 end

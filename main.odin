@@ -172,7 +172,6 @@ main :: proc() {
 
 		{
 			camera := game_get_camera(g)
-			fmt.println("Camera ", camera)
 			rl.BeginMode2D(camera)
 			defer rl.EndMode2D()
 			sprt_iter := dp.new_iter(&g.sprites)

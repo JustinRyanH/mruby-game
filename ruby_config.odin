@@ -2086,7 +2086,6 @@ camera_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	assert(success, "Could not create a Camera")
 	camera.zoom = 1
 
-
 	if (!mrb.undef_p(values.target) &&
 		   mrb.obj_is_kind_of(state, values.target, engine_classes.vector)) {
 		camera.target = vector_from_object(state, values.target)
@@ -2139,7 +2138,7 @@ camera_pos_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	target := vector_from_object(state, vector_v)
 	camera := camera_from_mrb_value(state, self)
-	fmt.println("Set Camera Target", camera.target)
+	camera.target = target
 
 	return mrb.nil_value()
 }
