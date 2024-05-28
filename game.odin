@@ -31,10 +31,12 @@ Collider :: struct {
 }
 
 ColliderHandle :: distinct dp.Handle
+CameraHandle :: distinct dp.Handle
 
 ColliderPool :: dp.DataPool(128, Collider, ColliderHandle)
 SpritePool :: dp.DataPool(1024, Sprite, SpriteHandle)
 ActiveSoundPool :: dp.DataPool(32, rl.Sound, ActiveSoundHandle)
+CameraPool :: dp.DataPool(8, rl.Camera2D, CameraHandle)
 
 CollisionTargets :: [dynamic]ColliderHandle
 
@@ -54,11 +56,12 @@ Game :: struct {
 	collision_evts_t: map[ColliderHandle]CollisionTargets,
 
 	// Game Data
-	camera:           ^rl.Camera2D,
+	camera:           CameraHandle,
 	bg_color:         rl.Color,
 	colliders:        ColliderPool,
 	active_sounds:    ActiveSoundPool,
 	sprites:          SpritePool,
+	cameras:          CameraPool,
 }
 
 game_init :: proc(game: ^Game) {
@@ -79,6 +82,15 @@ game_init :: proc(game: ^Game) {
 
 game_setup_temp :: proc(game: ^Game) {
 	game.collision_evts_t = make(map[ColliderHandle]CollisionTargets, 16, context.temp_allocator)
+}
+
+game_get_camera :: proc(game: ^Game) -> rl.Camera2D {
+	if game.camera == 0 {
+		return {}
+	}
+	camera, success := dp.get(&game.cameras, game.camera)
+	assert(success, "Camera could not be found")
+	return camera
 }
 
 game_add_collision :: proc(game: ^Game, a, b: ColliderHandle) {

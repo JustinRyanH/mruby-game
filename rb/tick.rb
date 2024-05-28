@@ -27,7 +27,7 @@ class TestGame
       tint: Color.blunt_violet,
       texture: Textures.copter,
     )
-    @camera = Camera.new
+    @camera = Camera.create
     @camera.pos = @spr.pos
     @camera.offset = Vector.new(width / 2, height / 2)
     Camera.current = @camera

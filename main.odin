@@ -171,7 +171,9 @@ main :: proc() {
 		game_run_code(g, tick_handle)
 
 		{
-			rl.BeginMode2D(g.camera^)
+			camera := game_get_camera(g)
+			fmt.println("Camera ", camera)
+			rl.BeginMode2D(camera)
 			defer rl.EndMode2D()
 			sprt_iter := dp.new_iter(&g.sprites)
 			for spr in dp.iter_next(&sprt_iter) {
