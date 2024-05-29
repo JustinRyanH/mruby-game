@@ -41,7 +41,11 @@ class TestGame
 
   def tick
     setup unless @started
-    @camera.pos = @player.pos
+    @player.pos += Vector.new(200 * FrameInput.delta_time, 0) if FrameInput.key_down?(:d)
+    @player.pos -= Vector.new(200 * FrameInput.delta_time, 0) if FrameInput.key_down?(:a)
+    @player.pos += Vector.new(0, 200 * FrameInput.delta_time) if FrameInput.key_down?(:w)
+    @player.pos -= Vector.new(0, 200 * FrameInput.delta_time) if FrameInput.key_down?(:s)
+    @camera.pos.x = @player.pos.x
     @camera.update
   end
 
