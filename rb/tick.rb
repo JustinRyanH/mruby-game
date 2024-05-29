@@ -8,6 +8,32 @@ require 'assets/scripts/setup'
 # $game ||= Game.new
 # $game.tick
 
+class SpringCamera
+  attr_reader :camera, :velocity, :spring
+
+  attr_accessor :pos
+
+  def self.create(
+    pos: Vector.zero,
+    offset: Vector.new(*FrameInput.screen_size),
+    spring: Spring.new(10, 1)
+  )
+    camera = Camera.create(pos:, offset:)
+    new(camera:, pos:, spring:)
+  end
+
+  def initialize(camera:, pos:, spring:)
+    @camera = camera
+    @pos = pos
+    @velocity = Vector.zero
+    @spring = spring
+  end
+
+  def update
+    camera.pos, @velocity = spring.motion(camera.pos, velocity, @pos)
+  end
+end
+
 class TestGame
   def initialize
     @started = false
@@ -15,6 +41,8 @@ class TestGame
 
   def tick
     setup unless @started
+    @camera.pos = @player.pos
+    @camera.update
   end
 
   def setup
@@ -27,9 +55,9 @@ class TestGame
 
   def create_camera
     width, height = FrameInput.screen_size
-    offset = Vector.new(width / 2, height / 2)
-    @camera = Camera.create(pos: Vector.zero, offset:)
-    Camera.current = @camera
+    offset = Vector.new(width / 4, height / 2)
+    @camera = SpringCamera.create(pos: Vector.zero, offset:)
+    Camera.current = @camera.camera
   end
 
   def create_player
