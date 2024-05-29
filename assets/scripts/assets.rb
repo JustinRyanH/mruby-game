@@ -21,6 +21,10 @@ class Sounds
 end
 
 class Textures
+  def self.bg0
+    @bg0 ||= AssetSystem.load_texture('assets/textures/BG-0.png')
+  end
+
   def self.copter
     @copter ||= AssetSystem.load_texture('assets/textures/copter_1.png')
   end

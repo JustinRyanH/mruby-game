@@ -38,7 +38,7 @@ class EchoBat < GameObject
   def self.create(pos:)
     size = Vector.new(64, 64)
 
-    sprite = Sprite.create(pos:, size:, texture: Textures.copter, tint: Color.blunt_violet)
+    sprite = Sprite.create(pos:, size:, texture: Textures.copter, tint: Color.black)
     collider = Collider.create(pos:, size:)
 
     new(collider:, sprite:)
@@ -68,6 +68,11 @@ class TestGame
 
   def setup
     @started = true
+    width, height = FrameInput.screen_size
+    # size = Vector.new(width, height)
+    bg_size = Vector.new(1280, 720) * 2
+    Sprite.create(pos: Vector.zero, size: bg_size, texture: Textures.bg0)
+
     create_camera
     create_player
   end
