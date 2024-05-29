@@ -133,6 +133,55 @@ class Vector
   end
 end
 
+class Collider
+  # Create a Collider
+  #
+  # @param [Vector] pos
+  # @param [Vector] size
+  def self.create(pos:, size:)
+  end
+
+  # Destroys the Collider, becomes invalid
+  def destroy
+  end
+
+  # Returns the ID of the Collider
+  #
+  # @return [Integer] id
+  def id
+  end
+
+  # Returns the Collider is valid
+  #
+  # @return [Boolean]
+  def valid?
+  end
+
+  # Returns Position of the collider
+  #
+  # @return [Vector]
+  def pos
+  end
+
+  # Sets the position of the vector
+  #
+  # @param [Vector] value
+  def pos=(value)
+  end
+
+  # Gets the size
+  #
+  # @return [Vector]
+  def sizeg
+  end
+
+  # Gets the other elements the collider is colliding with
+  #
+  # @return [Set<Collider>]
+  def collisions
+  end
+end
+
 module Draw
   # Draws a Rectangle
   #
