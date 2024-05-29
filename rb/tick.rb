@@ -15,27 +15,31 @@ class TestGame
 
   def tick
     setup unless @started
-    @camera.pos, @camera_velocity = @spring.motion(@camera.pos, @camera_velocity, @camera_pos)
-    @camera_velocity = Vector.new(100, 0) if FrameInput.key_just_pressed?(:d)
   end
 
   def setup
     @started = true
-    width, height = FrameInput.screen_size
+    create_camera
+    create_player
+  end
 
-    @spr = Sprite.create(
-      pos: Vector.zero,
-      size: Vector.new(64, 64),
-      tint: Color.blunt_violet,
-      texture: Textures.copter,
-    )
-    @camera = Camera.create
-    @camera.pos = @spr.pos
-    @camera_pos = @spr.pos
-    @camera.offset = Vector.new(width / 2, height / 2)
-    @camera_velocity = Vector.zero
-    @spring = Spring.new(25, 0.1)
+  private
+
+  def create_camera
+    width, height = FrameInput.screen_size
+    offset = Vector.new(width / 2, height / 2)
+    @camera = Camera.create(pos: Vector.zero, offset:)
     Camera.current = @camera
+  end
+
+  def create_player
+    pos = Vector.zero
+    size = Vector.new(64, 64)
+
+    sprite = Sprite.create(pos:, size:, texture: Textures.copter, tint: Color.blunt_violet)
+    collider = Collider.create(pos:, size:)
+
+    @player = GameObject.new(collider:, sprite:)
   end
 end
 

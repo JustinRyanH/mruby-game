@@ -2074,7 +2074,7 @@ camera_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
 	KValues :: struct {
-		target:   mrb.Value,
+		pos:      mrb.Value,
 		offset:   mrb.Value,
 		rotation: mrb.Value,
 		zoom:     mrb.Value,
@@ -2086,12 +2086,11 @@ camera_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	assert(success, "Could not create a Camera")
 	camera.zoom = 1
 
-	if (!mrb.undef_p(values.target) &&
-		   mrb.obj_is_kind_of(state, values.target, engine_classes.vector)) {
-		camera.target = vector_from_object(state, values.target)
+	if (!mrb.undef_p(values.pos) && mrb.obj_is_kind_of(state, values.pos, engine_classes.vector)) {
+		camera.target = vector_from_object(state, values.pos)
 	}
 	if (!mrb.undef_p(values.offset) &&
-		   mrb.obj_is_kind_of(state, values.target, engine_classes.vector)) {
+		   mrb.obj_is_kind_of(state, values.offset, engine_classes.vector)) {
 		camera.offset = vector_from_object(state, values.offset)
 	}
 	if (!mrb.undef_p(values.offset) && mrb.float_p(values.zoom)) {
