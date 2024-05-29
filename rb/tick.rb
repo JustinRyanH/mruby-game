@@ -29,8 +29,27 @@ class SpringCamera
     @spring = spring
   end
 
-  def update
+  def tick
     camera.pos, @velocity = spring.motion(camera.pos, velocity, @pos)
+  end
+end
+
+class EchoBat < GameObject
+  def self.create(pos:)
+    size = Vector.new(64, 64)
+
+    sprite = Sprite.create(pos:, size:, texture: Textures.copter, tint: Color.blunt_violet)
+    collider = Collider.create(pos:, size:)
+
+    new(collider:, sprite:)
+  end
+
+  def tick
+    super
+    self.pos += Vector.new(200 * FrameInput.delta_time, 0) if FrameInput.key_down?(:d)
+    self.pos -= Vector.new(200 * FrameInput.delta_time, 0) if FrameInput.key_down?(:a)
+    self.pos -= Vector.new(0, 200 * FrameInput.delta_time) if FrameInput.key_down?(:w)
+    self.pos += Vector.new(0, 200 * FrameInput.delta_time) if FrameInput.key_down?(:s)
   end
 end
 
@@ -41,12 +60,10 @@ class TestGame
 
   def tick
     setup unless @started
-    @player.pos += Vector.new(200 * FrameInput.delta_time, 0) if FrameInput.key_down?(:d)
-    @player.pos -= Vector.new(200 * FrameInput.delta_time, 0) if FrameInput.key_down?(:a)
-    @player.pos -= Vector.new(0, 200 * FrameInput.delta_time) if FrameInput.key_down?(:w)
-    @player.pos += Vector.new(0, 200 * FrameInput.delta_time) if FrameInput.key_down?(:s)
+    @player.tick
+
     @camera.pos.x = @player.pos.x
-    @camera.update
+    @camera.tick
   end
 
   def setup
@@ -66,12 +83,8 @@ class TestGame
 
   def create_player
     pos = Vector.zero
-    size = Vector.new(64, 64)
-
-    sprite = Sprite.create(pos:, size:, texture: Textures.copter, tint: Color.blunt_violet)
-    collider = Collider.create(pos:, size:)
-
-    @player = GameObject.new(collider:, sprite:)
+    @player = EchoBat.create(pos:)
+    puts "Player: #{@player}"
   end
 end
 
