@@ -2,6 +2,7 @@
 
 ## Current
 
+* Looping Paralax Backgrounds
 * I set `left=`, ect. on bounds objects
 * Have the character/obstacle loop in world space
 * Texture Packing
