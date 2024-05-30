@@ -25,6 +25,14 @@ class Textures
     @bg0 ||= AssetSystem.load_texture('assets/textures/BG-0.png')
   end
 
+  def self.bg1
+    @bg1 ||= AssetSystem.load_texture('assets/textures/BG-1.png')
+  end
+
+  def self.bg2
+    @bg2 ||= AssetSystem.load_texture('assets/textures/BG-2.png')
+  end
+
   def self.copter
     @copter ||= AssetSystem.load_texture('assets/textures/copter_1.png')
   end

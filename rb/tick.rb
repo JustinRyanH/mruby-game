@@ -37,13 +37,13 @@ end
 class LoopingBackground
   attr_reader :size
 
-  def initialize
+  def initialize(texture:, parallax:, z_offset:)
     @size = Vector.new(1280, 720) * 1.2
     bg_pos = Vector.new(size.x, 0)
 
-    @left = Sprite.create(pos: bg_pos * -1, size:, texture: Textures.bg0, z_offset: -1)
-    @middle = Sprite.create(pos: Vector.zero, size:, texture: Textures.bg0, z_offset: -1)
-    @right = Sprite.create(pos: bg_pos, size:, texture: Textures.bg0, z_offset: -1)
+    @left = Sprite.create(pos: bg_pos * -1, size:, texture:, z_offset:, parallax:)
+    @middle = Sprite.create(pos: Vector.zero, size:, texture:, z_offset:, parallax:)
+    @right = Sprite.create(pos: bg_pos, size:, texture:, z_offset:, parallax:)
   end
 
   def tick
@@ -102,6 +102,7 @@ class TestGame
     @camera.pos.x = @player.pos.x
     @camera.tick
     @background.tick
+    @background2.tick
   end
 
   def setup
@@ -109,7 +110,9 @@ class TestGame
 
     create_camera
     create_player
-    @background = LoopingBackground.new
+    @background = LoopingBackground.new(texture: Textures.bg0, z_offset: -1, parallax: 0.9)
+    @background2 = LoopingBackground.new(texture: Textures.bg1, z_offset: -0.95, parallax: 0.8)
+    @background3 = LoopingBackground.new(texture: Textures.bg2, z_offset: -0.9, parallax: 0.7)
   end
 
   private

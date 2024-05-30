@@ -1824,6 +1824,8 @@ setup_sprite_class :: proc(state: ^mrb.State) {
 	mrb.define_method(state, sprite_class, "size", sprite_size_get, mrb.args_none())
 	mrb.define_method(state, sprite_class, "z_offset=", sprite_z_offset_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "z_offset", sprite_z_offset_get, mrb.args_none())
+	mrb.define_method(state, sprite_class, "parallax=", sprite_parallax_set, mrb.args_req(1))
+	mrb.define_method(state, sprite_class, "parallax", sprite_parallax_get, mrb.args_none())
 
 	mrb.define_method(state, sprite_class, "texture=", sprite_texture_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "texture", sprite_texture_get, mrb.args_none())
@@ -1866,6 +1868,7 @@ sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		size:     mrb.Value,
 		tint:     mrb.Value,
 		z_offset: mrb.Value,
+		parallax: mrb.Value,
 	}
 
 	values: KValues
@@ -1910,6 +1913,11 @@ sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	if !mrb.undef_p(values.z_offset) {
 		spr.z_offset = cast(f32)mrb.as_float(state, values.z_offset)
+	}
+
+
+	if !mrb.undef_p(values.parallax) {
+		spr.parallax = cast(f32)mrb.as_float(state, values.parallax)
 	}
 
 	v := mrb.int_value(state, cast(mrb.Int)handle)
@@ -2008,8 +2016,30 @@ sprite_z_offset_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Valu
 	return mrb.float_value(state, cast(mrb.Float)spr.z_offset)
 }
 
-// mrb.define_method(state, sprite_class, "z_offset=", sprite_z_offset_set, mrb.args_req(1))
-// mrb.define_method(state, sprite_class, "z_offset", sprite_z_offset_get, mrb.args_none())
+@(private = "file")
+sprite_parallax_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	parallax: mrb.Float
+	mrb.get_args(state, "f", &parallax)
+	hnd := mrb.get_data_from_value(SpriteHandle, self)^
+	spr: ^Sprite = dp.get_ptr(&g.sprites, hnd)
+
+	assert(spr != nil, fmt.tprintf("Sprite should exist: %s", hnd))
+	spr.parallax = cast(f32)parallax
+
+	return mrb.nil_value()
+}
+
+@(private = "file")
+sprite_parallax_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	spr := sprite_from_object(state, self)
+	assert(spr != nil, fmt.tprintf("Sprite should exist: %s", spr))
+
+	return mrb.float_value(state, cast(mrb.Float)spr.parallax)
+}
 
 @(private = "file")
 sprite_is_valid :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
