@@ -125,7 +125,7 @@ RenderableTexture :: struct {
 	offset:    rl.Vector2,
 	tint:      rl.Color,
 	rotation:  f32,
-	z_index:   f32,
+	z_offset:  f32,
 }
 
 renderable_from_sprint :: proc(
@@ -146,7 +146,7 @@ renderable_from_sprint :: proc(
 	out.tint = spr.tint
 	out.offset = spr.size * 0.5
 	out.rotation = 0
-	out.z_index = spr.z_index
+	out.z_offset = spr.z_offset
 
 	return out, true
 }
@@ -229,15 +229,19 @@ main :: proc() {
 			}
 			append(&todo_render, renderable)
 		}
+		slice.sort_by(
+			todo_render[:],
+			proc(i, j: RenderableTexture) -> bool {return i.z_index < j.z_index},
+		)
 
 		{
 			camera := game_get_camera(g)
 			rl.BeginMode2D(camera)
 
-
 			for renderable in todo_render {
 				renderable_texture_render(renderable)
 			}
+
 			game_debug_draw(g)
 			rl.EndMode2D()
 		}

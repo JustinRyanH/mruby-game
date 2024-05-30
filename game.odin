@@ -22,7 +22,7 @@ Sprite :: struct {
 	texture:   TextureHandle,
 	tint:      Color,
 	visible:   bool,
-	z_index:   f32,
+	z_offset:  f32,
 }
 
 Collider :: struct {

@@ -1822,6 +1822,8 @@ setup_sprite_class :: proc(state: ^mrb.State) {
 	mrb.define_method(state, sprite_class, "pos", sprite_pos_get, mrb.args_none())
 	mrb.define_method(state, sprite_class, "size=", sprite_size_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "size", sprite_size_get, mrb.args_none())
+	mrb.define_method(state, sprite_class, "z_offset=", sprite_z_offset_set, mrb.args_req(1))
+	mrb.define_method(state, sprite_class, "z_offset", sprite_z_offset_get, mrb.args_none())
 
 	mrb.define_method(state, sprite_class, "texture=", sprite_texture_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "texture", sprite_texture_get, mrb.args_none())
@@ -1834,6 +1836,15 @@ setup_sprite_class :: proc(state: ^mrb.State) {
 	mrb.define_method(state, sprite_class, "visible?", sprite_visible_get, mrb.args_none())
 	mrb.define_method(state, sprite_class, "destroy", sprite_destroy, mrb.args_none())
 }
+
+
+@(private = "file")
+sprite_from_object :: proc(state: ^mrb.State, v: mrb.Value) -> ^Sprite {
+	hnd := mrb.get_data_from_value(SpriteHandle, v)^
+	spr: ^Sprite = dp.get_ptr(&g.sprites, hnd)
+	return spr
+}
+
 
 @(private = "file")
 sprite_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
@@ -1850,10 +1861,11 @@ sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
 	KValues :: struct {
-		texture: mrb.Value,
-		pos:     mrb.Value,
-		size:    mrb.Value,
-		tint:    mrb.Value,
+		texture:  mrb.Value,
+		pos:      mrb.Value,
+		size:     mrb.Value,
+		tint:     mrb.Value,
+		z_offset: mrb.Value,
 	}
 
 	values: KValues
@@ -1896,6 +1908,10 @@ sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		spr.tint = mrb.get_data_from_value(rl.Color, values.tint)^
 	}
 
+	if !mrb.undef_p(values.z_offset) {
+		assert(mrb.float_p(values.z_offset), "Expect `z_offset:` to be a float")
+		spr.z_offset = mrb.as_float(state, values.z_offset)
+	}
 
 	v := mrb.int_value(state, cast(mrb.Int)handle)
 	return mrb.obj_new(state, engine_classes.sprite, 1, &v)
@@ -1968,6 +1984,33 @@ sprite_size_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return vector_obj_from_vec(state, spr.size)
 }
 
+@(private = "file")
+sprite_z_offset_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	offset: mrb.Float
+	mrb.get_args(state, "f", &offset)
+	hnd := mrb.get_data_from_value(SpriteHandle, self)^
+	spr: ^Sprite = dp.get_ptr(&g.sprites, hnd)
+
+	assert(spr != nil, fmt.tprintf("Sprite should exist: %s", hnd))
+	spr.z_offset = cast(f32)offset
+
+	return mrb.nil_value()
+}
+
+@(private = "file")
+sprite_z_offset_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	spr := sprite_from_object(state, self)
+	assert(spr != nil, fmt.tprintf("Sprite should exist: %s", spr))
+
+	return mrb.as_float(state, spr.z_offset)
+}
+
+// mrb.define_method(state, sprite_class, "z_offset=", sprite_z_offset_set, mrb.args_req(1))
+// mrb.define_method(state, sprite_class, "z_offset", sprite_z_offset_get, mrb.args_none())
 
 @(private = "file")
 sprite_is_valid :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
