@@ -6,6 +6,7 @@ import "core:fmt"
 import "core:math"
 import "core:mem"
 import "core:reflect"
+import "core:slice"
 import "core:strings"
 
 import rl "vendor:raylib"
@@ -117,6 +118,52 @@ game_check_collisions :: proc(game: ^Game) {
 	}
 }
 
+
+RenderableTexture :: struct {
+	texture:   rl.Texture2D,
+	src, dest: rl.Rectangle,
+	offset:    rl.Vector2,
+	tint:      rl.Color,
+	rotation:  f32,
+	z_index:   f32,
+}
+
+renderable_from_sprint :: proc(
+	game: ^Game,
+	spr: Sprite,
+) -> (
+	out: RenderableTexture,
+	success: bool,
+) {
+	asset, texture_success := as_get_texture(&game.assets, spr.texture)
+	if !texture_success {
+		return
+	}
+
+	out.texture = asset.texture
+	out.src = asset.src
+	out.dest = {spr.pos.x, spr.pos.y, spr.size.x, spr.size.y}
+	out.tint = spr.tint
+	out.offset = spr.size * 0.5
+	out.rotation = 0
+	out.z_index = spr.z_index
+
+	return out, true
+}
+
+renderable_texture_render :: proc(renderable: RenderableTexture) {
+	rl.DrawTexturePro(
+		renderable.texture,
+		renderable.src,
+		renderable.dest,
+		renderable.offset,
+		renderable.rotation,
+		renderable.tint,
+	)
+}
+
+todo_render: [dynamic]RenderableTexture
+
 g: ^Game
 main :: proc() {
 	default_allocator := context.allocator
@@ -156,6 +203,7 @@ main :: proc() {
 		defer free_all(context.temp_allocator)
 		defer mrb.incremental_gc(g.ruby)
 		defer game_handle_sounds(g)
+		todo_render = make([dynamic]RenderableTexture, 0, 1024, context.temp_allocator)
 
 		imui_begin(&g.imui)
 
@@ -170,16 +218,25 @@ main :: proc() {
 		game_check_collisions(g)
 		game_run_code(g, tick_handle)
 
+
+		sprt_iter := dp.new_iter(&g.sprites)
+		for spr in dp.iter_next(&sprt_iter) {
+			if !spr.visible {continue}
+			renderable, success := renderable_from_sprint(g, spr)
+			if (!success) {
+				rl.TraceLog(.WARNING, "Could not Render Sprite")
+				continue
+			}
+			append(&todo_render, renderable)
+		}
+
 		{
 			camera := game_get_camera(g)
 			rl.BeginMode2D(camera)
-			sprt_iter := dp.new_iter(&g.sprites)
-			for spr in dp.iter_next(&sprt_iter) {
-				if !spr.visible {continue}
-				dest: rl.Rectangle = {spr.pos.x, spr.pos.y, spr.size.x, spr.size.y}
-				asset, success := as_get_texture(&g.assets, spr.texture)
-				assert(success, "We should always have a texture here")
-				rl.DrawTexturePro(asset.texture, asset.src, dest, spr.size * 0.5, 0, spr.tint)
+
+
+			for renderable in todo_render {
+				renderable_texture_render(renderable)
 			}
 			game_debug_draw(g)
 			rl.EndMode2D()
