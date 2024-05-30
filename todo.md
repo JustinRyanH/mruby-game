@@ -2,8 +2,8 @@
 
 ## Current
 
+* I set `left=`, ect. on bounds objects
 * Have the character/obstacle loop in world space
-* Engine.screen returns a screen object
 * Texture Packing
  - Maybe using Ruby scripts
 
@@ -112,6 +112,7 @@
 * Click on Press?
 * Implement Spring
 * Make the character move, use a camera to follow
+* Engine.screen returns a screen object
 
 ## AOR
 
