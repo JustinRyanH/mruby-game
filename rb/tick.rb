@@ -54,6 +54,8 @@ class EchoBat < GameObject
 end
 
 class TestGame
+  attr_reader :bg
+
   def initialize
     @started = false
   end
@@ -70,19 +72,28 @@ class TestGame
     mouse_pos = FrameInput.mouse_pos
     world_space = Camera.current.screen_to_world(mouse_pos)
 
+    center = @bg.size * 0.5
+
+    right_vector = Vector.new(bg.right, center.y)
+    right_vector = Camera.current.world_to_screen(right_vector)
+
     screen_size = FrameInput.screen.size
     text_pos = Vector.new(screen_size.x * 0.5, screen_size.y - 80)
     Draw.text(text: "Mouse ScreenSpace: (x: #{mouse_pos.x.round(2)}, y: #{mouse_pos.y.round(2)})",
               pos: text_pos)
     Draw.text(text: "Mouse WorldSpace: (x: #{world_space.x.round(2)}, y: #{world_space.y.round(2)})",
               pos: text_pos + Vector.new(0, 30))
+    Draw.text(text: "BG.left ScreenSpace: (x: #{right_vector.x.round(2)}, y: #{right_vector.y.round(2)})",
+              pos: text_pos + Vector.new(0, 60))
   end
 
   def setup
     @started = true
     # size = Vector.new(width, height)
     bg_size = Vector.new(1280, 720) * 2
-    Sprite.create(pos: Vector.zero, size: bg_size, texture: Textures.bg0)
+    @bg = Sprite.create(pos: Vector.zero, size: bg_size, texture: Textures.bg0)
+    bg2_pos = Vector.new(bg_size.x, 0)
+    @bg2 = Sprite.create(pos: bg2_pos, size: bg_size, texture: Textures.bg0)
 
     screen = FrameInput.screen
 
