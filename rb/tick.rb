@@ -72,6 +72,9 @@ class TestGame
     bg_size = Vector.new(1280, 720) * 2
     Sprite.create(pos: Vector.zero, size: bg_size, texture: Textures.bg0)
 
+    screen = FrameInput.screen
+    puts "screen.left: #{screen.left}, screen.right: #{screen.right}, screen.top: #{screen.top}, screen.bottom: #{screen.bottom}"
+
     create_camera
     create_player
   end
