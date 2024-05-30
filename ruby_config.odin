@@ -1820,6 +1820,8 @@ setup_sprite_class :: proc(state: ^mrb.State) {
 	mrb.define_method(state, sprite_class, "id", sprite_get_id, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "pos=", sprite_pos_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "pos", sprite_pos_get, mrb.args_none())
+	mrb.define_method(state, sprite_class, "size=", sprite_size_set, mrb.args_req(1))
+	mrb.define_method(state, sprite_class, "size", sprite_size_get, mrb.args_none())
 
 	mrb.define_method(state, sprite_class, "texture=", sprite_texture_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "texture", sprite_texture_get, mrb.args_none())
@@ -1936,6 +1938,34 @@ sprite_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(positions))
+}
+
+
+@(private = "file")
+sprite_size_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	vec_v: mrb.Value
+	mrb.get_args(state, "o", &vec_v)
+	vec := vector_from_object(state, vec_v)
+	hnd := mrb.get_data_from_value(SpriteHandle, self)^
+
+	spr := dp.get_ptr(&g.sprites, hnd)
+	assert(spr != nil, fmt.tprintf("Sprite should exist: %s", hnd))
+	spr.size = vec
+
+	return mrb.nil_value()
+}
+
+@(private = "file")
+sprite_size_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	hnd := mrb.get_data_from_value(SpriteHandle, self)^
+	spr, found := dp.get(&g.sprites, hnd)
+	assert(found, fmt.tprintf("Sprite should exist: %s", hnd))
+
+	return vector_obj_from_vec(state, spr.size)
 }
 
 
