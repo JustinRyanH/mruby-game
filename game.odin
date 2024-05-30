@@ -86,7 +86,10 @@ game_setup_temp :: proc(game: ^Game) {
 
 game_get_camera :: proc(game: ^Game) -> rl.Camera2D {
 	if game.camera == 0 {
-		return {}
+		width, height := input.frame_query_dimensions(game.input)
+		camera: rl.Camera2D
+		camera.zoom = 1
+		return camera
 	}
 	camera, success := dp.get(&game.cameras, game.camera)
 	assert(success, "Camera could not be found")
