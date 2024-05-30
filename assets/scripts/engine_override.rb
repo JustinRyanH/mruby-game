@@ -92,6 +92,10 @@ Sprite.class_eval do
   end
 end
 
+Screen.class_eval do
+  include Bounds
+end
+
 class OffsetSprite < Sprite
   attr_accessor :offset
 

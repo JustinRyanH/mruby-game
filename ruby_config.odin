@@ -2210,6 +2210,7 @@ setup_screen_class :: proc(state: ^mrb.State) {
 
 	mrb.define_method(state, screen_class, "size", screen_size, mrb.args_none())
 	mrb.define_method(state, screen_class, "pos", screen_pos, mrb.args_none())
+	mrb.define_method(state, screen_class, "anchor_percentage", screen_anchor, mrb.args_none())
 }
 
 
@@ -2221,5 +2222,10 @@ screen_size :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 screen_pos :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return vector_obj_from_vec(state, Vector2{})
+}
+
+@(private = "file")
+screen_anchor :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return vector_obj_from_vec(state, Vector2{})
 }
