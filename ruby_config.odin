@@ -2219,9 +2219,9 @@ camera_screen_to_world :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.V
 	screen_space := vector_from_object(state, screen_space_v)
 
 	camera := camera_from_mrb_value(state, self)
-	world_space := rl.GetWorldToScreen2D(screen_space, camera^)
+	world_space := rl.GetScreenToWorld2D(screen_space, camera^)
 
-	return vector_obj_from_vec(state, screen_space)
+	return vector_obj_from_vec(state, world_space)
 }
 
 
@@ -2239,7 +2239,9 @@ camera_current_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 
 @(private = "file")
 camera_current_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	return mrb.nil_value()
+	camera_index := g.camera
+	mrb_index := mrb.int_value(state, cast(mrb.Int)camera_index)
+	return mrb.obj_new(state, engine_classes.camera, 1, &mrb_index)
 }
 
 
