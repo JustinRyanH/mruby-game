@@ -34,6 +34,39 @@ class SpringCamera
   end
 end
 
+class LoopingBackground
+  attr_reader :size
+
+  def initialize
+    @size = Vector.new(1280, 720) * 1.2
+    bg_pos = Vector.new(size.x, 0)
+
+    @left = Sprite.create(pos: bg_pos * -1, size:, texture: Textures.bg0)
+    @middle = Sprite.create(pos: Vector.zero, size:, texture: Textures.bg0)
+    @right = Sprite.create(pos: bg_pos, size:, texture: Textures.bg0)
+  end
+
+  def tick
+    camera_pos = Camera.current.pos
+    move_all_right if @right.inside?(camera_pos)
+    move_all_left if @left.inside?(camera_pos)
+  end
+
+  def move_all_left
+    offset = Vector.new(size.x, 0)
+    @left.pos -= offset
+    @middle.pos -= offset
+    @right.pos -= offset
+  end
+
+  def move_all_right
+    offset = Vector.new(size.x, 0)
+    @left.pos += offset
+    @middle.pos += offset
+    @right.pos += offset
+  end
+end
+
 class EchoBat < GameObject
   def self.create(pos:)
     size = Vector.new(64, 64)
@@ -68,34 +101,13 @@ class TestGame
     @camera.spring.damping = 0.8
     @camera.pos.x = @player.pos.x
     @camera.tick
-
-    mouse_pos = FrameInput.mouse_pos
-    world_space = Camera.current.screen_to_world(mouse_pos)
-
-    center = @bg.size * 0.5
-
-    right_vector = Vector.new(bg.right, center.y)
-    right_vector = Camera.current.world_to_screen(right_vector)
-
-    screen_size = FrameInput.screen.size
-    text_pos = Vector.new(screen_size.x * 0.5, screen_size.y - 80)
-    Draw.text(text: "Mouse ScreenSpace: (x: #{mouse_pos.x.round(2)}, y: #{mouse_pos.y.round(2)})",
-              pos: text_pos)
-    Draw.text(text: "Mouse WorldSpace: (x: #{world_space.x.round(2)}, y: #{world_space.y.round(2)})",
-              pos: text_pos + Vector.new(0, 30))
-    Draw.text(text: "BG.left ScreenSpace: (x: #{right_vector.x.round(2)}, y: #{right_vector.y.round(2)})",
-              pos: text_pos + Vector.new(0, 60))
+    @background.tick
   end
 
   def setup
     @started = true
-    # size = Vector.new(width, height)
-    bg_size = Vector.new(1280, 720) * 2
-    @bg = Sprite.create(pos: Vector.zero, size: bg_size, texture: Textures.bg0)
-    bg2_pos = Vector.new(bg_size.x, 0)
-    @bg2 = Sprite.create(pos: bg2_pos, size: bg_size, texture: Textures.bg0)
 
-    screen = FrameInput.screen
+    @background = LoopingBackground.new
 
     create_camera
     create_player
@@ -114,7 +126,6 @@ class TestGame
   def create_player
     pos = Vector.zero
     @player = EchoBat.create(pos:)
-    puts "Player: #{@player}"
   end
 end
 
