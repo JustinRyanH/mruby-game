@@ -2,8 +2,9 @@
 
 ## Current
 
+* Sprite has a Paralax Value
+* Sprite has a y-index
 * Looping Paralax Backgrounds
-* I set `left=`, ect. on bounds objects
 * Have the character/obstacle loop in world space
 * Texture Packing
  - Maybe using Ruby scripts
@@ -114,6 +115,8 @@
 * Implement Spring
 * Make the character move, use a camera to follow
 * Engine.screen returns a screen object
+* Looping Backgrounds
+* I set `left=`, ect. on bounds objects
 
 ## AOR
 
