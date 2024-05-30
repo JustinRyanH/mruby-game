@@ -2,9 +2,7 @@
 
 ## Current
 
-* Sprite has a Paralax Value
-* Sprite has a y-index
-* Looping Paralax Backgrounds
+* Fix: Smart Parallax  Looping
 * Have the character/obstacle loop in world space
 * Texture Packing
  - Maybe using Ruby scripts
@@ -117,6 +115,9 @@
 * Engine.screen returns a screen object
 * Looping Backgrounds
 * I set `left=`, ect. on bounds objects
+* Sprite has a Paralax Value
+* Sprite has a y-index
+* Looping Paralax Backgrounds
 
 ## AOR
 
