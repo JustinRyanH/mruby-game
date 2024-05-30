@@ -2049,6 +2049,7 @@ sprite_destroy :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 //// Camera
 //////////////////////////////
 
+// TODO: Implement Camera Valid?
 setup_camera_class :: proc(state: ^mrb.State) {
 	camera_class := mrb.define_class(state, "Camera", mrb.state_get_object_class(state))
 	mrb.set_data_type(camera_class, .CData)
@@ -2061,6 +2062,20 @@ setup_camera_class :: proc(state: ^mrb.State) {
 	mrb.define_method(state, camera_class, "offset=", camera_offset_set, mrb.args_req(1))
 	mrb.define_method(state, camera_class, "offset", camera_offset_get, mrb.args_none())
 	mrb.define_method(state, camera_class, "destroy", camera_destroy, mrb.args_none())
+	mrb.define_method(
+		state,
+		camera_class,
+		"world_to_screen",
+		camera_world_to_screen,
+		mrb.args_req(1),
+	)
+	mrb.define_method(
+		state,
+		camera_class,
+		"screen_to_world",
+		camera_screen_to_world,
+		mrb.args_req(1),
+	)
 
 	mrb.define_class_method(state, camera_class, "current", camera_current_get, mrb.args_none())
 	mrb.define_class_method(state, camera_class, "current=", camera_current_set, mrb.args_req(1))
@@ -2177,10 +2192,38 @@ camera_offset_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 	return mrb.nil_value()
 }
 
+// TODO: Implement Camera Destroy
 @(private = "file")
 camera_destroy :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return mrb.nil_value()
 }
+
+@(private = "file")
+camera_world_to_screen :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+	world_space_v: mrb.Value
+	mrb.get_args(state, "o", &world_space_v)
+	world_space := vector_from_object(state, world_space_v)
+
+	camera := camera_from_mrb_value(state, self)
+	screen_space := rl.GetWorldToScreen2D(world_space, camera^)
+
+	return vector_obj_from_vec(state, screen_space)
+}
+
+@(private = "file")
+camera_screen_to_world :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+	screen_space_v: mrb.Value
+	mrb.get_args(state, "o", &screen_space_v)
+	screen_space := vector_from_object(state, screen_space_v)
+
+	camera := camera_from_mrb_value(state, self)
+	world_space := rl.GetWorldToScreen2D(screen_space, camera^)
+
+	return vector_obj_from_vec(state, screen_space)
+}
+
 
 @(private = "file")
 camera_current_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
