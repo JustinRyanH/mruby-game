@@ -1909,8 +1909,7 @@ sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	if !mrb.undef_p(values.z_offset) {
-		assert(mrb.float_p(values.z_offset), "Expect `z_offset:` to be a float")
-		spr.z_offset = mrb.as_float(state, values.z_offset)
+		spr.z_offset = cast(f32)mrb.as_float(state, values.z_offset)
 	}
 
 	v := mrb.int_value(state, cast(mrb.Int)handle)
@@ -2006,7 +2005,7 @@ sprite_z_offset_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Valu
 	spr := sprite_from_object(state, self)
 	assert(spr != nil, fmt.tprintf("Sprite should exist: %s", spr))
 
-	return mrb.as_float(state, spr.z_offset)
+	return mrb.float_value(state, cast(mrb.Float)spr.z_offset)
 }
 
 // mrb.define_method(state, sprite_class, "z_offset=", sprite_z_offset_set, mrb.args_req(1))

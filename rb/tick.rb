@@ -41,9 +41,9 @@ class LoopingBackground
     @size = Vector.new(1280, 720) * 1.2
     bg_pos = Vector.new(size.x, 0)
 
-    @left = Sprite.create(pos: bg_pos * -1, size:, texture: Textures.bg0)
-    @middle = Sprite.create(pos: Vector.zero, size:, texture: Textures.bg0)
-    @right = Sprite.create(pos: bg_pos, size:, texture: Textures.bg0)
+    @left = Sprite.create(pos: bg_pos * -1, size:, texture: Textures.bg0, z_offset: -1)
+    @middle = Sprite.create(pos: Vector.zero, size:, texture: Textures.bg0, z_offset: -1)
+    @right = Sprite.create(pos: bg_pos, size:, texture: Textures.bg0, z_offset: -1)
   end
 
   def tick
@@ -107,10 +107,9 @@ class TestGame
   def setup
     @started = true
 
-    @background = LoopingBackground.new
-
     create_camera
     create_player
+    @background = LoopingBackground.new
   end
 
   private

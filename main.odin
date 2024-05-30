@@ -231,7 +231,7 @@ main :: proc() {
 		}
 		slice.sort_by(
 			todo_render[:],
-			proc(i, j: RenderableTexture) -> bool {return i.z_index < j.z_index},
+			proc(i, j: RenderableTexture) -> bool {return i.z_offset < j.z_offset},
 		)
 
 		{
