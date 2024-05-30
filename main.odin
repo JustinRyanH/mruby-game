@@ -172,9 +172,7 @@ main :: proc() {
 
 		{
 			camera := game_get_camera(g)
-			if camera != {} {
-				rl.BeginMode2D(camera)
-			}
+			rl.BeginMode2D(camera)
 			sprt_iter := dp.new_iter(&g.sprites)
 			for spr in dp.iter_next(&sprt_iter) {
 				if !spr.visible {continue}
@@ -184,9 +182,7 @@ main :: proc() {
 				rl.DrawTexturePro(asset.texture, asset.src, dest, spr.size * 0.5, 0, spr.tint)
 			}
 			game_debug_draw(g)
-			if camera != {} {
-				rl.EndMode2D()
-			}
+			rl.EndMode2D()
 		}
 
 		imui_draw(&g.imui)
