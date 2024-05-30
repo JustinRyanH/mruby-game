@@ -93,6 +93,7 @@ EngineRClass :: struct {
 	sprite:        ^mrb.RClass,
 	texture_asset: ^mrb.RClass,
 	vector:        ^mrb.RClass,
+	screen:        ^mrb.RClass,
 }
 
 engine_classes: EngineRClass
@@ -110,6 +111,7 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	setup_entity_class(st)
 	setup_sprite_class(st)
 	setup_camera_class(st)
+	setup_screen_class(st)
 	setup_vector_class(st)
 	setup_color_class(st)
 }
@@ -171,6 +173,7 @@ setup_input :: proc(st: ^mrb.State) {
 		frame_input_was_down,
 		mrb.args_req(1),
 	)
+	mrb.define_class_method(st, frame_class, "screen", frame_input_screen, mrb.args_none())
 	mrb.define_class_method(
 		st,
 		frame_class,
@@ -282,6 +285,10 @@ sym_to_mouse_button :: proc(state: ^mrb.State) -> (btn: input.MouseButton, succe
 	}
 
 	return
+}
+@(private = "file")
+frame_input_screen :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return mrb.obj_new(state, engine_classes.screen, 0, nil)
 }
 
 @(private = "file")
@@ -2190,4 +2197,29 @@ camera_current_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 @(private = "file")
 camera_current_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return mrb.nil_value()
+}
+
+
+//////////////////////////////
+//// Screen
+//////////////////////////////
+
+setup_screen_class :: proc(state: ^mrb.State) {
+	screen_class := mrb.define_class(state, "Screen", mrb.state_get_object_class(state))
+	engine_classes.screen = screen_class
+
+	mrb.define_method(state, screen_class, "size", screen_size, mrb.args_none())
+	mrb.define_method(state, screen_class, "pos", screen_pos, mrb.args_none())
+}
+
+
+@(private = "file")
+screen_size :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	width, height := input.frame_query_dimensions(g.input)
+	return vector_obj_from_vec(state, Vector2{width, height})
+}
+
+@(private = "file")
+screen_pos :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return vector_obj_from_vec(state, Vector2{})
 }

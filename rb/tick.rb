@@ -68,7 +68,6 @@ class TestGame
 
   def setup
     @started = true
-    width, height = FrameInput.screen_size
     # size = Vector.new(width, height)
     bg_size = Vector.new(1280, 720) * 2
     Sprite.create(pos: Vector.zero, size: bg_size, texture: Textures.bg0)
@@ -80,8 +79,9 @@ class TestGame
   private
 
   def create_camera
-    width, height = FrameInput.screen_size
-    offset = Vector.new(width / 4, height / 2)
+    offset = FrameInput.screen.size
+    offset.x *= 0.25
+    offset.y *= 0.5
     @camera = SpringCamera.create(pos: Vector.zero, offset:)
     Camera.current = @camera.camera
   end
