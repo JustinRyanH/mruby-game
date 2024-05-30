@@ -140,9 +140,11 @@ renderable_from_sprint :: proc(
 		return
 	}
 
+	p_offset := game_parallax_offset(game, spr.parallax)
+
 	out.texture = asset.texture
 	out.src = asset.src
-	out.dest = {spr.pos.x, spr.pos.y, spr.size.x, spr.size.y}
+	out.dest = {spr.pos.x + p_offset.x, spr.pos.y + p_offset.y, spr.size.x, spr.size.y}
 	out.tint = spr.tint
 	out.offset = spr.size * 0.5
 	out.rotation = 0

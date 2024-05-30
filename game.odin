@@ -18,11 +18,11 @@ ActiveSoundHandle :: distinct dp.Handle
 SpriteHandle :: distinct dp.Handle
 
 Sprite :: struct {
-	pos, size: Vector2,
-	texture:   TextureHandle,
-	tint:      Color,
-	visible:   bool,
-	z_offset:  f32,
+	pos, size:          Vector2,
+	texture:            TextureHandle,
+	tint:               Color,
+	visible:            bool,
+	z_offset, parallax: f32,
 }
 
 Collider :: struct {
@@ -156,4 +156,10 @@ game_handle_sounds :: proc(game: ^Game) {
 			dp.remove(&game.active_sounds, hndle)
 		}
 	}
+}
+
+game_parallax_offset :: proc(game: ^Game, parallax: f32) -> Vector2 {
+	camera := game_get_camera(game)
+	camera_pos := rl.GetScreenToWorld2D(camera.offset, camera)
+	return camera_pos * parallax
 }
