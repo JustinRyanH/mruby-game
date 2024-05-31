@@ -1159,7 +1159,7 @@ draw_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	// TODO: I can totally do this with generics and reflection
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
@@ -1388,7 +1388,7 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 		font: mrb.Value,
 	}
 
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "font"),
@@ -1826,6 +1826,13 @@ setup_sprite_class :: proc(state: ^mrb.State) {
 	mrb.define_method(state, sprite_class, "z_offset", sprite_z_offset_get, mrb.args_none())
 	mrb.define_method(state, sprite_class, "parallax=", sprite_parallax_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "parallax", sprite_parallax_get, mrb.args_none())
+	mrb.define_method(
+		state,
+		sprite_class,
+		"parallax_pos",
+		sprite_parallax_pos_get,
+		mrb.args_none(),
+	)
 
 	mrb.define_method(state, sprite_class, "texture=", sprite_texture_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "texture", sprite_texture_get, mrb.args_none())
@@ -2029,6 +2036,19 @@ sprite_parallax_set :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Valu
 	spr.parallax = cast(f32)parallax
 
 	return mrb.nil_value()
+}
+
+
+@(private = "file")
+sprite_parallax_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	spr := sprite_from_object(state, self)
+	assert(spr != nil, fmt.tprintf("Sprite should exist: %s", spr))
+	p_offset := game_parallax_offset(g, spr.parallax)
+	parallax_pos := spr.pos + p_offset
+
+	return vector_obj_from_vec(state, parallax_pos)
 }
 
 @(private = "file")

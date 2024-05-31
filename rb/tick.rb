@@ -35,7 +35,7 @@ class SpringCamera
 end
 
 class LoopingBackground
-  attr_reader :size
+  attr_reader :size, :left, :middle, :right
 
   def initialize(texture:, parallax:, z_offset:)
     @size = Vector.new(1280, 720) * 1.2
@@ -48,8 +48,8 @@ class LoopingBackground
 
   def tick
     camera_pos = Camera.current.pos
-    move_all_right if @right.inside?(camera_pos)
-    move_all_left if @left.inside?(camera_pos)
+    move_all_right if @right.parallax_bounds.inside?(camera_pos)
+    move_all_left if @left.parallax_bounds.inside?(camera_pos)
   end
 
   def move_all_left
@@ -103,6 +103,7 @@ class TestGame
     @camera.tick
     @background.tick
     @background2.tick
+    @background3.tick
   end
 
   def setup

@@ -90,6 +90,10 @@ Sprite.class_eval do
   def inspect
     { name: 'Sprite', id: }
   end
+
+  def parallax_bounds(pos = parallax_pos)
+    Rectangle.new(pos:, size:)
+  end
 end
 
 Screen.class_eval do
