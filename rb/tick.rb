@@ -8,6 +8,8 @@ require 'assets/scripts/setup'
 # $game ||= Game.new
 # $game.tick
 
+GRAVITY = 100
+
 class SpringCamera
   attr_reader :camera, :velocity, :spring
 
@@ -68,26 +70,41 @@ class LoopingBackground
 end
 
 class EchoBat < GameObject
-  def self.create(pos:)
+  attr_reader :base_speed, :velocity
+
+  def self.create(pos:, base_speed:)
     size = Vector.new(64, 64)
 
     sprite = Sprite.create(pos:, size:, texture: Textures.copter, tint: Color.black)
     collider = Collider.create(pos:, size:)
 
-    new(collider:, sprite:)
+    new(collider:, sprite:, base_speed:)
+  end
+
+  def initialize(base_speed:, **)
+    super(**)
+    @base_speed = base_speed
+    @velocity = Vector.new(base_speed, GRAVITY)
   end
 
   def tick
     super
-    self.pos += Vector.new(200 * FrameInput.delta_time, 0) if FrameInput.key_down?(:d)
-    self.pos -= Vector.new(200 * FrameInput.delta_time, 0) if FrameInput.key_down?(:a)
-    self.pos -= Vector.new(0, 200 * FrameInput.delta_time) if FrameInput.key_down?(:w)
-    self.pos += Vector.new(0, 200 * FrameInput.delta_time) if FrameInput.key_down?(:s)
+    @velocity.x = base_speed
+    @velocity.y += GRAVITY * dt
+    @velocity.y = @velocity.y.clamp(-200, GRAVITY)
+    if FrameInput.key_down?(:a)
+      @velocity.x = base_speed * 0.2
+      @velocity.y = GRAVITY * 1.5
+    end
+
+    @velocity.y -= 100 if FrameInput.key_just_pressed?(:space)
+
+    self.pos += @velocity * FrameInput.delta_time
   end
 end
 
 class TestGame
-  attr_reader :bg
+  attr_reader :backgrounds
 
   def initialize
     @started = false
@@ -101,9 +118,7 @@ class TestGame
     @camera.spring.damping = 0.8
     @camera.pos.x = @player.pos.x
     @camera.tick
-    @background.tick
-    @background2.tick
-    @background3.tick
+    backgrounds.each(&:tick)
   end
 
   def setup
@@ -111,9 +126,10 @@ class TestGame
 
     create_camera
     create_player
-    @background = LoopingBackground.new(texture: Textures.bg0, z_offset: -1, parallax: 0.9)
-    @background2 = LoopingBackground.new(texture: Textures.bg1, z_offset: -0.95, parallax: 0.8)
-    @background3 = LoopingBackground.new(texture: Textures.bg2, z_offset: -0.9, parallax: 0.7)
+    @backgrounds = [
+      LoopingBackground.new(texture: Textures.bg0, z_offset: -1, parallax: 0.9),
+      LoopingBackground.new(texture: Textures.bg1, z_offset: -0.95, parallax: 0.8),
+    ]
   end
 
   private
@@ -128,7 +144,7 @@ class TestGame
 
   def create_player
     pos = Vector.zero
-    @player = EchoBat.create(pos:)
+    @player = EchoBat.create(pos:, base_speed: 300)
   end
 end
 
