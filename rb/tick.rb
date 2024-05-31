@@ -91,11 +91,16 @@ class EchoBat < GameObject
     super
     @velocity.x = base_speed
     @velocity.y += GRAVITY * dt
-    @velocity.y = @velocity.y.clamp(-200, GRAVITY)
     if FrameInput.key_down?(:a)
       @velocity.x = base_speed * 0.2
       @velocity.y = GRAVITY * 1.5
     end
+    @velocity.y = if FrameInput.key_down?(:s)
+                    @velocity.y += 10
+                    @velocity.y.clamp(-200, GRAVITY * 4)
+                  else
+                    @velocity.y.clamp(-200, GRAVITY)
+                  end
 
     @velocity.y -= 100 if FrameInput.key_just_pressed?(:space)
 
@@ -113,6 +118,7 @@ class TestGame
   def tick
     setup unless @started
     @player.tick
+    puts @player.pos.inspect if @player.pos.x % 1000 == 0
 
     @camera.spring.frequency = 6
     @camera.spring.damping = 0.8
