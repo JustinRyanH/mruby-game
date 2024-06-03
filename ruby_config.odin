@@ -294,7 +294,7 @@ frame_input_screen :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 @(private = "file")
 frame_input_screen_size :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	width, height := input.frame_query_dimensions(g.input)
-	mrb_width, mrb_height := cast(f64)width, cast(f64)height
+	mrb_width, mrb_height := cast(mrb.Float)width, cast(mrb.Float)height
 	return mrb.assoc_new(
 		state,
 		mrb.float_value(state, mrb_width),
@@ -327,7 +327,7 @@ frame_input_random_float :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb
 			high,
 		)
 	}
-	v := rand.float64_range(cast(f64)low, cast(f64)high, &g.rand)
+	v := rand.float32_range(cast(mrb.Float)low, cast(mrb.Float)high, &g.rand)
 
 	return mrb.float_value(state, v)
 }
@@ -795,8 +795,8 @@ vector_scale :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	v := mrb.get_data_from_value(Vector2, self)
 	new_v := [2]mrb.Value {
-		mrb.float_value(state, cast(f64)v.x * scale),
-		mrb.float_value(state, cast(f64)v.y * scale),
+		mrb.float_value(state, cast(mrb.Float)v.x * scale),
+		mrb.float_value(state, cast(mrb.Float)v.y * scale),
 	}
 
 
@@ -819,8 +819,8 @@ vector_lerp :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	c := math.lerp(a, b, cast(f32)t)
 	values := []mrb.Value {
-		mrb.float_value(state, cast(f64)c.x),
-		mrb.float_value(state, cast(f64)c.y),
+		mrb.float_value(state, cast(mrb.Float)c.x),
+		mrb.float_value(state, cast(mrb.Float)c.y),
 	}
 
 	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(values))
@@ -860,8 +860,8 @@ vector_add :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	c := a^ + b^
 	values := []mrb.Value {
-		mrb.float_value(state, cast(f64)c.x),
-		mrb.float_value(state, cast(f64)c.y),
+		mrb.float_value(state, cast(mrb.Float)c.x),
+		mrb.float_value(state, cast(mrb.Float)c.y),
 	}
 
 	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(values))
@@ -882,8 +882,8 @@ vector_minus :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	c := a^ - b^
 	values := []mrb.Value {
-		mrb.float_value(state, cast(f64)c.x),
-		mrb.float_value(state, cast(f64)c.y),
+		mrb.float_value(state, cast(mrb.Float)c.x),
+		mrb.float_value(state, cast(mrb.Float)c.y),
 	}
 
 	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(values))
@@ -899,8 +899,8 @@ vector_normalize :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 
 	values := []mrb.Value {
-		mrb.float_value(state, cast(f64)new.x),
-		mrb.float_value(state, cast(f64)new.y),
+		mrb.float_value(state, cast(mrb.Float)new.x),
+		mrb.float_value(state, cast(mrb.Float)new.y),
 	}
 
 	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(values))

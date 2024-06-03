@@ -13,7 +13,7 @@ when ODIN_OS == .Darwin {
 
 Int :: int
 UInt :: uint
-Float :: f64
+Float :: f32
 
 RBasic :: struct {}
 RFloat :: struct {}

@@ -2,7 +2,6 @@
 
 ## Current
 
-* Fix: Smart Parallax  Looping
 * Have the character/obstacle loop in world space
 * Texture Packing
  - Maybe using Ruby scripts
@@ -118,6 +117,7 @@
 * Sprite has a Paralax Value
 * Sprite has a y-index
 * Looping Paralax Backgrounds
+* Fix: Smart Parallax  Looping
 
 ## AOR
 
