@@ -3,7 +3,7 @@ package main
 import "base:runtime"
 
 import "core:fmt"
-import "core:math"
+import math "core:math/linalg"
 import "core:mem"
 import "core:reflect"
 import "core:slice"
@@ -141,10 +141,11 @@ renderable_from_sprint :: proc(
 	}
 
 	p_offset := game_parallax_offset(game, spr.parallax)
+	new_pos := spr.pos + p_offset
 
 	out.texture = asset.texture
 	out.src = asset.src
-	out.dest = {spr.pos.x + p_offset.x, spr.pos.y + p_offset.y, spr.size.x, spr.size.y}
+	out.dest = {new_pos.x, new_pos.y, spr.size.x, spr.size.y}
 	out.tint = spr.tint
 	out.offset = spr.size * 0.5
 	out.rotation = 0
@@ -219,7 +220,6 @@ main :: proc() {
 
 		game_check_collisions(g)
 		game_run_code(g, tick_handle)
-
 
 		sprt_iter := dp.new_iter(&g.sprites)
 		for spr in dp.iter_next(&sprt_iter) {
