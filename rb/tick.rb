@@ -118,7 +118,7 @@ class TestGame
   def tick
     setup unless @started
     @player.tick
-    puts @player.pos.inspect if @player.pos.x % 1000 == 0
+    puts @player.pos.inspect if (@player.pos.x % 1000).zero?
 
     @camera.spring.frequency = 6
     @camera.spring.damping = 0.8
