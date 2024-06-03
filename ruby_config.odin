@@ -861,6 +861,7 @@ vector_add :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	b := mrb.get_data_from_value(Vector2, other)
 
 	c := a^ + b^
+
 	values := []mrb.Value {
 		mrb.float_value(state, cast(mrb.Float)c.x),
 		mrb.float_value(state, cast(mrb.Float)c.y),
@@ -1990,8 +1991,8 @@ sprite_pos_get :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	assert(found, fmt.tprintf("Sprite should exist: %s", hnd))
 
 	positions := []mrb.Value {
-		mrb.int_value(state, cast(mrb.Int)spr.pos.x),
-		mrb.int_value(state, cast(mrb.Int)spr.pos.y),
+		mrb.float_value(state, cast(mrb.Float)spr.pos.x),
+		mrb.float_value(state, cast(mrb.Float)spr.pos.y),
 	}
 
 	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(positions))
