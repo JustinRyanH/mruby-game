@@ -8,6 +8,8 @@ Compile with these GEMs. It is a reduce version of the GBA mruby
 build system.
 
 ``` ruby
+  conf.cc.defines << 'MRB_USE_FLOAT32'
+
   conf.gem core: 'mruby-metaprog'
   conf.gem core: 'mruby-pack'
   conf.gem core: 'mruby-sprintf'
