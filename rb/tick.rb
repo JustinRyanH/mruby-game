@@ -118,7 +118,6 @@ class TestGame
   def tick
     setup unless @started
     @player.tick
-    puts @player.pos.inspect if (@player.pos.x % 1000).zero?
 
     @camera.spring.frequency = 6
     @camera.spring.damping = 0.8
@@ -134,7 +133,7 @@ class TestGame
     create_player
     @backgrounds = [
       LoopingBackground.new(texture: Textures.bg0, z_offset: -1, parallax: 0.9),
-      LoopingBackground.new(texture: Textures.bg1, z_offset: -0.95, parallax: 0.8),
+      LoopingBackground.new(texture: Textures.bg1, z_offset: -0.95, parallax: 0.85),
     ]
   end
 
