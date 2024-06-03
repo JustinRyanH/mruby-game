@@ -701,6 +701,7 @@ setup_vector_class :: proc(st: ^mrb.State) {
 	mrb.define_method(st, vector_class, "angle_between", vector_angle_between, mrb.args_req(1))
 	mrb.define_method(st, vector_class, "length", vector_length, mrb.args_none())
 	mrb.define_method(st, vector_class, "normalize", vector_normalize, mrb.args_none())
+	mrb.define_method(st, vector_class, "floor", vector_floor, mrb.args_none())
 	mrb.define_method(st, vector_class, "dup", vector_dup, mrb.args_none())
 	engine_classes.vector = vector_class
 }
@@ -905,6 +906,19 @@ vector_normalize :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(values))
 }
+
+@(private = "file")
+vector_floor :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	old := mrb.get_data_from_value(rl.Vector2, self)
+	new := math.floor(old^)
+
+	old^ = new
+
+	return self
+}
+
 
 @(private = "file")
 vector_angle :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
