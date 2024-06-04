@@ -202,6 +202,7 @@ struct stbrp_context
 //     IMPLEMENTATION SECTION
 //
 
+#define STB_RECT_PACK_IMPLEMENTATION
 #ifdef STB_RECT_PACK_IMPLEMENTATION
 #ifndef STBRP_SORT
 #include <stdlib.h>

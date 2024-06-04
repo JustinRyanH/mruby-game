@@ -4,7 +4,7 @@ RectPackContext :: struct {
 	width:       i32,
 	height:      i32,
 	alignment:   i32,
-	init_mode:   i32,
+	has_init:    bool,
 	heuristic:   i32,
 	num_nodes:   i32,
 	active_head: ^RectPackNode,
@@ -24,6 +24,11 @@ RectPackRect :: struct {
 }
 
 RectPackCoord :: i32
+
+RectPackHeuristic :: enum {
+	Skyline_BL_SortHeight = 0,
+	Skyline_BF_SortHeight,
+}
 
 // Assign packed locations to rectangles. The rectangles are of type
 // 'stbrp_rect' defined below, stored in the array 'rects', and there
@@ -51,3 +56,39 @@ RectPackCoord :: i32
 rp_pack_rects :: proc(ctx: ^RectPackContext, rects: [^]RectPackRect, num_rects: i32) -> i32 {
 	return 0
 }
+
+// Initialize a rectangle packer to:
+//    pack a rectangle that is 'width' by 'height' in dimensions
+//    using temporary storage provided by the array 'nodes', which is 'num_nodes' long
+//
+// You must call this function every time you start packing into a new target.
+//
+// There is no "shutdown" function. The 'nodes' memory must stay valid for
+// the following stbrp_pack_rects() call (or calls), but can be freed after
+// the call (or calls) finish.
+//
+// Note: to guarantee best results, either:
+//       1. make sure 'num_nodes' >= 'width'
+//   or  2. call stbrp_allow_out_of_mem() defined below with 'allow_out_of_mem = 1'
+//
+// If you don't do either of the above things, widths will be quantized to multiples
+// of small integers to guarantee the algorithm doesn't run out of temporary storage.
+//
+// If you do #2, then the non-quantized algorithm will be used, but the algorithm
+// may run out of temporary storage and be unable to pack some rectangles.
+rp_init_target :: proc(
+	ctx: ^RectPackContext,
+	width, height: int,
+	nodes: [^]RectPackContext,
+	num_nodes: i32,
+) {}
+
+// Optionally call this function after init but before doing any packing to
+// change the handling of the out-of-temp-memory scenario, described above.
+// If you call init again, this will be reset to the default (false).
+rp_setup_allow_out_of_mem :: proc(ctx: ^RectPackContext, allow_oom: bool) {}
+
+// Optionally select which packing heuristic the library should use. Different
+// heuristics will produce better/worse results for different data sets.
+// If you call init again, this will be reset to the default.
+rp_setup_heuristic :: proc(ctx: ^RectPackContext, heuristic: RectPackHeuristic) {}
