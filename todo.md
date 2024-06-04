@@ -2,9 +2,7 @@
 
 ## Current
 
-* Have the character/obstacle loop in world space
 * Texture Packing
- - Maybe using Ruby scripts
 
 ## Nice to Have
 
@@ -25,6 +23,7 @@
 * Game Start Flashier
   - Have all of the elements come onto the screen sft
 * add `require_relative`
+* Have the character/obstacle loop in world space
 * Swap out to use Odin log context
 * Implement Debug Tooling
 * Fix windows floating point position errors
