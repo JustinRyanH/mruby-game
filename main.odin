@@ -15,6 +15,8 @@ import dp "./data_pool"
 import "./input"
 import mrb "./mruby"
 
+GAME_DEV :: #config(GAME_DEV, true)
+
 Vector2 :: rl.Vector2
 Color :: rl.Color
 
@@ -192,6 +194,11 @@ main :: proc() {
 
 	rl.InitWindow(1280, 800, "Odin-Ruby Game Demo")
 	defer rl.CloseWindow()
+
+	when GAME_DEV {
+		// TODO: Clean this up on release
+		rl.SetWindowMonitor(1)
+	}
 
 	rl.InitAudioDevice()
 	defer rl.CloseAudioDevice()
