@@ -1,5 +1,7 @@
 package main
 
+import "core:sort"
+
 RectPackContext :: struct {
 	width:       i32,
 	height:      i32,
@@ -11,6 +13,8 @@ RectPackContext :: struct {
 	free_head:   ^RectPackNode,
 	extra:       [2]RectPackNode,
 }
+
+STBRP__MAXVAL :: 0x7fffffff
 
 RectPackNode :: struct {
 	x, y: RectPackCoord,
@@ -25,7 +29,8 @@ RectPackRect :: struct {
 
 RectPackCoord :: i32
 
-RectPackHeuristic :: enum {
+RectPackHeuristic :: enum i32 {
+	Skyline_default = 0,
 	Skyline_BL_SortHeight = 0,
 	Skyline_BF_SortHeight,
 }
@@ -53,7 +58,68 @@ RectPackHeuristic :: enum {
 //
 // The function returns 1 if all of the rectangles were successfully
 // packed and 0 otherwise.
+// TODO: return boolean
 rp_pack_rects :: proc(ctx: ^RectPackContext, rects: [^]RectPackRect, num_rects: i32) -> i32 {
+	i: i32
+	all_rects_packed: i32 = 1
+
+	for i = 0; i < num_rects; i += 1 {
+		rects[i].was_packed = i
+	}
+
+	sort.quick_sort_proc(rects[0:num_rects], rect_height_compare)
+
+	// for i = 0; i < num_rects; i += 1 {
+	// 	if rects[i].w == 0 || rects[i].h == 0 {
+	// 		rects[i].x = 0
+	// 		rects[i].y = 0
+	// 	} else {
+	// 	}
+	//
+	// }
+
+	sort.quick_sort_proc(rects[0:num_rects], rect_original_order)
+
+	for i = 0; i < num_rects; i += 1 {
+		rects[i].was_packed = i32(!(rects[i].x == STBRP__MAXVAL && rects[i].y == STBRP__MAXVAL))
+
+		if rects[i].was_packed == 0 {
+			all_rects_packed = 0
+		}
+	}
+
+	return all_rects_packed
+}
+
+find_result :: struct {
+	x, y:      i32,
+	prev_link: ^^RectPackNode,
+}
+
+
+rect_height_compare :: proc(a, b: RectPackRect) -> int {
+	if a.h > b.h {
+		return -1
+	}
+	if a.h < b.h {
+		return 1
+	}
+	if a.w > b.w {
+		return -1
+	}
+	if a.w < b.w {
+		return 1
+	}
+	return 0
+}
+
+rect_original_order :: proc(a, b: RectPackRect) -> int {
+	if (a.was_packed < b.was_packed) {
+		return -1
+	}
+	if (a.was_packed > b.was_packed) {
+		return 1
+	}
 	return 0
 }
 
