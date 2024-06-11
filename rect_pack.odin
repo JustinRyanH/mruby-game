@@ -13,7 +13,7 @@ RectPackContext :: struct {
 	extra:       [2]RectPackNode,
 }
 
-STBRP__MAXVAL :: 0x7fffffff
+MAXVAL :: 0x7fffffff
 
 RectPackNode :: struct {
 	x, y: RectPackCoord,
@@ -58,29 +58,37 @@ RectPackHeuristic :: enum i32 {
 // The function returns 1 if all of the rectangles were successfully
 // packed and 0 otherwise.
 // TODO: return boolean
-rp_pack_rects :: proc(ctx: ^RectPackContext, rects: [^]RectPackRect, num_rects: i32) -> i32 {
+rp_pack_rects :: proc(ctx: ^RectPackContext, rects: []RectPackRect) -> i32 {
 	i: i32
 	all_rects_packed: i32 = 1
 
-	for i = 0; i < num_rects; i += 1 {
+	for i = 0; i < i32(len(rects)); i += 1 {
 		rects[i].was_packed = i
 	}
 
-	sort.quick_sort_proc(rects[0:num_rects], rect_height_compare)
+	sort.quick_sort_proc(rects[:], rect_height_compare)
 
-	// for i = 0; i < num_rects; i += 1 {
-	// 	if rects[i].w == 0 || rects[i].h == 0 {
-	// 		rects[i].x = 0
-	// 		rects[i].y = 0
-	// 	} else {
-	// 	}
-	//
-	// }
+	for i = 0; i < i32(len(rects)); i += 1 {
+		if rects[i].w == 0 || rects[i].h == 0 {
+			rects[i].x = 0
+			rects[i].y = 0
+		} else {
+			result := skyline_pack_rectangle(ctx, rects[i].w, rects[i].h)
+			if result.prev_link != nil {
+				rects[i].x = cast(RectPackCoord)result.x
+				rects[i].y = cast(RectPackCoord)result.y
+			} else {
+				rects[i].x = MAXVAL
+				rects[i].y = MAXVAL
+			}
+		}
 
-	sort.quick_sort_proc(rects[0:num_rects], rect_original_order)
+	}
 
-	for i = 0; i < num_rects; i += 1 {
-		rects[i].was_packed = i32(!(rects[i].x == STBRP__MAXVAL && rects[i].y == STBRP__MAXVAL))
+	sort.quick_sort_proc(rects[:], rect_original_order)
+
+	for i = 0; i < i32(len(rects)); i += 1 {
+		rects[i].was_packed = i32(!(rects[i].x == MAXVAL && rects[i].y == MAXVAL))
 
 		if rects[i].was_packed == 0 {
 			all_rects_packed = 0
@@ -90,7 +98,7 @@ rp_pack_rects :: proc(ctx: ^RectPackContext, rects: [^]RectPackRect, num_rects: 
 	return all_rects_packed
 }
 
-find_result :: struct {
+FoundResult :: struct {
 	x, y:      i32,
 	prev_link: ^^RectPackNode,
 }
@@ -174,3 +182,7 @@ rp_setup_allow_out_of_mem :: proc(ctx: ^RectPackContext, allow_oom: bool) {}
 // heuristics will produce better/worse results for different data sets.
 // If you call init again, this will be reset to the default.
 rp_setup_heuristic :: proc(ctx: ^RectPackContext, heuristic: RectPackHeuristic) {}
+
+skyline_pack_rectangle :: proc(ctx: ^RectPackContext, width, height: i32) -> FoundResult {
+	return FoundResult{}
+}
