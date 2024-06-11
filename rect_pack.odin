@@ -183,6 +183,31 @@ rp_setup_allow_out_of_mem :: proc(ctx: ^RectPackContext, allow_oom: bool) {}
 // If you call init again, this will be reset to the default.
 rp_setup_heuristic :: proc(ctx: ^RectPackContext, heuristic: RectPackHeuristic) {}
 
-skyline_pack_rectangle :: proc(ctx: ^RectPackContext, width, height: i32) -> FoundResult {
+@(private = "file")
+skyline_pack_rectangle :: proc(ctx: ^RectPackContext, width, height: i32) -> (res: FoundResult) {
+	res = skyline_find_best_pos(ctx, width, height)
+	node: ^RectPackNode
+	cur: ^RectPackNode
+	//    1. it failed
+	if (res.prev_link == nil) {
+		res.prev_link = nil
+		return
+	}
+	//    2. the best node doesn't fit (we don't always check this)
+	if (res.y + height > ctx.height) {
+		res.prev_link = nil
+		return
+	}
+	//    3. we're out of memory
+	if (ctx.free_head == nil) {
+		res.prev_link = nil
+		return
+	}
+
+	return
+}
+
+@(private = "file")
+skyline_find_best_pos :: proc(ctx: ^RectPackContext, width, height: i32) -> FoundResult {
 	return FoundResult{}
 }
