@@ -166,11 +166,10 @@ rp_init_target :: proc(
 
 	ctx.extra[0].x = 0
 	ctx.extra[0].y = 0
-	ctx.extra[0].next = &ctx.extra[1];
+	ctx.extra[0].next = &ctx.extra[1]
 	ctx.extra[1].x = width
-	ctx.extra[1].y = 1 << 30 
+	ctx.extra[1].y = 1 << 30
 	ctx.extra[1].next = nil
-
 }
 
 // Optionally call this function after init but before doing any packing to
@@ -181,4 +180,4 @@ rp_setup_allow_out_of_mem :: proc(ctx: ^RectPackContext, allow_oom: bool) {}
 // Optionally select which packing heuristic the library should use. Different
 // heuristics will produce better/worse results for different data sets.
 // If you call init again, this will be reset to the default.
-rp_setup_heuristic :: p9roc(ctx: ^RectPackContext, heuristic: RectPackHeuristic) {}
+rp_setup_heuristic :: proc(ctx: ^RectPackContext, heuristic: RectPackHeuristic) {}
