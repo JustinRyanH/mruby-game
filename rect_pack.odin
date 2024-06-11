@@ -7,7 +7,7 @@ RectPackContext :: struct {
 	height:      i32,
 	alignment:   i32,
 	has_init:    bool,
-	heuristic:   i32,
+	heuristic:   RectPackHeuristic,
 	num_nodes:   i32,
 	active_head: ^RectPackNode,
 	free_head:   ^RectPackNode,
@@ -144,10 +144,34 @@ rect_original_order :: proc(a, b: RectPackRect) -> int {
 // may run out of temporary storage and be unable to pack some rectangles.
 rp_init_target :: proc(
 	ctx: ^RectPackContext,
-	width, height: int,
-	nodes: [^]RectPackContext,
+	width, height: i32,
+	nodes: [^]RectPackNode,
 	num_nodes: i32,
-) {}
+) {
+	i: i32
+
+	for i = 0; i < num_nodes - 1; i += 1 {
+		nodes[i].next = &nodes[i + 1]
+	}
+	nodes[i].next = nil
+	ctx.has_init = true
+	ctx.heuristic = .Skyline_default
+	ctx.free_head = &nodes[0]
+	ctx.active_head = &ctx.extra[0]
+	ctx.width = width
+	ctx.height = height
+	ctx.num_nodes = num_nodes
+	// TODO: allow oom
+	ctx.alignment = 1
+
+	ctx.extra[0].x = 0
+	ctx.extra[0].y = 0
+	ctx.extra[0].next = &ctx.extra[1];
+	ctx.extra[1].x = width
+	ctx.extra[1].y = 1 << 30 
+	ctx.extra[1].next = nil
+
+}
 
 // Optionally call this function after init but before doing any packing to
 // change the handling of the out-of-temp-memory scenario, described above.
@@ -157,4 +181,4 @@ rp_setup_allow_out_of_mem :: proc(ctx: ^RectPackContext, allow_oom: bool) {}
 // Optionally select which packing heuristic the library should use. Different
 // heuristics will produce better/worse results for different data sets.
 // If you call init again, this will be reset to the default.
-rp_setup_heuristic :: proc(ctx: ^RectPackContext, heuristic: RectPackHeuristic) {}
+rp_setup_heuristic :: p9roc(ctx: ^RectPackContext, heuristic: RectPackHeuristic) {}
