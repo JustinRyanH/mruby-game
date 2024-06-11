@@ -8,7 +8,6 @@ RectPackContext :: struct {
 	alignment:   i32,
 	has_init:    bool,
 	heuristic:   RectPackHeuristic,
-	num_nodes:   i32,
 	active_head: ^RectPackNode,
 	free_head:   ^RectPackNode,
 	extra:       [2]RectPackNode,
@@ -142,15 +141,10 @@ rect_original_order :: proc(a, b: RectPackRect) -> int {
 //
 // If you do #2, then the non-quantized algorithm will be used, but the algorithm
 // may run out of temporary storage and be unable to pack some rectangles.
-rp_init_target :: proc(
-	ctx: ^RectPackContext,
-	width, height: i32,
-	nodes: [^]RectPackNode,
-	num_nodes: i32,
-) {
-	i: i32
+rp_init_target :: proc(ctx: ^RectPackContext, width, height: i32, nodes: []RectPackNode) {
+	i: int
 
-	for i = 0; i < num_nodes - 1; i += 1 {
+	for i = 0; i < len(nodes) - 1; i += 1 {
 		nodes[i].next = &nodes[i + 1]
 	}
 	nodes[i].next = nil
@@ -160,7 +154,6 @@ rp_init_target :: proc(
 	ctx.active_head = &ctx.extra[0]
 	ctx.width = width
 	ctx.height = height
-	ctx.num_nodes = num_nodes
 	// TODO: allow oom
 	ctx.alignment = 1
 
