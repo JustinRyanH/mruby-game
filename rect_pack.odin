@@ -323,10 +323,46 @@ skyline_find_best_pos :: proc(ctx: ^RectPackContext, in_width, height: i32) -> (
 @(private = "file")
 skyline_find_min_y :: proc(
 	ctx: ^RectPackContext,
-	node: ^RectPackNode,
+	first: ^RectPackNode,
 	x0, width: i32,
 	pwaste: ^i32,
 ) -> i32 {
-	return 0
+	node: ^RectPackNode = first
+	x1: i32 = x0 + width
+	min_y: i32
+	visited_width: i32
+	waste_area: i32
+
+	assert(first.x <= x0)
+	assert(node.next.x > x0)
+
+	for node.x < x1 {
+		if node.y > min_y {
+			// raise min_y higher.
+			// we've accounted for all waste up to min_y,
+			// but we'll now add more waste for everything we've visted
+			waste_area += visited_width * (node.y - min_y)
+			min_y = node.y
+
+			if node.x < x0 {
+				visited_width += node.next.x - x0
+			} else {
+				visited_width += node.next.x - node.x
+			}
+		} else {
+			under_width := node.next.x - node.x
+			if under_width + visited_width > width {
+				under_width = width - visited_width
+			}
+			waste_area += under_width * (min_y - node.y)
+			visited_width += under_width
+		}
+		node = node.next
+	}
+
+	pwaste^ = waste_area
+
+
+	return min_y
 }
 // static int stbr p__skyline_find_min_y(stbrp_context *c, stbrp_node *first, int x0, int width, int *pwaste)
