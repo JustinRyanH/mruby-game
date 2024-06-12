@@ -235,8 +235,8 @@ skyline_pack_rectangle :: proc(ctx: ^RectPackContext, width, height: i32) -> (re
 @(private = "file")
 skyline_find_best_pos :: proc(ctx: ^RectPackContext, in_width, height: i32) -> (res: FoundResult) {
 	best_waste: i32 = 1 << 30
-	best_x := best_waste
-	best_y := best_waste
+	best_x: i32 = best_waste
+	best_y: i32 = best_waste
 
 	prev: ^^RectPackNode
 	best: ^^RectPackNode
@@ -275,9 +275,48 @@ skyline_find_best_pos :: proc(ctx: ^RectPackContext, in_width, height: i32) -> (
 		prev = &node.next
 		node = node.next
 	}
+	best_x = best == nil ? 0 : (best^).x
+
+	if ctx.heuristic == .Skyline_BF_SortHeight {
+		tail = ctx.active_head
+		node = ctx.active_head
+		prev = &ctx.active_head
+
+		for tail.x < width {
+			tail = tail.next
+		}
+		for tail != nil {
+			xpos: i32 = tail.x - width
+			y: i32
+			waste: i32
+
+			for node.next.x <= xpos {
+				y := skyline_find_min_y(ctx, node, xpos, width, &waste)
+				if y + height <= ctx.height {
+					if y <= best_y {
+						if y < best_y ||
+						   waste < best_waste ||
+						   (waste == best_waste && xpos < best_x) {
+							best_x = xpos
+							assert(y <= best_y)
+							best_y = y
+							best_waste = waste
+							best = prev
+						}
+					}
+				}
+			}
 
 
-	return FoundResult{}
+			tail = tail.next
+		}
+	}
+
+
+	res.prev_link = best
+	res.x = best_x
+	res.y = best_y
+	return
 }
 
 // TODO:: Return the waste instead
