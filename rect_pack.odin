@@ -204,6 +204,30 @@ skyline_pack_rectangle :: proc(ctx: ^RectPackContext, width, height: i32) -> (re
 		return
 	}
 
+	node = ctx.free_head
+	node.x = RectPackCoord(res.x)
+	node.y = RectPackCoord(res.y)
+
+	cur = res.prev_link^
+	if cur.x < res.x {
+		next := cur.next
+		cur.next = node
+		cur = next
+	} else {
+		res.prev_link^ = node
+	}
+
+	for cur.next != nil && cur.next.x <= res.x + width {
+		next := cur.next
+		cur.next = ctx.free_head
+		ctx.free_head = cur
+		cur = next
+	}
+	node.next = cur
+	if cur.x < res.x + width {
+		cur.x = RectPackCoord(res.x + width)
+	}
+
 	return
 }
 
