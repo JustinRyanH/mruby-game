@@ -6,3 +6,4 @@ mruby-game.exe
 .vscode/
 .idea/
 *.raddbg
+*.rdi
