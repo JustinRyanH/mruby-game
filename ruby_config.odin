@@ -2454,6 +2454,7 @@ setup_rect_pack_class :: proc(state: ^mrb.State) {
 	mrb.set_data_type(rect_pack, .CData)
 
 	mrb.define_method(state, rect_pack, "initialize", rect_pack_new, mrb.args_key(4, 0))
+	mrb.define_method(state, rect_pack, "pack!", rect_pack_pack, mrb.args_req(1))
 }
 
 
@@ -2491,4 +2492,46 @@ rect_pack_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	rp.init_target(&rect_pack.ctx, width, height, rect_pack.nodes)
 
 	return self
+}
+
+@(private = "file")
+rect_pack_pack :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	rectangles: mrb.Value
+	mrb.get_args(state, "o", &rectangles)
+
+	rect_pack := mrb.get_data_from_value(RubyRectPack, self)
+	width, height := rect_pack.ctx.width, rect_pack.ctx.height
+	rp.init_target(&rect_pack.ctx, width, height, rect_pack.nodes)
+
+	count_sym := mrb.sym_from_string(g.ruby, "count")
+	size_sym := mrb.sym_from_string(g.ruby, "size")
+	set_pos_sym := mrb.sym_from_string(g.ruby, "pos=")
+	count_v := mrb.funcall_argv(g.ruby, rectangles, count_sym, 0, nil)
+	count := mrb.as_int(state, count_v)
+
+	rects := make([]rp.Rect, count, context.temp_allocator)
+
+	for i := 0; i < count; i += 1 {
+		entry := mrb.ary_entry(rectangles, i)
+		size_v := mrb.funcall_argv(g.ruby, entry, size_sym, 0, nil)
+		size := vector_from_object(state, size_v)
+		rects[i].w = cast(i32)size.x
+		rects[i].h = cast(i32)size.y
+	}
+	rp.pack_rects(&rect_pack.ctx, rects)
+
+	for i := 0; i < count; i += 1 {
+		rect := rects[i]
+		new_pos := Vector2{cast(f32)rect.x, cast(f32)rect.y}
+		fmt.println("new pos", new_pos, rect.x, rect.y)
+		entry := mrb.ary_entry(rectangles, i)
+
+		pos_v := vector_obj_from_vec(state, new_pos)
+
+		mrb.funcall_argv(g.ruby, entry, set_pos_sym, 1, &pos_v)
+	}
+
+	return rectangles
 }

@@ -16,18 +16,17 @@ require 'assets/scripts/engine_override'
 # $new_game.tick
 #
 class Rectangle
-  attr_reader :x, :y, :width, :height, :color
+  attr_reader :color
+  attr_accessor :pos, :size
 
   def initialize(width:, height:, x: 0, y: 0, color: Color.red)
-    @x = x
-    @y = y
-    @width = width
-    @height = height
+    @pos = Vector.new(x, y)
+    @size = Vector.new(width, height)
     @color = color
   end
 
   def tick
-    Draw.rect(pos: Vector.new(x, y), size: Vector.new(width, height), color:)
+    Draw.rect(pos:, size:, color:)
   end
 end
 
@@ -42,7 +41,7 @@ class RectPackTest
   def setup
     @ready = true
 
-    @rectangles = (0..5).map do
+    @rectangles = (0...5).map do
       screen_size = FrameInput.screen.size
       color = [
         Color.violet,
@@ -51,14 +50,18 @@ class RectPackTest
         Color.ray_white,
         Color.magenta,
       ].sample
-      width = FrameInput.random_int(32..128)
-      height = FrameInput.random_int(32..128)
+      width = FrameInput.random_int(32..48)
+      height = FrameInput.random_int(32..48)
       x = FrameInput.random_int(0..screen_size.x)
       y = FrameInput.random_int(0..screen_size.y)
       Rectangle.new(x:, y:, width:, height:, color:)
     end
-    @sum_width = @rectangles.map(&:width).inject(:+)
-    @sum_height = @rectangles.map(&:width).inject(:+)
+
+    @sum_width = @rectangles.map(&:size).map(&:x).inject(:+) + 20
+    @sum_height = @rectangles.map(&:size).map(&:y).inject(:+)
+
+    rc = RectPack.new(width: 90, height: @sum_height, num_nodes: 20)
+    rc.pack!(@rectangles)
   end
 
   def ready?
