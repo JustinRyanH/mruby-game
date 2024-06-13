@@ -34,12 +34,15 @@ end
 class RectPackTest
   def tick
     setup unless ready?
+    center = FrameInput.screen.size * 0.5
     @rectangles.each(&:tick)
+    Draw.rect(pos: center, size: Vector.new(@sum_width, @sum_height), mode: :outline)
   end
 
   def setup
     @ready = true
     @rectangles = (0..5).map do
+      screen_size = FrameInput.screen.size
       color = [
         Color.violet,
         Color.lime,
@@ -49,8 +52,12 @@ class RectPackTest
       ].sample
       width = FrameInput.random_int(32..128)
       height = FrameInput.random_int(32..128)
-      Rectangle.new(width:, height:, color:)
+      x = FrameInput.random_int(0..screen_size.x)
+      y = FrameInput.random_int(0..screen_size.y)
+      Rectangle.new(x:, y:, width:, height:, color:)
     end
+    @sum_width = @rectangles.map(&:width).inject(:+)
+    @sum_height = @rectangles.map(&:width).inject(:+)
   end
 
   def ready?
