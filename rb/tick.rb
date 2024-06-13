@@ -26,7 +26,7 @@ class Rectangle
   end
 
   def tick
-    Draw.rect(pos:, size:, color:)
+    Draw.rect(pos:, size:, color:, anchor_percentage: Vector.zero)
   end
 end
 
@@ -60,12 +60,16 @@ class RectPackTest
     @sum_width = @rectangles.map(&:size).map(&:x).inject(:+) + 20
     @sum_height = @rectangles.map(&:size).map(&:y).inject(:+)
 
-    rc = RectPack.new(width: 90, height: @sum_height, num_nodes: 20)
-    rc.pack!(@rectangles)
+    pack_rectangles(100, 300)
   end
 
   def ready?
     @ready || false
+  end
+
+  def pack_rectangles(width, height)
+    rc = RectPack.new(width:, height:, num_nodes: 20)
+    rc.pack!(@rectangles)
   end
 end
 
