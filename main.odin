@@ -181,108 +181,90 @@ main :: proc() {
 	defer reset_tracking_allocator(&tracking_allocator)
 
 	game_ctx = context
-	test_nodes := make([]rp.Node, 8)
-	defer delete(test_nodes)
-
-	test_rects := make([]rp.Rect, 2)
-	defer delete(test_rects)
-
-	test_rects[0].w = 2
-	test_rects[0].h = 2
-	test_rects[1].w = 8
-	test_rects[1].h = 8
-
-	ctx := rp.PackContext{}
-	rp.init_target(&ctx, 10, 10, test_nodes)
-	rp.pack_rects(&ctx, test_rects)
-
-	fmt.println(test_rects[0])
-	fmt.println(test_rects[1])
 
 
-	//
-	// g = new(Game)
-	// defer free(g)
-	//
-	// game_init(g)
-	// defer game_deinit(g)
-	//
-	// game_load_mruby_raylib(g)
-	//
-	// tick_handle, tick_loaded := as_load_ruby(&g.assets, "rb/tick.rb")
-	// assert(tick_loaded, "`tick.rb` is required")
-	//
-	// rl.InitWindow(1280, 800, "Odin-Ruby Game Demo")
-	// defer rl.CloseWindow()
-	//
-	// when GAME_DEV {
-	// 	// TODO: Clean this up on release
-	// 	rl.SetWindowMonitor(1)
-	// }
-	//
-	// rl.InitAudioDevice()
-	// defer rl.CloseAudioDevice()
-	//
-	// rl.SetTargetFPS(TargetFPS)
-	//
-	// for !g.should_exit {
-	// 	defer {
-	// 		is_bad := track_bad_free_tracking_allocator(&tracking_allocator)
-	// 		assert(!is_bad, "Double Free issue")
-	// 	}
-	// 	defer free_all(context.temp_allocator)
-	// 	defer mrb.incremental_gc(g.ruby)
-	// 	defer game_handle_sounds(g)
-	// 	todo_render = make([dynamic]RenderableTexture, 0, 1024, context.temp_allocator)
-	//
-	// 	imui_begin(&g.imui)
-	//
-	// 	game_setup_temp(g)
-	//
-	// 	input.update_input(&g.input, 1.0 / TargetFPS)
-	// 	rl.BeginDrawing()
-	// 	defer rl.EndDrawing()
-	//
-	// 	rl.ClearBackground(g.bg_color)
-	//
-	// 	game_check_collisions(g)
-	// 	game_run_code(g, tick_handle)
-	//
-	// 	sprt_iter := dp.new_iter(&g.sprites)
-	// 	for spr in dp.iter_next(&sprt_iter) {
-	// 		if !spr.visible {continue}
-	// 		renderable, success := renderable_from_sprint(g, spr)
-	// 		if (!success) {
-	// 			rl.TraceLog(.WARNING, "Could not Render Sprite")
-	// 			continue
-	// 		}
-	// 		append(&todo_render, renderable)
-	// 	}
-	// 	slice.sort_by(
-	// 		todo_render[:],
-	// 		proc(i, j: RenderableTexture) -> bool {return i.z_offset < j.z_offset},
-	// 	)
-	//
-	// 	{
-	// 		camera := game_get_camera(g)
-	// 		rl.BeginMode2D(camera)
-	//
-	// 		for renderable in todo_render {
-	// 			renderable_texture_render(renderable)
-	// 		}
-	//
-	// 		game_debug_draw(g)
-	// 		rl.EndMode2D()
-	// 	}
-	//
-	// 	imui_draw(&g.imui)
-	//
-	// 	// Check for asset change every second or so
-	// 	if input.frame_query_id(g.input) % TargetFPS == 0 {
-	// 		as_check(&g.assets)
-	// 	}
-	// 	if rl.WindowShouldClose() {
-	// 		g.should_exit = true
-	// 	}
-	// }
+	g = new(Game)
+	defer free(g)
+
+	game_init(g)
+	defer game_deinit(g)
+
+	game_load_mruby_raylib(g)
+
+	tick_handle, tick_loaded := as_load_ruby(&g.assets, "rb/tick.rb")
+	assert(tick_loaded, "`tick.rb` is required")
+
+	rl.InitWindow(1280, 800, "Odin-Ruby Game Demo")
+	defer rl.CloseWindow()
+
+	when GAME_DEV {
+		// TODO: Clean this up on release
+		rl.SetWindowMonitor(1)
+	}
+
+	rl.InitAudioDevice()
+	defer rl.CloseAudioDevice()
+
+	rl.SetTargetFPS(TargetFPS)
+
+	for !g.should_exit {
+		defer {
+			is_bad := track_bad_free_tracking_allocator(&tracking_allocator)
+			assert(!is_bad, "Double Free issue")
+		}
+		defer free_all(context.temp_allocator)
+		defer mrb.incremental_gc(g.ruby)
+		defer game_handle_sounds(g)
+		todo_render = make([dynamic]RenderableTexture, 0, 1024, context.temp_allocator)
+
+		imui_begin(&g.imui)
+
+		game_setup_temp(g)
+
+		input.update_input(&g.input, 1.0 / TargetFPS)
+		rl.BeginDrawing()
+		defer rl.EndDrawing()
+
+		rl.ClearBackground(g.bg_color)
+
+		game_check_collisions(g)
+		game_run_code(g, tick_handle)
+
+		sprt_iter := dp.new_iter(&g.sprites)
+		for spr in dp.iter_next(&sprt_iter) {
+			if !spr.visible {continue}
+			renderable, success := renderable_from_sprint(g, spr)
+			if (!success) {
+				rl.TraceLog(.WARNING, "Could not Render Sprite")
+				continue
+			}
+			append(&todo_render, renderable)
+		}
+		slice.sort_by(
+			todo_render[:],
+			proc(i, j: RenderableTexture) -> bool {return i.z_offset < j.z_offset},
+		)
+
+		{
+			camera := game_get_camera(g)
+			rl.BeginMode2D(camera)
+
+			for renderable in todo_render {
+				renderable_texture_render(renderable)
+			}
+
+			game_debug_draw(g)
+			rl.EndMode2D()
+		}
+
+		imui_draw(&g.imui)
+
+		// Check for asset change every second or so
+		if input.frame_query_id(g.input) % TargetFPS == 0 {
+			as_check(&g.assets)
+		}
+		if rl.WindowShouldClose() {
+			g.should_exit = true
+		}
+	}
 }
