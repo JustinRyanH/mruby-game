@@ -2,6 +2,16 @@
 
 require 'assets/scripts/common'
 
+Array.class_eval do
+  # TODO: Sample count
+  def sample
+    return nil if count.zero?
+
+    index = FrameInput.random_int(0...count)
+    at(index)
+  end
+end
+
 Integer.class_eval do
   def even?
     (self % 2).zero?
