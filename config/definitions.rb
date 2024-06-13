@@ -189,7 +189,8 @@ module Draw
   # @param [Vector] size
   # @param [Vector] anchor_percetnage - 0..1 values inside the
   # @param [Symbol] mode `:solid` or `:outline`
-  def self.rect(pos:, size:, anchor_percetnage: Vector.zero, mode: solid)
+  # @param [Color] color
+  def self.rect(pos:, size:, anchor_percetnage: Vector.zero, mode: solid, color: Color.red)
   end
 
   # Draws Text
