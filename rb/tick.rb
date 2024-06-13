@@ -15,7 +15,8 @@ require 'assets/scripts/engine_override'
 # $new_game ||= TestGame.new
 # $new_game.tick
 #
-class Rectangle
+class TestRectangle
+  include Bounds
   attr_reader :color
   attr_accessor :pos, :size
 
@@ -28,21 +29,36 @@ class Rectangle
   def tick
     Draw.rect(pos:, size:, color:, anchor_percentage: Vector.zero)
   end
+
+  def x
+    @pos.x
+  end
+
+  def y
+    @pos.y
+  end
+
+  def width
+    @size.x
+  end
+
+  def height
+    @size.y
+  end
 end
 
 class RectPackTest
   def tick
     setup unless ready?
-    center = FrameInput.screen.size * 0.5
     @rectangles.each(&:tick)
-    Draw.rect(pos: center, size: Vector.new(@sum_width, @sum_height), mode: :outline)
+    Draw.rect(pos: @bound_rect.pos, size: @bound_rect.size, mode: :outline)
   end
 
   def setup
     @ready = true
 
+    screen_size = FrameInput.screen.size
     @rectangles = (0...5).map do
-      screen_size = FrameInput.screen.size
       color = [
         Color.violet,
         Color.lime,
@@ -54,13 +70,12 @@ class RectPackTest
       height = FrameInput.random_int(32..48)
       x = FrameInput.random_int(0..screen_size.x)
       y = FrameInput.random_int(0..screen_size.y)
-      Rectangle.new(x:, y:, width:, height:, color:)
+      TestRectangle.new(x:, y:, width:, height:, color:)
     end
 
-    @sum_width = @rectangles.map(&:size).map(&:x).inject(:+) + 20
-    @sum_height = @rectangles.map(&:size).map(&:y).inject(:+)
+    @bound_rect = Rectangle.new(pos: screen_size * 0.5, size: Vector.new(100, 300))
 
-    pack_rectangles(100, 300)
+    pack_rectangles(@bound_rect.width, @bound_rect.height)
   end
 
   def ready?
@@ -70,6 +85,10 @@ class RectPackTest
   def pack_rectangles(width, height)
     rc = RectPack.new(width:, height:, num_nodes: 20)
     rc.pack!(@rectangles)
+    @rectangles.each do |rect|
+      rect.left += @bound_rect.left
+      rect.top += @bound_rect.top
+    end
   end
 end
 
