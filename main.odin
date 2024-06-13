@@ -14,6 +14,7 @@ import rl "vendor:raylib"
 import dp "./data_pool"
 import "./input"
 import mrb "./mruby"
+import rp "./rect_pack"
 
 GAME_DEV :: #config(GAME_DEV, true)
 
@@ -180,10 +181,10 @@ main :: proc() {
 	defer reset_tracking_allocator(&tracking_allocator)
 
 	game_ctx = context
-	test_nodes := make([]RectPackNode, 8)
+	test_nodes := make([]rp.Node, 8)
 	defer delete(test_nodes)
 
-	test_rects := make([]RectPackRect, 2)
+	test_rects := make([]rp.Rect, 2)
 	defer delete(test_rects)
 
 	test_rects[0].w = 2
@@ -191,9 +192,12 @@ main :: proc() {
 	test_rects[1].w = 8
 	test_rects[1].h = 8
 
-	ctx := RectPackContext{}
-	rp_init_target(&ctx, 10, 10, test_nodes)
-	rp_pack_rects(&ctx, test_rects)
+	ctx := rp.PackContext{}
+	rp.init_target(&ctx, 10, 10, test_nodes)
+	rp.pack_rects(&ctx, test_rects)
+
+	fmt.println(test_rects[0])
+	fmt.println(test_rects[1])
 
 
 	//
