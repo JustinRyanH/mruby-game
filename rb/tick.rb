@@ -5,11 +5,11 @@ require 'assets/scripts/setup'
 # ObjectSpace.count_objects(h)
 # puts h
 
-# $game ||= Game.new
-# $game.tick
+# $old_game ||= Game.new
+# $old_game.tick
 
 require 'assets/scripts/setup'
 require 'assets/scripts/new_game'
 
-$game ||= TestGame.new
-$game.tick
+$new_game ||= TestGame.new
+$new_game.tick
