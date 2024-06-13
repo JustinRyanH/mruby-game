@@ -1,5 +1,27 @@
 # frozen_string_literal: true
 
+class Screen
+  # Returns the size of the screen
+  #
+  # @return [Vector]
+  def size
+  end
+
+  # Returns Position of the screen.
+  # Generaly Vector{ x: 0, y: 0 }
+  #
+  # @return [Vector]
+  def pos
+  end
+
+  # returns where on the Screen Rect the pos is located
+  # Generaly Vector{ x: 0, y: 0 }
+  #
+  # @return [Vector]
+  def anchor_percentage
+  end
+end
+
 class Log
   # @param [String] msg
   def self.info(msg)
@@ -49,6 +71,12 @@ class FrameInput
   #
   # @return [Boolean]
   def self.key_was_down?(key)
+  end
+
+  # Get Screen Abstraction
+  #
+  # @return [Screen]
+  def self.screen
   end
 
   # Get the width and height of the curent frame
