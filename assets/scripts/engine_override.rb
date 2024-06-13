@@ -164,6 +164,14 @@ class Rectangle
     @anchor_percentage = Vector.new(0.5, 0.5)
   end
 
+  def width
+    size.x
+  end
+
+  def height
+    size.y
+  end
+
   def inspect
     { name: 'Rectangle', top:, right:, bottom:, left: }
   end
