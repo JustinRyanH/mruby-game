@@ -41,6 +41,7 @@ class RectPackTest
 
   def setup
     @ready = true
+
     @rectangles = (0..5).map do
       screen_size = FrameInput.screen.size
       color = [

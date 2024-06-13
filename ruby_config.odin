@@ -14,6 +14,7 @@ import rl "vendor:raylib"
 import dp "./data_pool"
 import "./input"
 import mrb "./mruby"
+import rp "./rect_pack"
 import "./utils"
 
 
@@ -71,9 +72,9 @@ get_curent_game :: proc "contextless" (state: ^mrb.State) -> mrb.Value {
 	return current
 }
 
+mrb_camera_tpye: mrb.DataType = {"Camera", mrb.free}
 mrb_collider_type: mrb.DataType = {"Collider", mrb.free}
 mrb_color_type: mrb.DataType = {"Color", mrb.free}
-mrb_camera_tpye: mrb.DataType = {"Camera", mrb.free}
 mrb_font_handle_type: mrb.DataType = {"Font", mrb.free}
 mrb_frame_input_type: mrb.DataType = {"FrameInput", mrb.free}
 mrb_sprite_type: mrb.DataType = {"Sprite", mrb.free}
@@ -88,6 +89,7 @@ EngineRClass :: struct {
 	engine:        ^mrb.RClass,
 	font_asset:    ^mrb.RClass,
 	frame:         ^mrb.RClass,
+	rect_pack:     ^mrb.RClass,
 	screen:        ^mrb.RClass,
 	set:           ^mrb.RClass,
 	sound:         ^mrb.RClass,
@@ -114,6 +116,7 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	setup_screen_class(st)
 	setup_vector_class(st)
 	setup_color_class(st)
+	setup_rect_pack_class(st)
 }
 
 setup_easing :: proc(st: ^mrb.State) {
@@ -2423,4 +2426,69 @@ screen_pos :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 @(private = "file")
 screen_anchor :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return vector_obj_from_vec(state, Vector2{})
+}
+
+
+//////////////////////////////
+//// Rect Pack
+//////////////////////////////
+
+rect_pack_free :: proc "c" (state: ^mrb.State, p: rawptr) {
+	context = load_context(state)
+
+	defer mrb.free(state, p)
+	rect_pack := cast(^RubyRectPack)p
+	delete(rect_pack.nodes)
+}
+
+mrb_rect_pack_type: mrb.DataType = {"RectPack", rect_pack_free}
+
+RubyRectPack :: struct {
+	ctx:   rp.PackContext,
+	nodes: []rp.Node,
+}
+
+setup_rect_pack_class :: proc(state: ^mrb.State) {
+	rect_pack := mrb.define_class(state, "RectPack", mrb.state_get_object_class(state))
+	engine_classes.rect_pack = rect_pack
+	mrb.set_data_type(rect_pack, .CData)
+
+	mrb.define_method(state, rect_pack, "initialize", rect_pack_new, mrb.args_key(4, 0))
+}
+
+
+@(private = "file")
+rect_pack_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	KValues :: struct {
+		width:     mrb.Value,
+		height:    mrb.Value,
+		num_nodes: mrb.Value,
+		heuristic: mrb.Value,
+	}
+	values: KValues
+	load_kwargs(KValues, state, &values)
+
+	num_nodes: i32 = 50
+	width: i32 = 1024
+	height: i32 = 1024
+	// TODO: load Hueristic from KWargs
+	heuristic := rp.PackHeuristic.Skyline_default
+
+	if !mrb.undef_p(values.num_nodes) {
+		num_nodes = cast(i32)mrb.as_int(state, values.num_nodes)
+	}
+	if !mrb.undef_p(values.num_nodes) {
+		width = cast(i32)mrb.as_int(state, values.width)
+	}
+	if !mrb.undef_p(values.num_nodes) {
+		height = cast(i32)mrb.as_int(state, values.height)
+	}
+
+	rect_pack := init_cdata(RubyRectPack, state, self, &mrb_rect_pack_type)
+	rect_pack.nodes = make([]rp.Node, num_nodes)
+	rp.init_target(&rect_pack.ctx, width, height, rect_pack.nodes)
+
+	return self
 }
