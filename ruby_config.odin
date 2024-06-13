@@ -88,12 +88,12 @@ EngineRClass :: struct {
 	engine:        ^mrb.RClass,
 	font_asset:    ^mrb.RClass,
 	frame:         ^mrb.RClass,
+	screen:        ^mrb.RClass,
 	set:           ^mrb.RClass,
 	sound:         ^mrb.RClass,
 	sprite:        ^mrb.RClass,
 	texture_asset: ^mrb.RClass,
 	vector:        ^mrb.RClass,
-	screen:        ^mrb.RClass,
 }
 
 engine_classes: EngineRClass
@@ -1187,7 +1187,7 @@ draw_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	// TODO: I can totally do this with generics and reflection
-	names: []mrb.Sym = {
+	names: []mrb.Sym =  {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
@@ -1416,7 +1416,7 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 		font: mrb.Value,
 	}
 
-	names: []mrb.Sym = {
+	names: []mrb.Sym =  {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "font"),
