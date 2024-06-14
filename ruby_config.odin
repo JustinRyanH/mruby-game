@@ -2477,14 +2477,33 @@ rect_pack_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	// TODO: load Hueristic from KWargs
 	heuristic := rp.PackHeuristic.Skyline_default
 
-	if !mrb.undef_p(values.num_nodes) {
-		num_nodes = cast(i32)mrb.as_int(state, values.num_nodes)
-	}
-	if !mrb.undef_p(values.width) {
-		width = cast(i32)mrb.as_int(state, values.width)
-	}
-	if !mrb.undef_p(values.height) {
-		height = cast(i32)mrb.as_int(state, values.height)
+	assert(!mrb.undef_p(values.num_nodes), ":num_nodes is required")
+	assert(!mrb.undef_p(values.width), ":width is required")
+	assert(!mrb.undef_p(values.num_nodes), ":height is required")
+
+	num_nodes = cast(i32)mrb.as_int(state, values.num_nodes)
+	width = cast(i32)mrb.as_int(state, values.width)
+	height = cast(i32)mrb.as_int(state, values.height)
+
+	if (!mrb.undef_p(values.heuristic)) {
+		assert(
+			mrb.symbol_p(values.heuristic),
+			"Expected hueristic to be either :bottom_left, or :best_first",
+		)
+		name := mrb.sym_name(state, mrb.obj_to_sym(state, values.heuristic))
+		switch name {
+		case "bottom_left":
+			heuristic = .Skyline_BL_SortHeight
+		case "best_first":
+			heuristic = .Skyline_BF_SortHeight
+		case:
+			mrb.raise_exception(
+				state,
+				":%s is not a valid hueristic, it must either be `:bottom_left` or `:best_fit`",
+				name,
+			)
+			return self
+		}
 	}
 
 	rect_pack := init_cdata(RubyRectPack, state, self, &mrb_rect_pack_type)

@@ -4,7 +4,7 @@ require 'assets/scripts/setup'
 require 'assets/scripts/engine_override'
 # h = {}
 # ObjectSpace.count_objects(h)
-# puts h
+# pugts h
 
 # $old_game ||= Game.new
 # $old_game.tick
@@ -102,7 +102,7 @@ class RectPackTest
   end
 
   def pack_rectangles(width, height)
-    rc = RectPack.new(width:, height:, num_nodes: 20)
+    rc = RectPack.new(width:, height:, num_nodes: 20, heuristic: :best_first)
     rc.pack!(@rectangles)
     @rectangles.each do |rect|
       rect.left += @bound_rect.left
