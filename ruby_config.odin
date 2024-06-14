@@ -2480,10 +2480,10 @@ rect_pack_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	if !mrb.undef_p(values.num_nodes) {
 		num_nodes = cast(i32)mrb.as_int(state, values.num_nodes)
 	}
-	if !mrb.undef_p(values.num_nodes) {
+	if !mrb.undef_p(values.width) {
 		width = cast(i32)mrb.as_int(state, values.width)
 	}
-	if !mrb.undef_p(values.num_nodes) {
+	if !mrb.undef_p(values.height) {
 		height = cast(i32)mrb.as_int(state, values.height)
 	}
 
