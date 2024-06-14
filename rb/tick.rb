@@ -17,17 +17,21 @@ require 'assets/scripts/engine_override'
 #
 class TestRectangle
   include Bounds
-  attr_reader :color
+  attr_reader :color, :spring
   attr_accessor :pos, :size
 
   def initialize(width:, height:, x: 0, y: 0, color: Color.red)
     @pos = Vector.new(x, y)
+    @current = Vector.new(x, y)
     @size = Vector.new(width, height)
     @color = color
+    @spring = Spring.new(10, 1)
+    @velocity = Vector.zero
   end
 
   def tick
-    Draw.rect(pos:, size:, color:, anchor_percentage: Vector.zero)
+    @current, @velocity = spring.motion(@current, @velocity, @pos)
+    Draw.rect(pos: @current, size:, color:, anchor_percentage: Vector.zero)
   end
 
   def x
@@ -71,6 +75,21 @@ class RectPackTest
       x = FrameInput.random_int(0..screen_size.x)
       y = FrameInput.random_int(0..screen_size.y)
       TestRectangle.new(x:, y:, width:, height:, color:)
+    end
+
+    5.times do
+      color = [
+        Color.violet,
+        Color.lime,
+        Color.sky_blue,
+        Color.ray_white,
+        Color.magenta,
+      ].sample
+      width = FrameInput.random_int(4..16)
+      height = FrameInput.random_int(4..16)
+      x = FrameInput.random_int(0..screen_size.x)
+      y = FrameInput.random_int(0..screen_size.y)
+      @rectangles.push TestRectangle.new(x:, y:, width:, height:, color:)
     end
 
     @bound_rect = Rectangle.new(pos: screen_size * 0.5, size: Vector.new(100, 300))
