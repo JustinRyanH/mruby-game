@@ -2475,7 +2475,7 @@ rect_pack_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	width: i32 = 1024
 	height: i32 = 1024
 	// TODO: load Hueristic from KWargs
-	heuristic := rp.PackHeuristic.Skyline_default
+	heuristic := rp.Heuristic.Skyline_default
 
 	assert(!mrb.undef_p(values.num_nodes), ":num_nodes is required")
 	assert(!mrb.undef_p(values.width), ":width is required")

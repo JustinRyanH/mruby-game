@@ -26,7 +26,7 @@ Context :: struct {
 	alignment:   i32,
 	has_init:    bool,
 	num_nodes:   i32,
-	heuristic:   PackHeuristic,
+	heuristic:   Heuristic,
 	active_head: ^Node,
 	free_head:   ^Node,
 	extra:       [2]Node,
@@ -47,7 +47,7 @@ Rect :: struct {
 
 Coord :: i32
 
-PackHeuristic :: enum i32 {
+Heuristic :: enum i32 {
 	Skyline_default = 0,
 	Skyline_BL_SortHeight = 0,
 	Skyline_BF_SortHeight,
@@ -179,7 +179,7 @@ setup_allow_out_of_mem :: proc(ctx: ^Context, allow_oom: bool) {
 // Optionally select which packing heuristic the library should use. Different
 // heuristics will produce better/worse results for different data sets.
 // If you call init again, this will be reset to the default.
-setup_heuristic :: proc(ctx: ^Context, heuristic: PackHeuristic) {
+setup_heuristic :: proc(ctx: ^Context, heuristic: Heuristic) {
 	ctx.heuristic = heuristic
 }
 
