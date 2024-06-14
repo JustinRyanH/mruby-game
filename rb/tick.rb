@@ -25,7 +25,7 @@ class TestRectangle
     @current = Vector.new(x, y)
     @size = Vector.new(width, height)
     @color = color
-    @spring = Spring.new(10, 1)
+    @spring = Spring.new(12.5, 0.75)
     @velocity = Vector.zero
   end
 
