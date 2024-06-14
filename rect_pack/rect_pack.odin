@@ -290,22 +290,24 @@ skyline_find_best_pos :: proc(ctx: ^Context, in_width, height: i32) -> (res: Fou
 		}
 		for tail != nil {
 			xpos: i32 = tail.x - width
+			assert(xpos >= 0)
 			y: i32
 			waste: i32
 
 			for node.next.x <= xpos {
-				y := skyline_find_min_y(ctx, node, xpos, width, &waste)
-				if y + height <= ctx.height {
-					if y <= best_y {
-						if y < best_y ||
-						   waste < best_waste ||
-						   (waste == best_waste && xpos < best_x) {
-							best_x = xpos
-							assert(y <= best_y)
-							best_y = y
-							best_waste = waste
-							best = prev
-						}
+				prev = &node.next
+				node = node.next
+			}
+
+			y = skyline_find_min_y(ctx, node, xpos, width, &waste)
+			if y + height <= ctx.height {
+				if y <= best_y {
+					if y < best_y || waste < best_waste || (waste == best_waste && xpos < best_x) {
+						best_x = xpos
+						assert(y <= best_y)
+						best_y = y
+						best_waste = waste
+						best = prev
 					}
 				}
 			}
@@ -331,8 +333,8 @@ skyline_find_min_y :: proc(ctx: ^Context, first: ^Node, x0, width: i32, pwaste: 
 	visited_width: i32
 	waste_area: i32
 
-	assert(first.x <= x0)
-	assert(node.next.x > x0)
+	assert(first.x <= x0, "First X is less than the given x0")
+	assert(node.next.x > x0, "Next X is greater than x0")
 
 	for node.x < x1 {
 		if node.y > min_y {
