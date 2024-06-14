@@ -1190,7 +1190,7 @@ draw_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	// TODO: I can totally do this with generics and reflection
-	names: []mrb.Sym = {
+	names: []mrb.Sym =  {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
@@ -1419,7 +1419,7 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 		font: mrb.Value,
 	}
 
-	names: []mrb.Sym = {
+	names: []mrb.Sym =  {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "font"),
@@ -2444,7 +2444,7 @@ rect_pack_free :: proc "c" (state: ^mrb.State, p: rawptr) {
 mrb_rect_pack_type: mrb.DataType = {"RectPack", rect_pack_free}
 
 RubyRectPack :: struct {
-	ctx:   rp.PackContext,
+	ctx:   rp.Context,
 	nodes: []rp.Node,
 }
 

@@ -20,7 +20,7 @@ package rect_pack
 
 import "core:sort"
 
-PackContext :: struct {
+Context :: struct {
 	width:       i32,
 	height:      i32,
 	alignment:   i32,
@@ -77,7 +77,7 @@ PackHeuristic :: enum i32 {
 // The function returns 1 if all of the rectangles were successfully
 // packed and 0 otherwise.
 // TODO: return boolean
-pack_rects :: proc(ctx: ^PackContext, rects: []Rect) -> i32 {
+pack_rects :: proc(ctx: ^Context, rects: []Rect) -> i32 {
 	i: i32
 	all_rects_packed: i32 = 1
 
@@ -141,7 +141,7 @@ FoundResult :: struct {
 //
 // If you do #2, then the non-quantized algorithm will be used, but the algorithm
 // may run out of temporary storage and be unable to pack some rectangles.
-init_target :: proc(ctx: ^PackContext, width, height: i32, nodes: []Node) {
+init_target :: proc(ctx: ^Context, width, height: i32, nodes: []Node) {
 	i: int
 
 	for i = 0; i < len(nodes) - 1; i += 1 {
@@ -168,7 +168,7 @@ init_target :: proc(ctx: ^PackContext, width, height: i32, nodes: []Node) {
 // Optionally call this function after init but before doing any packing to
 // change the handling of the out-of-temp-memory scenario, described above.
 // If you call init again, this will be reset to the default (false).
-setup_allow_out_of_mem :: proc(ctx: ^PackContext, allow_oom: bool) {
+setup_allow_out_of_mem :: proc(ctx: ^Context, allow_oom: bool) {
 	if allow_oom {
 		ctx.alignment = 1
 	} else {
@@ -179,12 +179,12 @@ setup_allow_out_of_mem :: proc(ctx: ^PackContext, allow_oom: bool) {
 // Optionally select which packing heuristic the library should use. Different
 // heuristics will produce better/worse results for different data sets.
 // If you call init again, this will be reset to the default.
-setup_heuristic :: proc(ctx: ^PackContext, heuristic: PackHeuristic) {
+setup_heuristic :: proc(ctx: ^Context, heuristic: PackHeuristic) {
 	ctx.heuristic = heuristic
 }
 
 @(private = "file")
-skyline_pack_rectangle :: proc(ctx: ^PackContext, width, height: i32) -> (res: FoundResult) {
+skyline_pack_rectangle :: proc(ctx: ^Context, width, height: i32) -> (res: FoundResult) {
 	res = skyline_find_best_pos(ctx, width, height)
 	node: ^Node
 	cur: ^Node
@@ -236,7 +236,7 @@ skyline_pack_rectangle :: proc(ctx: ^PackContext, width, height: i32) -> (res: F
 }
 
 @(private = "file")
-skyline_find_best_pos :: proc(ctx: ^PackContext, in_width, height: i32) -> (res: FoundResult) {
+skyline_find_best_pos :: proc(ctx: ^Context, in_width, height: i32) -> (res: FoundResult) {
 	best_waste: i32 = 1 << 30
 	best_x: i32 = best_waste
 	best_y: i32 = best_waste
@@ -324,7 +324,7 @@ skyline_find_best_pos :: proc(ctx: ^PackContext, in_width, height: i32) -> (res:
 
 // TODO:: Return the waste instead
 @(private = "file")
-skyline_find_min_y :: proc(ctx: ^PackContext, first: ^Node, x0, width: i32, pwaste: ^i32) -> i32 {
+skyline_find_min_y :: proc(ctx: ^Context, first: ^Node, x0, width: i32, pwaste: ^i32) -> i32 {
 	node: ^Node = first
 	x1: i32 = x0 + width
 	min_y: i32
