@@ -56,6 +56,8 @@ class RectPackTest
     setup unless ready?
     @rectangles.each(&:tick)
     Draw.rect(pos: @bound_rect.pos, size: @bound_rect.size, mode: :outline)
+
+    pack_rectangles(@bound_rect.width, @bound_rect.height) if FrameInput.key_just_pressed?(:space)
   end
 
   def setup
@@ -93,8 +95,6 @@ class RectPackTest
     end
 
     @bound_rect = Rectangle.new(pos: screen_size * 0.5, size: Vector.new(100, 300))
-
-    pack_rectangles(@bound_rect.width, @bound_rect.height)
   end
 
   def ready?
