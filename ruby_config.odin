@@ -1190,7 +1190,7 @@ draw_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	// TODO: I can totally do this with generics and reflection
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
@@ -1419,7 +1419,7 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 		font: mrb.Value,
 	}
 
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "font"),
@@ -2525,7 +2525,6 @@ rect_pack_pack :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	for i := 0; i < count; i += 1 {
 		rect := rects[i]
 		new_pos := Vector2{cast(f32)rect.x, cast(f32)rect.y}
-		fmt.println("new pos", new_pos, rect.x, rect.y)
 		entry := mrb.ary_entry(rectangles, i)
 
 		pos_v := vector_obj_from_vec(state, new_pos)
