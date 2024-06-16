@@ -81,6 +81,11 @@ class RectPackTest
       Color.dark_green,
       Color.maroon,
       Color.orange,
+      Color.beige,
+      Color.dreamy_sunset,
+      Color.blunt_violet,
+      Color.magic_spell,
+      Color.regal_blue,
     ]
 
     screen_size = FrameInput.screen.size
