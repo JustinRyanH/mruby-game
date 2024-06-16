@@ -1,4 +1,6 @@
-GRAVITY = 100
+# frozen_string_literal: true
+
+GRAVITY = 150
 
 class SpringCamera
   attr_reader :camera, :velocity, :spring
