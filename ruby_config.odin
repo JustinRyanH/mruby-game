@@ -2488,13 +2488,13 @@ rect_pack_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	if (!mrb.undef_p(values.heuristic)) {
 		assert(
 			mrb.symbol_p(values.heuristic),
-			"Expected hueristic to be either :bottom_left, or :best_first",
+			"Expected hueristic to be either :bottom_left, or :best_fit",
 		)
 		name := mrb.sym_name(state, mrb.obj_to_sym(state, values.heuristic))
 		switch name {
 		case "bottom_left":
 			heuristic = .Skyline_BL_SortHeight
-		case "best_first":
+		case "best_fit":
 			heuristic = .Skyline_BF_SortHeight
 		case:
 			mrb.raise_exception(
@@ -2509,6 +2509,7 @@ rect_pack_new :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	rect_pack := init_cdata(RubyRectPack, state, self, &mrb_rect_pack_type)
 	rect_pack.nodes = make([]rp.Node, num_nodes)
 	rp.init_target(&rect_pack.ctx, width, height, rect_pack.nodes)
+	rp.setup_heuristic(&rect_pack.ctx, heuristic)
 
 	return self
 }
@@ -2522,7 +2523,6 @@ rect_pack_pack :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	rect_pack := mrb.get_data_from_value(RubyRectPack, self)
 	width, height := rect_pack.ctx.width, rect_pack.ctx.height
-	rp.init_target(&rect_pack.ctx, width, height, rect_pack.nodes)
 
 	count_sym := mrb.sym_from_string(g.ruby, "count")
 	size_sym := mrb.sym_from_string(g.ruby, "size")
