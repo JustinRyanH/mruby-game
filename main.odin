@@ -14,7 +14,6 @@ import rl "vendor:raylib"
 import dp "./data_pool"
 import "./input"
 import mrb "./mruby"
-import rp "./rect_pack"
 
 GAME_DEV :: #config(GAME_DEV, true)
 
