@@ -31,14 +31,14 @@ texture_handle :: proc(str: string) -> TextureHandle {
 }
 
 TextureAsset :: struct {
-	handle:  TextureHandle,
-	texture: rl.Texture,
-	src:     rl.Rectangle,
-	unique:  bool,
+	handle:        TextureHandle,
+	texture:       rl.Texture,
+	src:           rl.Rectangle,
+	atlas_texture: bool,
 }
 
 texture_asset_deinit :: proc(ta: ^TextureAsset) {
-	if !ta.unique {
+	if ta.atlas_texture {
 		return
 	}
 	rl.UnloadTexture(ta.texture)
