@@ -7,6 +7,7 @@ import "core:time"
 
 import rl "vendor:raylib"
 
+import rp "./rect_pack"
 import "./utils"
 
 SoundHandle :: distinct u64
@@ -34,8 +35,8 @@ atlas_handle :: proc(str: string) -> AtlasHandle {
 }
 
 TextureSystem :: struct {
-	atlas:    map[AtlasHandle]rl.Texture,
-	textures: map[TextureHandle]TextureAsset,
+	atlas_map: map[AtlasHandle]rl.Texture,
+	textures:  map[TextureHandle]TextureAsset,
 }
 
 
@@ -237,14 +238,63 @@ as_load_texture :: proc(as: ^AssetSystem, path: string) -> (TextureHandle, bool)
 	return th, true
 }
 
-as_create_atlas :: proc(
+// TODO: More complex failure information
+as_create_atlas_from_textures :: proc(
 	as: ^AssetSystem,
-	name: String,
+	name: string,
 	width, height: i32,
+	textures: []TextureHandle,
 ) -> (
 	AtlasHandle,
 	bool,
 ) {
+	ah := atlas_handle(name)
+	if ah in as.texture_system.atlas_map {
+		return 0, false
+	}
+	img := rl.GenImageColor(width, height, rl.BLANK)
+	rects: []rp.Rect = make([]rp.Rect, len(textures), context.temp_allocator)
+	images: []rl.Image = make([]rl.Image, len(textures), context.temp_allocator)
+	nodes := make([]rp.Node, len(textures), context.temp_allocator)
+
+	failed_loading_texture := false
+	for handle, idx in textures {
+		texture, success := as_get_texture(as, handle)
+		if !success {
+			failed_loading_texture = true
+			continue
+		}
+
+		rects[idx].id = cast(i32)idx
+		rects[idx].w = img.width
+		rects[idx].h = img.height
+		images[idx] = rl.LoadImageFromTexture(texture.texture)
+	}
+	defer {
+		for image in images {
+			rl.UnloadImage(image)
+		}
+	}
+	if failed_loading_texture {
+		return 0, false
+	}
+	ctx := rp.Context{}
+	rp.init_target(&ctx, width, height, nodes)
+
+	rp.pack_rects(&ctx, rects)
+	for rect in rects {
+		target := images[cast(int)rect.id]
+		w, h := cast(f32)rect.w, cast(f32)rect.h
+		x, y := cast(f32)rect.x, cast(f32)rect.y
+		rl.ImageDraw(&img, target, {0, 0, w, h}, {x, y, w, h}, rl.WHITE)
+	}
+	texture := rl.LoadTextureFromImage(img)
+
+
+	// TODO: Thing
+	as.texture_system.atlas_map[ah] = texture
+
+	return ah, true
 }
 
 as_get_texture :: proc(as: ^AssetSystem, th: TextureHandle) -> (TextureAsset, bool) {
