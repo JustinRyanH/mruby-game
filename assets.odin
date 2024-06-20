@@ -240,6 +240,83 @@ as_load_texture :: proc(as: ^AssetSystem, path: string) -> (TextureHandle, bool)
 }
 
 // TODO: More complex failure information
+as_create_atlas_from_paths :: proc(
+	as: ^AssetSystem,
+	name: string,
+	width, height: i32,
+	paths: []string,
+) -> (
+	AtlasHandle,
+	bool,
+) {
+	ah := atlas_handle(name)
+	if ah in as.texture_system.atlas_map {
+		return 0, false
+	}
+	img := rl.GenImageColor(width, height, rl.BLANK)
+	defer rl.UnloadImage(img)
+
+	rects: []rp.Rect = make([]rp.Rect, len(paths), context.temp_allocator)
+	images: []rl.Image = make([]rl.Image, len(paths), context.temp_allocator)
+	nodes := make([]rp.Node, len(paths), context.temp_allocator)
+
+	for path, idx in paths {
+		cpath := strings.clone_to_cstring(path, context.temp_allocator)
+		img := rl.LoadImage(cpath)
+		images[idx] = img
+
+		rects[idx].id = cast(i32)idx
+		rects[idx].w = img.width
+		rects[idx].h = img.height
+	}
+
+	defer {
+		for image in images {
+			rl.UnloadImage(image)
+		}
+	}
+
+	ctx := rp.Context{}
+	rp.init_target(&ctx, width, height, nodes)
+	rp.pack_rects(&ctx, rects)
+
+	for rect, idx in rects {
+		target := images[idx]
+		w, h := cast(f32)rect.w, cast(f32)rect.h
+		x, y := cast(f32)rect.x, cast(f32)rect.y
+		assert(rect.id == cast(i32)idx, "Packed Rectangle got unsorted")
+		rl.ImageDraw(&img, target, {0, 0, w, h}, {x, y, w, h}, rl.WHITE)
+	}
+
+	atlas_texture := rl.LoadTextureFromImage(img)
+
+	for image, idx in images {
+		path := paths[idx]
+		rect := rects[idx]
+
+		w, h := cast(f32)rect.w, cast(f32)rect.h
+		x, y := cast(f32)rect.x, cast(f32)rect.y
+
+		handle := texture_handle(path)
+
+		if handle in as.texture_system.textures {
+			texture_asset_deinit(&as.texture_system.textures[handle])
+		}
+
+		asset: TextureAsset
+		asset.handle = handle
+		asset.texture = atlas_texture
+		asset.src = {x, y, w, h}
+		asset.atlas_texture = ah
+	}
+
+	// TODO: Thing
+	as.texture_system.atlas_map[ah] = atlas_texture
+
+	return ah, true
+}
+
+// TODO: More complex failure information
 as_create_atlas_from_textures :: proc(
 	as: ^AssetSystem,
 	name: string,
@@ -254,6 +331,8 @@ as_create_atlas_from_textures :: proc(
 		return 0, false
 	}
 	img := rl.GenImageColor(width, height, rl.BLANK)
+	defer rl.UnloadImage(img)
+
 	rects: []rp.Rect = make([]rp.Rect, len(textures), context.temp_allocator)
 	images: []rl.Image = make([]rl.Image, len(textures), context.temp_allocator)
 	nodes := make([]rp.Node, len(textures), context.temp_allocator)
@@ -271,6 +350,7 @@ as_create_atlas_from_textures :: proc(
 		rects[idx].h = texture.texture.height
 		images[idx] = rl.LoadImageFromTexture(texture.texture)
 	}
+
 	defer {
 		for image in images {
 			rl.UnloadImage(image)

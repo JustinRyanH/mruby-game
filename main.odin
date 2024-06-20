@@ -206,6 +206,25 @@ main :: proc() {
 
 	rl.SetTargetFPS(TargetFPS)
 
+
+	paths := []string {
+		"assets/textures/copter_1.png",
+		"assets/textures/copter_2.png",
+		"assets/textures/copter_3.png",
+	}
+
+	handle, success := as_create_atlas_from_paths(&g.assets, "test", 100, 100, paths)
+	if !success {
+		return
+	}
+
+	a, a_success := as_load_texture(&g.assets, "assets/textures/copter_1.png")
+	assert(a_success)
+	b, b_success := as_load_texture(&g.assets, "assets/textures/copter_2.png")
+	assert(b_success)
+	c, c_success := as_load_texture(&g.assets, "assets/textures/copter_3.png")
+	assert(c_success)
+
 	for !g.should_exit {
 		defer {
 			is_bad := track_bad_free_tracking_allocator(&tracking_allocator)
@@ -254,6 +273,26 @@ main :: proc() {
 
 			game_debug_draw(g)
 			rl.EndMode2D()
+		}
+
+		{
+			txt, success := as_get_atlas_texture(&g.assets, handle)
+			assert(success)
+			rl.DrawTexture(txt, 0, 0, rl.WHITE)
+			rl.DrawRectangleLines(0, 0, txt.width, txt.height, rl.RED)
+		}
+
+		{
+			atl, atl_success := as_get_atlas_texture(&g.assets, handle)
+			txt, success := as_get_texture(&g.assets, a)
+			assert(success)
+			rl.DrawTexturePro(txt.texture, txt.src, {300, 300, 64, 64}, {32, 32}, 0, rl.WHITE)
+			txt, success = as_get_texture(&g.assets, b)
+			assert(success)
+			rl.DrawTexturePro(txt.texture, txt.src, {200, 350, 64, 64}, {32, 32}, 0, rl.WHITE)
+			txt, success = as_get_texture(&g.assets, c)
+			assert(success)
+			rl.DrawTexturePro(txt.texture, txt.src, {400, 400, 64, 64}, {32, 32}, 0, rl.WHITE)
 		}
 
 		imui_draw(&g.imui)
