@@ -220,7 +220,7 @@ main :: proc() {
 	}
 
 	textures := []TextureHandle{a, b, c}
-	handle, success := as_create_atlas_from_textures(&g.assets, "test", 600, 600, textures)
+	handle, success := as_create_atlas_from_textures(&g.assets, "test", 100, 100, textures)
 	if !success {
 		return
 	}
@@ -280,6 +280,7 @@ main :: proc() {
 			return
 		}
 		rl.DrawTexture(txt, 0, 0, rl.WHITE)
+		rl.DrawRectangleLines(0, 0, txt.width, txt.height, rl.RED)
 
 		imui_draw(&g.imui)
 

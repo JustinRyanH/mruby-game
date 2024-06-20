@@ -268,8 +268,8 @@ as_create_atlas_from_textures :: proc(
 
 
 		rects[idx].id = cast(i32)idx
-		rects[idx].w = cast(i32)texture.src.width
-		rects[idx].h = cast(i32)texture.src.height
+		rects[idx].w = texture.texture.width
+		rects[idx].h = texture.texture.height
 		images[idx] = rl.LoadImageFromTexture(texture.texture)
 	}
 	defer {
