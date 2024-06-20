@@ -20,11 +20,13 @@ SoundAsset :: struct {
 	sound:  rl.Sound,
 }
 
+TextureHandle :: distinct u64
+AtlasHandle :: distinct u64
+
 TextureSystem :: struct {
+	atlas:    map[AtlasHandle]rl.Texture,
 	textures: map[TextureHandle]TextureAsset,
 }
-
-TextureHandle :: distinct u64
 
 texture_handle :: proc(str: string) -> TextureHandle {
 	return cast(TextureHandle)utils.generate_u64_from_string(str)
