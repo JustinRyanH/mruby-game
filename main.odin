@@ -206,6 +206,25 @@ main :: proc() {
 
 	rl.SetTargetFPS(TargetFPS)
 
+	a, a_success := as_load_texture(&g.assets, "assets/textures/copter_1.png")
+	if !a_success {
+		return
+	}
+	b, b_success := as_load_texture(&g.assets, "assets/textures/copter_2.png")
+	if !b_success {
+		return
+	}
+	c, c_success := as_load_texture(&g.assets, "assets/textures/copter_3.png")
+	if !c_success {
+		return
+	}
+
+	textures := []TextureHandle{a, b, c}
+	handle, success := as_create_atlas_from_textures(&g.assets, "test", 600, 600, textures)
+	if !success {
+		return
+	}
+
 	for !g.should_exit {
 		defer {
 			is_bad := track_bad_free_tracking_allocator(&tracking_allocator)
@@ -255,6 +274,12 @@ main :: proc() {
 			game_debug_draw(g)
 			rl.EndMode2D()
 		}
+
+		txt, success := as_get_atlas_texture(&g.assets, handle)
+		if !success {
+			return
+		}
+		rl.DrawTexture(txt, 0, 0, rl.WHITE)
 
 		imui_draw(&g.imui)
 

@@ -143,6 +143,7 @@ as_deinit :: proc(as: ^AssetSystem) {
 	delete(as.fonts)
 	delete(as.asset_dir)
 	delete(as.texture_system.textures)
+	delete(as.texture_system.atlas_map)
 	delete(as.sounds)
 }
 
@@ -265,9 +266,10 @@ as_create_atlas_from_textures :: proc(
 			continue
 		}
 
+
 		rects[idx].id = cast(i32)idx
-		rects[idx].w = img.width
-		rects[idx].h = img.height
+		rects[idx].w = cast(i32)texture.src.width
+		rects[idx].h = cast(i32)texture.src.height
 		images[idx] = rl.LoadImageFromTexture(texture.texture)
 	}
 	defer {
@@ -280,8 +282,8 @@ as_create_atlas_from_textures :: proc(
 	}
 	ctx := rp.Context{}
 	rp.init_target(&ctx, width, height, nodes)
-
 	rp.pack_rects(&ctx, rects)
+
 	for rect in rects {
 		target := images[cast(int)rect.id]
 		w, h := cast(f32)rect.w, cast(f32)rect.h
@@ -295,6 +297,14 @@ as_create_atlas_from_textures :: proc(
 	as.texture_system.atlas_map[ah] = texture
 
 	return ah, true
+}
+
+as_get_atlas_texture :: proc(as: ^AssetSystem, ah: AtlasHandle) -> (rl.Texture, bool) {
+	if !(ah in as.texture_system.atlas_map) {
+		return {}, false
+	}
+
+	return as.texture_system.atlas_map[ah]
 }
 
 as_get_texture :: proc(as: ^AssetSystem, th: TextureHandle) -> (TextureAsset, bool) {
