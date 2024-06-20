@@ -275,12 +275,25 @@ main :: proc() {
 			rl.EndMode2D()
 		}
 
-		txt, success := as_get_atlas_texture(&g.assets, handle)
-		if !success {
-			return
+		{
+			txt, success := as_get_atlas_texture(&g.assets, handle)
+			assert(success)
+			rl.DrawTexture(txt, 0, 0, rl.WHITE)
+			rl.DrawRectangleLines(0, 0, txt.width, txt.height, rl.RED)
 		}
-		rl.DrawTexture(txt, 0, 0, rl.WHITE)
-		rl.DrawRectangleLines(0, 0, txt.width, txt.height, rl.RED)
+
+		{
+			atl, atl_success := as_get_atlas_texture(&g.assets, handle)
+			txt, success := as_get_texture(&g.assets, a)
+			assert(success)
+			rl.DrawTexturePro(txt.texture, txt.src, {300, 300, 64, 64}, {32, 32}, 0, rl.WHITE)
+			txt, success = as_get_texture(&g.assets, b)
+			assert(success)
+			rl.DrawTexturePro(txt.texture, txt.src, {200, 350, 64, 64}, {32, 32}, 0, rl.WHITE)
+			txt, success = as_get_texture(&g.assets, c)
+			assert(success)
+			rl.DrawTexturePro(txt.texture, txt.src, {400, 450, 64, 64}, {32, 32}, 0, rl.WHITE)
+		}
 
 		imui_draw(&g.imui)
 

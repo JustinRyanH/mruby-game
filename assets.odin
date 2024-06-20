@@ -44,11 +44,11 @@ TextureAsset :: struct {
 	handle:        TextureHandle,
 	texture:       rl.Texture,
 	src:           rl.Rectangle,
-	atlas_texture: bool,
+	atlas_texture: AtlasHandle,
 }
 
 texture_asset_deinit :: proc(ta: ^TextureAsset) {
-	if ta.atlas_texture {
+	if ta.atlas_texture > 0 {
 		return
 	}
 	rl.UnloadTexture(ta.texture)
@@ -234,7 +234,7 @@ as_load_texture :: proc(as: ^AssetSystem, path: string) -> (TextureHandle, bool)
 	texture := rl.LoadTexture(cpath)
 	src := rl.Rectangle{0, 0, cast(f32)texture.width, cast(f32)texture.height}
 	assert(texture != {})
-	as.texture_system.textures[th] = TextureAsset{th, texture, src, true}
+	as.texture_system.textures[th] = TextureAsset{th, texture, src, 0}
 
 	return th, true
 }
@@ -266,7 +266,6 @@ as_create_atlas_from_textures :: proc(
 			continue
 		}
 
-
 		rects[idx].id = cast(i32)idx
 		rects[idx].w = texture.texture.width
 		rects[idx].h = texture.texture.height
@@ -284,17 +283,33 @@ as_create_atlas_from_textures :: proc(
 	rp.init_target(&ctx, width, height, nodes)
 	rp.pack_rects(&ctx, rects)
 
-	for rect in rects {
+	for rect, idx in rects {
 		target := images[cast(int)rect.id]
 		w, h := cast(f32)rect.w, cast(f32)rect.h
 		x, y := cast(f32)rect.x, cast(f32)rect.y
+		assert(rect.id == cast(i32)idx, "Packed Rectangle got unsorted")
 		rl.ImageDraw(&img, target, {0, 0, w, h}, {x, y, w, h}, rl.WHITE)
 	}
-	texture := rl.LoadTextureFromImage(img)
+	atlas_texture := rl.LoadTextureFromImage(img)
 
+	for handle, idx in textures {
+		t_asset := as_get_texture_ptr(as, handle)
+		assert(t_asset != nil, "Texture could not load, but it loaded earlier")
+		// We only want to unload the texture if we have 1 texture for sprite
+		// the owner of the atlas is responsible for cleaning it up
+		if (t_asset.atlas_texture == 0) {
+			rl.UnloadTexture(t_asset.texture)
+		}
+		t_asset.texture = atlas_texture
+		t_asset.atlas_texture = ah
+		rect := rects[idx]
+		x, y := cast(f32)rect.x, cast(f32)rect.y
+		w, h := cast(f32)rect.w, cast(f32)rect.h
+		t_asset.src = {x, y, w, h}
+	}
 
 	// TODO: Thing
-	as.texture_system.atlas_map[ah] = texture
+	as.texture_system.atlas_map[ah] = atlas_texture
 
 	return ah, true
 }
@@ -313,6 +328,14 @@ as_get_texture :: proc(as: ^AssetSystem, th: TextureHandle) -> (TextureAsset, bo
 	}
 
 	return as.texture_system.textures[th]
+}
+
+as_get_texture_ptr :: proc(as: ^AssetSystem, th: TextureHandle) -> ^TextureAsset {
+	if !(th in as.texture_system.textures) {
+		return nil
+	}
+
+	return &as.texture_system.textures[th]
 }
 
 as_load_sound :: proc(as: ^AssetSystem, path: string) -> (SoundHandle, bool) {
