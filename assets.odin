@@ -20,6 +20,10 @@ SoundAsset :: struct {
 	sound:  rl.Sound,
 }
 
+TextureSystem :: struct {
+	textures: map[TextureHandle]TextureAsset,
+}
+
 TextureHandle :: distinct u64
 
 texture_handle :: proc(str: string) -> TextureHandle {
@@ -96,11 +100,11 @@ ruby_code_deinit :: proc(rc: ^RubyCodeAsset) {
 }
 
 AssetSystem :: struct {
-	asset_dir: string,
-	ruby:      map[RubyCodeHandle]RubyCodeAsset,
-	fonts:     map[FontHandle]FontAsset,
-	textures:  map[TextureHandle]TextureAsset,
-	sounds:    map[SoundHandle]SoundAsset,
+	asset_dir:      string,
+	ruby:           map[RubyCodeHandle]RubyCodeAsset,
+	fonts:          map[FontHandle]FontAsset,
+	texture_system: TextureSystem,
+	sounds:         map[SoundHandle]SoundAsset,
 }
 
 as_init :: proc(as: ^AssetSystem, asset_dir: string) {
@@ -111,8 +115,8 @@ as_init :: proc(as: ^AssetSystem, asset_dir: string) {
 }
 
 as_deinit :: proc(as: ^AssetSystem) {
-	for i in as.textures {
-		tx := &as.textures[i]
+	for i in as.texture_system.textures {
+		tx := &as.texture_system.textures[i]
 		texture_asset_deinit(tx)
 	}
 	for i in as.ruby {
@@ -128,7 +132,7 @@ as_deinit :: proc(as: ^AssetSystem) {
 	delete(as.ruby)
 	delete(as.fonts)
 	delete(as.asset_dir)
-	delete(as.textures)
+	delete(as.texture_system.textures)
 	delete(as.sounds)
 }
 
@@ -210,7 +214,7 @@ as_get_font :: proc(as: ^AssetSystem, fh: FontHandle) -> FontAsset {
 
 as_load_texture :: proc(as: ^AssetSystem, path: string) -> (TextureHandle, bool) {
 	th := texture_handle(path)
-	if th in as.textures {
+	if th in as.texture_system.textures {
 		return th, true
 	}
 
@@ -219,17 +223,17 @@ as_load_texture :: proc(as: ^AssetSystem, path: string) -> (TextureHandle, bool)
 	texture := rl.LoadTexture(cpath)
 	src := rl.Rectangle{0, 0, cast(f32)texture.width, cast(f32)texture.height}
 	assert(texture != {})
-	as.textures[th] = TextureAsset{th, texture, src, true}
+	as.texture_system.textures[th] = TextureAsset{th, texture, src, true}
 
 	return th, true
 }
 
 as_get_texture :: proc(as: ^AssetSystem, th: TextureHandle) -> (TextureAsset, bool) {
-	if !(th in as.textures) {
+	if !(th in as.texture_system.textures) {
 		return {}, false
 	}
 
-	return as.textures[th]
+	return as.texture_system.textures[th]
 }
 
 as_load_sound :: proc(as: ^AssetSystem, path: string) -> (SoundHandle, bool) {
