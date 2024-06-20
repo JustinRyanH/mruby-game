@@ -23,14 +23,21 @@ SoundAsset :: struct {
 TextureHandle :: distinct u64
 AtlasHandle :: distinct u64
 
+@(private = "file")
+texture_handle :: proc(str: string) -> TextureHandle {
+	return cast(TextureHandle)utils.generate_u64_from_string(str)
+}
+
+@(private = "file")
+atlas_handle :: proc(str: string) -> AtlasHandle {
+	return cast(AtlasHandle)utils.generate_u64_from_string(str)
+}
+
 TextureSystem :: struct {
 	atlas:    map[AtlasHandle]rl.Texture,
 	textures: map[TextureHandle]TextureAsset,
 }
 
-texture_handle :: proc(str: string) -> TextureHandle {
-	return cast(TextureHandle)utils.generate_u64_from_string(str)
-}
 
 TextureAsset :: struct {
 	handle:        TextureHandle,
@@ -228,6 +235,16 @@ as_load_texture :: proc(as: ^AssetSystem, path: string) -> (TextureHandle, bool)
 	as.texture_system.textures[th] = TextureAsset{th, texture, src, true}
 
 	return th, true
+}
+
+as_create_atlas :: proc(
+	as: ^AssetSystem,
+	name: String,
+	width, height: i32,
+) -> (
+	AtlasHandle,
+	bool,
+) {
 }
 
 as_get_texture :: proc(as: ^AssetSystem, th: TextureHandle) -> (TextureAsset, bool) {
