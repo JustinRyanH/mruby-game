@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # require 'assets/scripts/setup'
-# require 'assets/scripts/engine_override'
+require 'assets/scripts/engine_override'
 # h = {}
 # ObjectSpace.count_objects(h)
 # pugts h
@@ -22,6 +22,18 @@ class TexturePacking
 
   def setup
     @ready = true
+    texture_paths = [
+      'copter_1.png',
+      'copter_2.png',
+      'copter_3.png',
+    ].map { |path| "assets/textures/#{path}" }
+    @atlas = AssetSystem.pack_textures(
+      name: 'atlas_example',
+      paths: texture_paths,
+      width: 1024,
+      height: 1024,
+    )
+    puts "Atlas Size: #{@atlas.size.inspect}"
   end
 
   def ready?

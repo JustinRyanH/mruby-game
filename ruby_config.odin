@@ -82,6 +82,7 @@ mrb_vector_type: mrb.DataType = {"Vector", mrb.free}
 
 EngineRClass :: struct {
 	as:            ^mrb.RClass,
+	atlas_asset:   ^mrb.RClass,
 	camera:        ^mrb.RClass,
 	collider:      ^mrb.RClass,
 	color:         ^mrb.RClass,
@@ -117,6 +118,7 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	setup_vector_class(st)
 	setup_color_class(st)
 	setup_rect_pack_class(st)
+	setup_atlas(st)
 }
 
 setup_easing :: proc(st: ^mrb.State) {
@@ -1190,7 +1192,7 @@ draw_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	// TODO: I can totally do this with generics and reflection
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
@@ -1419,7 +1421,7 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 		font: mrb.Value,
 	}
 
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "font"),
@@ -1502,6 +1504,7 @@ setup_assets :: proc(st: ^mrb.State) {
 	as_class := mrb.define_class(st, "AssetSystem", mrb.state_get_object_class(st))
 	mrb.define_class_method(st, as_class, "add_font", assets_add_font, mrb.args_req(1))
 	mrb.define_class_method(st, as_class, "load_texture", assets_load_texture, mrb.args_req(1))
+	mrb.define_class_method(st, as_class, "pack_textures", assets_pack_textures, mrb.args_req(1))
 	mrb.define_class_method(st, as_class, "load_sound", assets_load_sound, mrb.args_req(1))
 	engine_classes.as = as_class
 }
@@ -1531,6 +1534,54 @@ assets_load_texture :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Valu
 	handle_value := mrb.int_value(state, cast(mrb.Int)handle)
 
 	return mrb.obj_new(state, engine_classes.texture_asset, 1, &handle_value)
+}
+@(private = "file")
+assets_pack_textures :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+	asset_system := &g.assets
+
+	KValues :: struct {
+		name:   mrb.Value,
+		width:  mrb.Value,
+		height: mrb.Value,
+		paths:  mrb.Value,
+	}
+
+	values: KValues
+	load_kwargs(KValues, state, &values)
+	if !mrb.string_p(values.name) {
+		mrb.raise_exception(state, "Expected first argument to be a name of the atlas")
+		return mrb.nil_value()
+	}
+
+	atlas_name, name_success := mrb.string_from_value(state, values.name, context.temp_allocator)
+	assert(name_success, "The name we want to use to identify atlas")
+	if !mrb.array_p(values.paths) {
+		mrb.raise_exception(state, "Expected paths to be an array of strings")
+		return mrb.nil_value()
+	}
+
+	path_strings := make([dynamic]string, context.temp_allocator)
+	value := mrb.ary_pop(state, values.paths)
+	for (!mrb.nil_p(value)) {
+		path_str, success := mrb.string_from_value(state, value, context.temp_allocator)
+		assert(success, "We should be able to always create a new string value")
+		append(&path_strings, path_str)
+
+		value = mrb.ary_pop(state, values.paths)
+	}
+	width := mrb.as_int(state, values.width)
+	height := mrb.as_int(state, values.height)
+	atlas, atlas_success := as_create_atlas_from_paths(
+		asset_system,
+		atlas_name,
+		cast(i32)width,
+		cast(i32)height,
+		path_strings[:],
+	)
+
+	atlas_id := mrb.int_value(state, cast(mrb.Int)atlas)
+	return mrb.obj_new(state, engine_classes.atlas_asset, 1, &atlas_id)
 }
 
 @(private = "file")
@@ -1657,6 +1708,72 @@ sound_play :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	return mrb.nil_value()
 }
+
+
+//////////////////////////////
+//// Atlas
+//////////////////////////////
+
+setup_atlas :: proc(st: ^mrb.State) {
+	atlas_class := mrb.define_class(st, "Atlas", mrb.state_get_object_class(st))
+	mrb.set_data_type(atlas_class, .CData)
+	mrb.define_method(st, atlas_class, "initialize", atlas_init, mrb.args_req(1))
+	mrb.define_method(st, atlas_class, "id", atlas_get_id, mrb.args_none())
+	mrb.define_method(st, atlas_class, "size", atlas_get_size, mrb.args_none())
+	engine_classes.atlas_asset = atlas_class
+}
+
+atlas_from_object :: proc(
+	state: ^mrb.State,
+	v: mrb.Value,
+	loc := #caller_location,
+) -> AtlasHandle {
+	assert(
+		mrb.obj_is_kind_of(state, v, engine_classes.atlas_asset),
+		fmt.tprintf("Expected Object to be a Atlas @ %v", loc),
+	)
+	return mrb.get_data_from_value(AtlasHandle, v)^
+}
+
+
+@(private = "file")
+atlas_init :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	handle_id: int
+	mrb.get_args(state, "i", &handle_id)
+
+	i := mrb.get_data_from_value(AtlasHandle, self)
+
+	if (i == nil) {
+		mrb.data_init(self, nil, &mrb_font_handle_type)
+		i = cast(^AtlasHandle)mrb.malloc(state, size_of(AtlasHandle))
+		mrb.data_init(self, i, &mrb_font_handle_type)
+	}
+	i^ = cast(AtlasHandle)handle_id
+	return self
+}
+
+@(private = "file")
+atlas_get_id :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	id := mrb.get_data_from_value(AtlasHandle, self)^
+	return mrb.int_value(state, cast(mrb.Int)id)
+}
+
+
+@(private = "file")
+atlas_get_size :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+	id := mrb.get_data_from_value(AtlasHandle, self)^
+
+	asset, ok := as_get_atlas_texture(&g.assets, id)
+	assert(ok, "Texture does not exist")
+	size := []mrb.Value {
+		mrb.float_value(state, cast(mrb.Float)asset.width),
+		mrb.float_value(state, cast(mrb.Float)asset.height),
+	}
+
+	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(size))
+}
+
 
 //////////////////////////////
 //// Textures
