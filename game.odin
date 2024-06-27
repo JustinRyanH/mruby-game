@@ -48,7 +48,7 @@ Game :: struct {
 	assets:           AssetSystem,
 	imui:             ImUiState,
 	input:            input.FrameInput,
-	rand:             rand.Rand,
+	rand:             runtime.Default_Random_State,
 	debug:            bool,
 	should_exit:      bool,
 

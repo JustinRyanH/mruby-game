@@ -332,7 +332,7 @@ frame_input_random_float :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb
 			high,
 		)
 	}
-	v := rand.float32_range(cast(mrb.Float)low, cast(mrb.Float)high, &g.rand)
+	v := rand.float32_range(cast(mrb.Float)low, cast(mrb.Float)high)
 
 	return mrb.float_value(state, v)
 }
@@ -355,14 +355,14 @@ frame_input_random_int :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.V
 		}
 
 		upper := cast(i64)(high - low)
-		v := cast(int)rand.int63_max(upper, &g.rand)
+		v := cast(int)rand.int63_max(upper)
 		return mrb.int_value(state, v + low)
 	}
 
 	// We don't do the guard here because I still want to have the RND move 
 	// event if we don't get a real value
 	upper := cast(i64)(high - low)
-	v := cast(int)rand.int63_max(upper + 1, &g.rand)
+	v := cast(int)rand.int63_max(upper + 1)
 	return mrb.int_value(state, v + low)
 
 }

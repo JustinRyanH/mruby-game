@@ -170,6 +170,9 @@ renderable_texture_render :: proc(renderable: RenderableTexture) {
 todo_render: [dynamic]RenderableTexture
 
 g: ^Game
+
+SCREEN_HEIGHT :: 800
+SCREEN_WIDTH :: 1280
 main :: proc() {
 	default_allocator := context.allocator
 	tracking_allocator: mem.Tracking_Allocator
@@ -193,7 +196,7 @@ main :: proc() {
 	tick_handle, tick_loaded := as_load_ruby(&g.assets, "rb/tick.rb")
 	assert(tick_loaded, "`tick.rb` is required")
 
-	rl.InitWindow(1280, 800, "Odin-Ruby Game Demo")
+	rl.InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Odin-Ruby Game Demo")
 	defer rl.CloseWindow()
 
 	when GAME_DEV {
@@ -201,7 +204,7 @@ main :: proc() {
 		rl.SetWindowMonitor(1)
 	}
 
-	screen_buffer := rl.LoadRenderTexture(1280, 800)
+	screen_buffer := rl.LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT)
 
 	rl.InitAudioDevice()
 	defer rl.CloseAudioDevice()
@@ -224,10 +227,8 @@ main :: proc() {
 
 		input.update_input(&g.input, 1.0 / TargetFPS)
 		rl.BeginDrawing()
-		defer rl.EndDrawing()
 
 		rl.BeginTextureMode(screen_buffer)
-		rl.EndTextureMode()
 
 		rl.ClearBackground(g.bg_color)
 
@@ -253,7 +254,6 @@ main :: proc() {
 			camera := game_get_camera(g)
 			rl.BeginMode2D(camera)
 
-			rl.BeginTextureMode()
 			for renderable in todo_render {
 				renderable_texture_render(renderable)
 			}
@@ -263,6 +263,18 @@ main :: proc() {
 		}
 
 		imui_draw(&g.imui)
+
+		rl.EndTextureMode()
+		rl.DrawTexturePro(
+			screen_buffer.texture,
+			{0, -SCREEN_HEIGHT, SCREEN_WIDTH, -SCREEN_HEIGHT},
+			{0, 0, SCREEN_WIDTH, SCREEN_HEIGHT},
+			rl.Vector2{},
+			0,
+			rl.WHITE,
+		)
+
+		rl.EndDrawing()
 
 		// Check for asset change every second or so
 		if input.frame_query_id(g.input) % TargetFPS == 0 {

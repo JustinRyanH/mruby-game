@@ -309,6 +309,7 @@ as_create_atlas_from_paths :: proc(
 		asset.texture = atlas_texture
 		asset.src = {x, y, w, h}
 		asset.atlas_texture = ah
+		as.texture_system.textures[handle] = asset
 	}
 
 	// TODO: Thing
