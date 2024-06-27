@@ -288,6 +288,7 @@ as_create_atlas_from_paths :: proc(
 		rl.ImageDraw(&img, target, {0, 0, w, h}, {x, y, w, h}, rl.WHITE)
 	}
 
+
 	atlas_texture := rl.LoadTextureFromImage(img)
 
 	for image, idx in images {

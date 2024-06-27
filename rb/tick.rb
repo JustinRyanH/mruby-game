@@ -14,10 +14,14 @@ require 'assets/scripts/engine_override'
 #
 # $new_game ||= TestGame.new
 # $new_game.tick
+ATLAS_WIDTH = 1024
 
 class TexturePacking
   def tick
     setup unless ready?
+    center = FrameInput.screen.size * 0.5
+    @atlas.draw(center)
+    Draw.rect(pos: center, size: Vector.new(ATLAS_WIDTH, 128), mode: :outline)
   end
 
   def setup
@@ -30,8 +34,8 @@ class TexturePacking
     @atlas = AssetSystem.pack_textures(
       name: 'atlas_example',
       paths: texture_paths,
-      width: 1024,
-      height: 1024,
+      width: ATLAS_WIDTH,
+      height: 128,
     )
     puts "Atlas Size: #{@atlas.size.inspect}"
   end

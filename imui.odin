@@ -131,16 +131,18 @@ imui_draw :: proc(imui: ^ImUiState) {
 
 				rl.DrawTexturePro(asset.texture, asset.src, dest, offset, c.rotation, c.tint)
 			case AtlasHandle:
-				asset, success := as_get_atlas_texture(&g.assets, handle)
+				atlas, success := as_get_atlas_texture(&g.assets, handle)
 				assert(success, "We should not try to draw an invalid texture")
 
 				offset := rl.Vector2{c.size.x * c.offset_p.x, c.size.y * c.offset_p.y}
 
 				dest := rl.Rectangle{c.pos.x, c.pos.y, c.size.x, c.size.y}
 
+				fmt.println(c.pos, offset, c.pos - offset)
+
 				rl.DrawTexturePro(
-					asset,
-					{0, 0, cast(f32)asset.width, cast(f32)asset.height},
+					atlas,
+					{0, 0, cast(f32)atlas.width, cast(f32)atlas.height},
 					dest,
 					offset,
 					c.rotation,

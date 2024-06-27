@@ -1779,6 +1779,28 @@ atlas_get_size :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 @(private = "file")
 atlas_draw :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	context = load_context(state)
+
+	pos_value: mrb.Value
+	mrb.get_args(state, "o", &pos_value)
+
+	pos := vector_from_object(state, pos_value)
+
+	id := mrb.get_data_from_value(AtlasHandle, self)^
+	asset, ok := as_get_atlas_texture(&g.assets, id)
+	assert(ok)
+
+
+	cmd: ImUiDrawTextureCmd
+	cmd.pos = pos
+	cmd.texture = id
+	cmd.offset_p = Vector2{0.5, 0.5}
+	cmd.tint = rl.WHITE
+	cmd.size.x = cast(f32)asset.width
+	cmd.size.y = cast(f32)asset.height
+
+	imui_add_cmd(&g.imui, cmd)
+
 	return mrb.nil_value()
 }
 
