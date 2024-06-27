@@ -12,6 +12,7 @@ require 'assets/scripts/engine_override'
 # require 'assets/scripts/setup'
 # require 'assets/scripts/new_game'
 #
+require 'assets/scripts/assets'
 # $new_game ||= TestGame.new
 # $new_game.tick
 ATLAS_WIDTH = 1024
@@ -37,7 +38,11 @@ class TexturePacking
       width: ATLAS_WIDTH,
       height: 128,
     )
-    puts "Atlas Size: #{@atlas.size.inspect}"
+
+    Sprite.create(pos: Vector.new(300, 200), size: Vector.new(32, 32), texture: Textures.copter)
+    Sprite.create(pos: Vector.new(400, 200), size: Vector.new(32, 32), texture: Textures.copter2)
+    Sprite.create(pos: Vector.new(450, 200), size: Vector.new(32, 32), texture: Textures.copter3)
+    Sprite.create(pos: Vector.new(500, 200), size: Vector.new(32, 32), texture: Textures.copter)
   end
 
   def ready?

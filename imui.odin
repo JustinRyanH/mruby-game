@@ -138,8 +138,6 @@ imui_draw :: proc(imui: ^ImUiState) {
 
 				dest := rl.Rectangle{c.pos.x, c.pos.y, c.size.x, c.size.y}
 
-				fmt.println(c.pos, offset, c.pos - offset)
-
 				rl.DrawTexturePro(
 					atlas,
 					{0, 0, cast(f32)atlas.width, cast(f32)atlas.height},

@@ -201,6 +201,8 @@ main :: proc() {
 		rl.SetWindowMonitor(1)
 	}
 
+	screen_buffer := rl.LoadRenderTexture(1280, 800)
+
 	rl.InitAudioDevice()
 	defer rl.CloseAudioDevice()
 
@@ -223,6 +225,9 @@ main :: proc() {
 		input.update_input(&g.input, 1.0 / TargetFPS)
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
+
+		rl.BeginTextureMode(screen_buffer)
+		rl.EndTextureMode()
 
 		rl.ClearBackground(g.bg_color)
 
@@ -248,6 +253,7 @@ main :: proc() {
 			camera := game_get_camera(g)
 			rl.BeginMode2D(camera)
 
+			rl.BeginTextureMode()
 			for renderable in todo_render {
 				renderable_texture_render(renderable)
 			}

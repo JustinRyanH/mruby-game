@@ -3,6 +3,7 @@
 ## Current
 
 * Texture Packing
+  - Unload Textures if they're already loaded
 
 ## Nice to Have
 
