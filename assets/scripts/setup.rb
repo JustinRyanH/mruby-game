@@ -352,6 +352,27 @@ class Game
   end
 
   def setup
+    texture_paths = [
+      'copter_1.png',
+      'copter_2.png',
+      'copter_3.png',
+      'platform_um.png',
+      'platform_ulc.png',
+      'platform_urc.png',
+      'platform_lm.png',
+      'platform_m.png',
+      'platform_rm.png',
+      'platform_bm.png',
+      'platform_blc.png',
+      'platform_brc.png',
+    ].map { |path| "assets/textures/#{path}" }
+    @atlas = AssetSystem.pack_textures(
+      name: 'atlas_example',
+      paths: texture_paths,
+      width: 258,
+      height: 258,
+    )
+
     @scene.enter
 
     @ready = true
