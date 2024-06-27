@@ -1192,7 +1192,7 @@ draw_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	// TODO: I can totally do this with generics and reflection
-	names: []mrb.Sym = {
+	names: []mrb.Sym =  {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
@@ -1387,10 +1387,12 @@ draw_draw_texture :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 	cmd.tint = rl.WHITE
 
 	if mrb.undef_p(values.size) {
-		txt_asset, txt_found := as_get_texture(&g.assets, cmd.texture)
+		handle := cmd.texture.(TextureHandle)
+
+		texture, txt_found := as_get_texture(&g.assets, handle)
 		assert(txt_found, "Texture is not valid")
-		cmd.size.x = txt_asset.src.width
-		cmd.size.y = txt_asset.src.height
+		cmd.size.x = texture.src.width
+		cmd.size.y = texture.src.height
 	} else {
 		cmd.size = vector_from_object(state, values.size)
 	}
@@ -1421,7 +1423,7 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 		font: mrb.Value,
 	}
 
-	names: []mrb.Sym = {
+	names: []mrb.Sym =  {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "font"),
@@ -1718,8 +1720,9 @@ setup_atlas :: proc(st: ^mrb.State) {
 	atlas_class := mrb.define_class(st, "Atlas", mrb.state_get_object_class(st))
 	mrb.set_data_type(atlas_class, .CData)
 	mrb.define_method(st, atlas_class, "initialize", atlas_init, mrb.args_req(1))
-	mrb.define_method(st, atlas_class, "id", atlas_get_id, mrb.args_none())
+	mrb.define_method(st, atlas_class, "id", atlas_get_id, mrb.args_req(1))
 	mrb.define_method(st, atlas_class, "size", atlas_get_size, mrb.args_none())
+	mrb.define_method(st, atlas_class, "draw", atlas_draw, mrb.args_req(1))
 	engine_classes.atlas_asset = atlas_class
 }
 
@@ -1774,6 +1777,10 @@ atlas_get_size :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	return mrb.obj_new(state, engine_classes.vector, 2, raw_data(size))
 }
 
+@(private = "file")
+atlas_draw :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	return mrb.nil_value()
+}
 
 //////////////////////////////
 //// Textures
