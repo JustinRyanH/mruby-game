@@ -173,6 +173,8 @@ g: ^Game
 
 SCREEN_HEIGHT :: 800
 SCREEN_WIDTH :: 1280
+SCALE_WIDTH :: SCREEN_WIDTH / 4
+SCALE_HEIGHT :: SCREEN_HEIGHT / 4
 main :: proc() {
 	default_allocator := context.allocator
 	tracking_allocator: mem.Tracking_Allocator
@@ -204,7 +206,7 @@ main :: proc() {
 		rl.SetWindowMonitor(1)
 	}
 
-	screen_buffer := rl.LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT)
+	screen_buffer := rl.LoadRenderTexture(SCALE_WIDTH, SCALE_HEIGHT)
 
 	rl.InitAudioDevice()
 	defer rl.CloseAudioDevice()
@@ -226,6 +228,8 @@ main :: proc() {
 		game_setup_temp(g)
 
 		input.update_input(&g.input, 1.0 / TargetFPS)
+		g.input.current_frame.meta.screen_width = SCALE_WIDTH
+		g.input.current_frame.meta.screen_height = SCALE_HEIGHT
 		rl.BeginDrawing()
 
 		rl.BeginTextureMode(screen_buffer)
@@ -267,7 +271,7 @@ main :: proc() {
 		rl.EndTextureMode()
 		rl.DrawTexturePro(
 			screen_buffer.texture,
-			{0, -SCREEN_HEIGHT, SCREEN_WIDTH, -SCREEN_HEIGHT},
+			{0, -SCALE_HEIGHT, SCALE_WIDTH, -SCALE_HEIGHT},
 			{0, 0, SCREEN_WIDTH, SCREEN_HEIGHT},
 			rl.Vector2{},
 			0,

@@ -65,7 +65,7 @@ class EchoBat < GameObject
   attr_reader :base_speed, :velocity
 
   def self.create(pos:, base_speed:)
-    size = Vector.new(64, 64)
+    size = Vector.new(16, 16)
 
     sprite = Sprite.create(pos:, size:, texture: Textures.copter, tint: Color.black)
     collider = Collider.create(pos:, size:)
