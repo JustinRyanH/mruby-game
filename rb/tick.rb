@@ -6,11 +6,5 @@
 # ObjectSpace.count_objects(h)
 # pugts h
 
-# $old_game ||= Game.new
-# $old_game.tick
-
-require 'assets/scripts/setup'
-require 'assets/scripts/new_game'
-
-$new_game ||= TestGame.new
-$new_game.tick
+$old_game ||= Game.new
+$old_game.tick
