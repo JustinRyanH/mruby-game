@@ -2,7 +2,6 @@
 
 ## Current
 
-* Hide/Reveal Asset Code
 * Particle Emission
 * Echolocation
 
