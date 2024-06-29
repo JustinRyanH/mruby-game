@@ -10,6 +10,7 @@
 
 * Handle how-reload failures elegantly
 * UI
+  - Use Spring for UI instead
   - Global Style
   - Rotation (Transitions)
   - Scaling/Stretch (Transitions)
@@ -17,7 +18,6 @@
   - Scrolling
   - NPatch Background
   - Allow Tracking Transitions
-  - Relative Transitions
   - Disable Buttons
 * Game Start Flashier
   - Have all of the elements come onto the screen sft
