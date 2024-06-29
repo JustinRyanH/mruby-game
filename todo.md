@@ -2,8 +2,9 @@
 
 ## Current
 
-* Particle Emission
+* Hide/Reveal Enviormnent Debug
 * Echolocation
+* Particle Emission
 
 ## Nice to Have
 
