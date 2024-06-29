@@ -286,6 +286,8 @@ as_create_atlas_from_paths :: proc(
 		x, y := cast(f32)rect.x, cast(f32)rect.y
 		assert(rect.id == cast(i32)idx, "Packed Rectangle got unsorted")
 		rl.ImageDraw(&img, target, {0, 0, w, h}, {x + 1, y + 1, w, h}, rl.WHITE)
+		rl.ImageDraw(&img, target, {0, 0, 1, h}, {x, y + 1, 1, h}, rl.RED)
+		rl.ImageDraw(&img, target, {w - 1, 0, 1, h}, {x + w + 1, y + 1, 1, h}, rl.RED)
 	}
 
 
