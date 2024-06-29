@@ -48,7 +48,6 @@ Game :: struct {
 	assets:           AssetSystem,
 	imui:             ImUiState,
 	input:            input.FrameInput,
-	rand:             runtime.Default_Random_State,
 	debug:            bool,
 	should_exit:      bool,
 
@@ -66,7 +65,7 @@ Game :: struct {
 
 game_init :: proc(game: ^Game) {
 	game.ctx = context
-	game.rand = rand.create(1)
+	rand.reset(1)
 	game.ruby = mrb.open_allocf(mruby_odin_allocf, &game.ctx)
 
 	game.bg_color = rl.BLACK
