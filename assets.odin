@@ -266,8 +266,8 @@ as_create_atlas_from_paths :: proc(
 		images[idx] = img
 
 		rects[idx].id = cast(i32)idx
-		rects[idx].w = img.width
-		rects[idx].h = img.height
+		rects[idx].w = img.width + 2
+		rects[idx].h = img.height + 2
 	}
 
 	defer {
@@ -282,10 +282,10 @@ as_create_atlas_from_paths :: proc(
 
 	for rect, idx in rects {
 		target := images[idx]
-		w, h := cast(f32)rect.w, cast(f32)rect.h
+		w, h := cast(f32)target.width, cast(f32)target.height
 		x, y := cast(f32)rect.x, cast(f32)rect.y
 		assert(rect.id == cast(i32)idx, "Packed Rectangle got unsorted")
-		rl.ImageDraw(&img, target, {0, 0, w, h}, {x, y, w, h}, rl.WHITE)
+		rl.ImageDraw(&img, target, {0, 0, w, h}, {x + 1, y + 1, w, h}, rl.WHITE)
 	}
 
 
@@ -295,8 +295,8 @@ as_create_atlas_from_paths :: proc(
 		path := paths[idx]
 		rect := rects[idx]
 
-		w, h := cast(f32)rect.w, cast(f32)rect.h
-		x, y := cast(f32)rect.x, cast(f32)rect.y
+		w, h := cast(f32)rect.w - 2, cast(f32)rect.h - 2
+		x, y := cast(f32)rect.x + 1, cast(f32)rect.y + 1
 
 		handle := texture_handle(path)
 
