@@ -4,13 +4,13 @@
 
 * Texture Packing
   - Fix the texture packing border issue... https://gist.github.com/karl-zylinski/a5f996ef03f46998b9886fb456279e08
+* Timestamp on Hotreload Loads
+* Particle Emission
+* Echolocation
 
 ## Nice to Have
 
-* Timestamp on Hotreload Loads
-* All Draw Commands go to Draw Command Stack
 * Handle how-reload failures elegantly
-* Implement a version of lua's init for require
 * UI
   - Global Style
   - Rotation (Transitions)
@@ -35,6 +35,7 @@
 * Modules?
 * Delegate to the Style
 * WASM build
+* Don't crash on Ruby Failures
 * Debug Console/IMGUI
 
 ## Juice
@@ -45,7 +46,6 @@
 ## Gameplay
 
 * Shadows
-* Echolocation
 * High Risk bouns areas
 * Movement
   - Flap (High Sound)
@@ -59,10 +59,9 @@
 
 ## Backburner
 
-* Particle Emission
-
 ## Done
 
+* All Draw Commands go to Draw Command Stack
 * Make Obstacle a collection of Sprites
 * Seperate Sprites and Collisions
 * Do a special entity regristration and free to check we actually clean them up
