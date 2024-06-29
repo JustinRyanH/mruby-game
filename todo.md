@@ -3,6 +3,7 @@
 ## Current
 
 * Timestamp on Hotreload Loads
+* Hide/Reveal Asset Code
 * Particle Emission
 * Echolocation
 
