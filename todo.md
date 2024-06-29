@@ -2,8 +2,6 @@
 
 ## Current
 
-* Texture Packing
-  - Fix the texture packing border issue... https://gist.github.com/karl-zylinski/a5f996ef03f46998b9886fb456279e08
 * Timestamp on Hotreload Loads
 * Particle Emission
 * Echolocation
@@ -117,6 +115,8 @@
 * Sprite has a y-index
 * Looping Paralax Backgrounds
 * Fix: Smart Parallax  Looping
+* Texture Packing
+  - Fix the texture packing border issue... https://gist.github.com/karl-zylinski/a5f996ef03f46998b9886fb456279e08
 
 ## AOR
 
