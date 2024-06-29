@@ -173,8 +173,8 @@ g: ^Game
 
 SCREEN_HEIGHT :: 800
 SCREEN_WIDTH :: 1280
-SCALE_WIDTH :: SCREEN_WIDTH / 4
-SCALE_HEIGHT :: SCREEN_HEIGHT / 4
+SCALE_WIDTH :: SCREEN_WIDTH
+SCALE_HEIGHT :: SCREEN_HEIGHT
 main :: proc() {
 	default_allocator := context.allocator
 	tracking_allocator: mem.Tracking_Allocator
