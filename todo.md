@@ -2,6 +2,7 @@
 
 ## Current
 
+* Loading/Unloading and hot reloading shaders
 * Hide/Reveal Enviormnent Debug
 * Echolocation
 * Particle Emission
