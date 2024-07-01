@@ -7,8 +7,18 @@ import "core:time"
 
 import rl "vendor:raylib"
 
+import dp "./data_pool"
 import rp "./rect_pack"
 import "./utils"
+
+ShaderHandle :: distinct dp.Handle
+
+ShaderAsset :: struct {
+	handle:       ShaderHandle,
+	fragmentPath: string,
+	vertexPath:   string,
+	shader:       rl.Shader,
+}
 
 SoundHandle :: distinct u64
 
@@ -115,6 +125,7 @@ AssetSystem :: struct {
 	fonts:          map[FontHandle]FontAsset,
 	texture_system: TextureSystem,
 	sounds:         map[SoundHandle]SoundAsset,
+	shaders:        dp.DataPool(8, ShaderAsset, ShaderHandle),
 }
 
 as_init :: proc(as: ^AssetSystem, asset_dir: string) {
@@ -372,4 +383,22 @@ as_get_sound :: proc(as: ^AssetSystem, sh: SoundHandle) -> (SoundAsset, bool) {
 		return {}, false
 	}
 	return as.sounds[sh]
+}
+
+as_load_shader :: proc(
+	as: ^AssetSystem,
+	vertexPath, fragmentPath: string,
+) -> (
+	ShaderHandle,
+	bool,
+) {
+	iter := dp.new_iter(&as.shaders)
+	for data, handle in dp.iter_next(&iter) {
+		if data.fragmentPath == fragmentPath && data.vertexPath == vertexPath {
+			return handle, true
+		}
+	}
+
+
+	return {}, false
 }
