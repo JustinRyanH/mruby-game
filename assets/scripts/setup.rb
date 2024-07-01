@@ -84,19 +84,19 @@ class StartState
   end
 
   def main_style
-    @main_style ||= Style.from_hash({ font_size: 120, padding: 8, background_color: Color.crow_black_blue })
+    Style.from_hash({ font_size: 120, padding: 8, background_color: Color.crow_black_blue })
   end
 
   def button_style
-    @button_style ||= Style.from_hash({ background_color: Color.magic_spell, text_align: :right, font_size: 74 })
+    Style.from_hash({ background_color: Color.magic_spell, text_align: :right, font_size: 74 })
   end
 
   def hover_style
-    @hover_style ||= button_style.merge_new({ background_color: Color.blunt_violet, font_color: Color.magic_spell })
+    button_style.merge_new({ background_color: Color.blunt_violet, font_color: Color.magic_spell })
   end
 
   def down_style
-    @down_style ||= hover_style.merge_new({ font_size: hover_style.font_size * 0.98 })
+    hover_style.merge_new({ font_size: hover_style.font_size * 0.98 })
   end
 
   def starting_position
