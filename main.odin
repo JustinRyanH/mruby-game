@@ -212,6 +212,10 @@ main :: proc() {
 	defer rl.CloseAudioDevice()
 
 	rl.SetTargetFPS(TargetFPS)
+	rl.LoadShader(nil, "assets/shaders/simple.frag")
+
+	as_load_shader(&g.assets, nil, "assets/shaders/simple.frag")
+	assert(false)
 
 	for !g.should_exit {
 		defer {
@@ -222,6 +226,7 @@ main :: proc() {
 		defer mrb.incremental_gc(g.ruby)
 		defer game_handle_sounds(g)
 		todo_render = make([dynamic]RenderableTexture, 0, 1024, context.temp_allocator)
+
 
 		imui_begin(&g.imui)
 

@@ -14,10 +14,10 @@ import "./utils"
 ShaderHandle :: distinct dp.Handle
 
 ShaderAsset :: struct {
-	handle:       ShaderHandle,
-	fragmentPath: string,
-	vertexPath:   string,
-	shader:       rl.Shader,
+	handle:    ShaderHandle,
+	frag_path: Maybe(string),
+	vert_path: Maybe(string),
+	shader:    rl.Shader,
 }
 
 SoundHandle :: distinct u64
@@ -387,18 +387,37 @@ as_get_sound :: proc(as: ^AssetSystem, sh: SoundHandle) -> (SoundAsset, bool) {
 
 as_load_shader :: proc(
 	as: ^AssetSystem,
-	vertexPath, fragmentPath: string,
+	vert_path, frag_path: Maybe(string),
 ) -> (
 	ShaderHandle,
 	bool,
 ) {
 	iter := dp.new_iter(&as.shaders)
 	for data, handle in dp.iter_next(&iter) {
-		if data.fragmentPath == fragmentPath && data.vertexPath == vertexPath {
+		if data.frag_path == frag_path && data.vert_path == vert_path {
 			return handle, true
 		}
 	}
 
+	c_vert_path: cstring = t_maybe_path_to_cstring(vert_path)
+	c_frag_path: cstring = t_maybe_path_to_cstring(frag_path)
+
+	shader := rl.LoadShader(c_vert_path, c_frag_path)
+	shader_asset, handle, success := dp.add_empty(&as.shaders)
+
+	shader_asset.frag_path = frag_path
+	shader_asset.vert_path = vert_path
+
 
 	return {}, false
+}
+
+@(private = "file")
+t_maybe_path_to_cstring :: proc(path: Maybe(string)) -> cstring {
+	p, ok := path.(string)
+	if !ok {
+		return nil
+	}
+
+	return strings.clone_to_cstring(p, context.temp_allocator)
 }
