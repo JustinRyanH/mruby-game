@@ -243,6 +243,9 @@ as_load_texture :: proc(as: ^AssetSystem, path: string) -> (TextureHandle, bool)
 	cpath := strings.clone_to_cstring(path, context.temp_allocator)
 
 	texture := rl.LoadTexture(cpath)
+	if !rl.IsTextureReady(texture) {
+		return 0, false
+	}
 	src := rl.Rectangle{0, 0, cast(f32)texture.width, cast(f32)texture.height}
 	assert(texture != {})
 	as.texture_system.textures[th] = TextureAsset{th, texture, src, 0}
