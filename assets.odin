@@ -385,6 +385,7 @@ as_get_sound :: proc(as: ^AssetSystem, sh: SoundHandle) -> (SoundAsset, bool) {
 	return as.sounds[sh]
 }
 
+// TODO: unload shader
 as_load_shader :: proc(
 	as: ^AssetSystem,
 	vert_path, frag_path: Maybe(string),
