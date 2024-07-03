@@ -213,7 +213,8 @@ main :: proc() {
 
 	rl.SetTargetFPS(TargetFPS)
 
-	as_load_shader(&g.assets, nil, "assets/shaders/simple.frag")
+	_, shader_loaded := as_load_shader(&g.assets, nil, "assets/shaders/simple.frag")
+	assert(shader_loaded, "Shader failed to load")
 
 	for !g.should_exit {
 		defer {
