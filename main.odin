@@ -240,16 +240,6 @@ main :: proc() {
 		g.input.current_frame.meta.screen_height = SCALE_HEIGHT
 		rl.BeginDrawing()
 
-		tasset, t_asset_loader := as_get_texture(&g.assets, thandle)
-		assert(t_asset_loader, "Texture Asset not Found")
-		rl.DrawTextureEx(tasset.texture, {400, 400}, 0, 8, rl.WHITE)
-
-		// shader_asset, found_shader := as_get_shader(&g.assets, shader_handle)
-		// assert(found_shader, "Could not find shader")
-		//
-		// rl.BeginShaderMode(shader_asset.shader)
-		//
-		// rl.EndShaderMode()
 
 		// rl.BeginTextureMode(screen_buffer)
 
@@ -257,6 +247,18 @@ main :: proc() {
 
 		game_check_collisions(g)
 		game_run_code(g, tick_handle)
+
+		shader_asset, found_shader := as_get_shader(&g.assets, shader_handle)
+		assert(found_shader, "Could not find shader")
+
+		rl.BeginShaderMode(shader_asset.shader)
+
+		tasset, t_asset_loader := as_get_texture(&g.assets, thandle)
+		assert(t_asset_loader, "Texture Asset not Found")
+
+		rl.DrawTextureEx(tasset.texture, {400, 100}, 0, 8, rl.WHITE)
+		rl.EndShaderMode()
+
 
 		// sprt_iter := dp.new_iter(&g.sprites)
 		// for spr in dp.iter_next(&sprt_iter) {

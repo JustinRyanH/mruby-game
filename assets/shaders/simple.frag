@@ -13,7 +13,9 @@ void main()
 {
     // Texel color fetching from texture sampler
     // NOTE: The texel is actually the a GRAYSCALE index color
-    vec4 texelColor = texture(texture0, fragTexCoord)*fragColor;
+    vec4 texel_color = texture(texture0, fragTexCoord)*fragColor;
 
-    finalColor = texelColor;
+    vec4 shader_out_test = vec4(texel_color.r, 0, 0, 1);
+
+    finalColor = shader_out_test;
 }
