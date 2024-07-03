@@ -212,10 +212,8 @@ main :: proc() {
 	defer rl.CloseAudioDevice()
 
 	rl.SetTargetFPS(TargetFPS)
-	rl.LoadShader(nil, "assets/shaders/simple.frag")
 
 	as_load_shader(&g.assets, nil, "assets/shaders/simple.frag")
-	assert(false)
 
 	for !g.should_exit {
 		defer {

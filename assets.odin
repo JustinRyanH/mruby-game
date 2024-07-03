@@ -403,13 +403,17 @@ as_load_shader :: proc(
 	c_frag_path: cstring = t_maybe_path_to_cstring(frag_path)
 
 	shader := rl.LoadShader(c_vert_path, c_frag_path)
+	assert(shader != {}, "Shader Did not load")
 	shader_asset, handle, success := dp.add_empty(&as.shaders)
-
+	if (!success) {
+		return {}, false
+	}
 	shader_asset.frag_path = frag_path
 	shader_asset.vert_path = vert_path
+	shader_asset.handle = handle
+	shader_asset.shader = shader
 
-
-	return {}, false
+	return handle, true
 }
 
 @(private = "file")
