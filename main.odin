@@ -217,8 +217,17 @@ main :: proc() {
 	assert(shader_loaded, "Shader failed to load")
 
 
-	thandle, t_loaded := as_load_texture(&g.assets, "assets/textures/copter_1.png")
-	assert(t_loaded, "Texture failed to load")
+	texture_one_handle, texture_one_loaded := as_load_texture(
+		&g.assets,
+		"assets/textures/copter_1.png",
+	)
+	assert(texture_one_loaded, "Texture failed to load")
+
+	texture_two_handle, texture_two_loaded := as_load_texture(
+		&g.assets,
+		"assets/textures/platform_m.png",
+	)
+	assert(texture_one_loaded, "Texture failed to load")
 
 	for !g.should_exit {
 		defer {
@@ -240,6 +249,16 @@ main :: proc() {
 		g.input.current_frame.meta.screen_height = SCALE_HEIGHT
 		rl.BeginDrawing()
 
+		shader_asset, found_shader := as_get_shader(&g.assets, shader_handle)
+		assert(found_shader)
+		texture_location := rl.GetShaderLocation(shader_asset.shader, "texture1")
+		assert(texture_location >= 0)
+
+		asset_one, asset_one_loaded := as_get_texture(&g.assets, texture_one_handle)
+		assert(asset_one_loaded, "Texture Asset not Found")
+		asset_two, asset_two_loaded := as_get_texture(&g.assets, texture_two_handle)
+		assert(asset_two_loaded, "Texture Asset not Found")
+
 
 		// rl.BeginTextureMode(screen_buffer)
 
@@ -248,15 +267,12 @@ main :: proc() {
 		game_check_collisions(g)
 		game_run_code(g, tick_handle)
 
-		shader_asset, found_shader := as_get_shader(&g.assets, shader_handle)
 		assert(found_shader, "Could not find shader")
 
 		rl.BeginShaderMode(shader_asset.shader)
+		rl.SetShaderValueTexture(shader_asset.shader, texture_location, asset_one.texture)
 
-		tasset, t_asset_loader := as_get_texture(&g.assets, thandle)
-		assert(t_asset_loader, "Texture Asset not Found")
-
-		rl.DrawTextureEx(tasset.texture, {400, 100}, 0, 8, rl.WHITE)
+		rl.DrawTextureEx(asset_two.texture, {400, 100}, 0, 8, rl.WHITE)
 		rl.EndShaderMode()
 
 
