@@ -279,7 +279,7 @@ as_create_atlas_from_paths :: proc(
 		img := rl.LoadImage(cpath)
 		images[idx] = img
 
-		rects[idx].id = cast(i32)idx
+		rects[idx].id = idx
 		rects[idx].w = img.width + 2
 		rects[idx].h = img.height + 2
 	}
@@ -298,7 +298,7 @@ as_create_atlas_from_paths :: proc(
 		target := images[idx]
 		w, h := cast(f32)target.width, cast(f32)target.height
 		x, y := cast(f32)rect.x, cast(f32)rect.y
-		assert(rect.id == cast(i32)idx, "Packed Rectangle got unsorted")
+		assert(rect.id == idx, "Packed Rectangle got unsorted")
 		rl.ImageDraw(&img, target, {0, 0, w, h}, {x + 1, y + 1, w, h}, rl.WHITE)
 		// Left Padding
 		rl.ImageDraw(&img, target, {0, 0, 1, h}, {x, y + 1, 1, h}, rl.WHITE)

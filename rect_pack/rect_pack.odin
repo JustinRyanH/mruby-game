@@ -39,7 +39,7 @@ Node :: struct {
 	next: ^Node,
 }
 Rect :: struct {
-	id:         i32,
+	id:         int,
 	w, h:       Coord,
 	x, y:       Coord,
 	was_packed: i32,
