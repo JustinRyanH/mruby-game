@@ -17,10 +17,16 @@ ActiveSoundHandle :: distinct dp.Handle
 
 SpriteHandle :: distinct dp.Handle
 
+SpriteType :: enum {
+	Static,
+	Dynamic,
+}
+
 Sprite :: struct {
 	pos, size:          Vector2,
 	texture:            TextureHandle,
 	tint:               Color,
+	type:               SpriteType,
 	visible:            bool,
 	z_offset, parallax: f32,
 }

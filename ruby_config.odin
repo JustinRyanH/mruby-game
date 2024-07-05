@@ -1192,7 +1192,7 @@ draw_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	// TODO: I can totally do this with generics and reflection
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
@@ -1423,7 +1423,7 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 		font: mrb.Value,
 	}
 
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "font"),
@@ -2053,6 +2053,7 @@ sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		tint:     mrb.Value,
 		z_offset: mrb.Value,
 		parallax: mrb.Value,
+		type:     mrb.Value,
 	}
 
 	values: KValues
@@ -2077,6 +2078,7 @@ sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	spr.size = mrb.get_data_from_value(Vector2, values.size)^
 	spr.tint = rl.WHITE
 	spr.visible = true
+	spr.type = .Dynamic
 
 	if !mrb.undef_p(values.pos) {
 		assert(
@@ -2102,6 +2104,29 @@ sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 	if !mrb.undef_p(values.parallax) {
 		spr.parallax = cast(f32)mrb.as_float(state, values.parallax)
+	}
+
+	if !mrb.undef_p(values.type) {
+		if !mrb.symbol_p(values.type) {
+			mrb.raise_exception(state, "Expected `type:` to a symbol of :dynamic, :static")
+			return mrb.nil_value()
+		}
+		type_as_sym := mrb.obj_to_sym(state, values.type)
+		type_str := mrb.sym_to_string(state, type_as_sym)
+
+		ada_type, type_success := strings.to_ada_case(type_str, context.temp_allocator)
+		assert(type_success == .None, "Failed to change type cast")
+		sprite_type, sprite_type_success := reflect.enum_from_name(SpriteType, ada_type)
+
+		if !sprite_type_success {
+			mrb.raise_exception(
+				state,
+				"Expected `type:` to a symbol of :dynamic, :static found %s",
+				type_str,
+			)
+			return mrb.nil_value()
+		}
+		spr.type = sprite_type
 	}
 
 	v := mrb.int_value(state, cast(mrb.Int)handle)
