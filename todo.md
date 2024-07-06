@@ -2,6 +2,9 @@
 
 ## Current
 
+* Draw Background Static Items to the Static Buffer
+* Draw Dynamic Regular Buffer
+* Make sure that I can still do proper z-index
 * Hide/Reveal Enviormnent Debug
   - Create Render Texture
 * Echolocation
