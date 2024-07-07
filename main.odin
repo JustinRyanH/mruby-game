@@ -206,15 +206,12 @@ main :: proc() {
 		rl.SetWindowMonitor(1)
 	}
 
-	// screen_buffer := rl.LoadRenderTexture(SCALE_WIDTH, SCALE_HEIGHT)
+	screen_buffer := rl.LoadRenderTexture(SCALE_WIDTH, SCALE_HEIGHT)
 
 	rl.InitAudioDevice()
 	defer rl.CloseAudioDevice()
 
 	rl.SetTargetFPS(TargetFPS)
-
-	shader_handle, shader_loaded := as_load_shader(&g.assets, nil, "assets/shaders/simple.frag")
-	assert(shader_loaded, "Shader failed to load")
 
 
 	texture_one_handle, texture_one_loaded := as_load_texture(
@@ -249,71 +246,52 @@ main :: proc() {
 		g.input.current_frame.meta.screen_height = SCALE_HEIGHT
 		rl.BeginDrawing()
 
-		shader_asset, found_shader := as_get_shader(&g.assets, shader_handle)
-		assert(found_shader)
-		texture_location := rl.GetShaderLocation(shader_asset.shader, "texture1")
-		assert(texture_location >= 0)
 
-		asset_one, asset_one_loaded := as_get_texture(&g.assets, texture_one_handle)
-		assert(asset_one_loaded, "Texture Asset not Found")
-		asset_two, asset_two_loaded := as_get_texture(&g.assets, texture_two_handle)
-		assert(asset_two_loaded, "Texture Asset not Found")
-
-
-		// rl.BeginTextureMode(screen_buffer)
+		rl.BeginTextureMode(screen_buffer)
 
 		rl.ClearBackground(g.bg_color)
 
 		game_check_collisions(g)
 		game_run_code(g, tick_handle)
 
-		assert(found_shader, "Could not find shader")
+		sprt_iter := dp.new_iter(&g.sprites)
+		for spr in dp.iter_next(&sprt_iter) {
+			if !spr.visible {continue}
+			renderable, success := renderable_from_sprint(g, spr)
+			if (!success) {
+				rl.TraceLog(.WARNING, "Could not Render Sprite")
+				continue
+			}
+			append(&todo_render, renderable)
+		}
+		slice.sort_by(
+			todo_render[:],
+			proc(i, j: RenderableTexture) -> bool {return i.z_offset < j.z_offset},
+		)
 
-		rl.BeginShaderMode(shader_asset.shader)
-		rl.SetShaderValueTexture(shader_asset.shader, texture_location, asset_one.texture)
+		{
+			camera := game_get_camera(g)
+			rl.BeginMode2D(camera)
 
-		rl.DrawTextureEx(asset_two.texture, {400, 100}, 0, 8, rl.WHITE)
-		rl.EndShaderMode()
+			for renderable in todo_render {
+				renderable_texture_render(renderable)
+			}
 
+			game_debug_draw(g)
+			rl.EndMode2D()
+		}
 
-		// sprt_iter := dp.new_iter(&g.sprites)
-		// for spr in dp.iter_next(&sprt_iter) {
-		// 	if !spr.visible {continue}
-		// 	renderable, success := renderable_from_sprint(g, spr)
-		// 	if (!success) {
-		// 		rl.TraceLog(.WARNING, "Could not Render Sprite")
-		// 		continue
-		// 	}
-		// 	append(&todo_render, renderable)
-		// }
-		// slice.sort_by(
-		// 	todo_render[:],
-		// 	proc(i, j: RenderableTexture) -> bool {return i.z_offset < j.z_offset},
-		// )
-		//
-		// {
-		// 	camera := game_get_camera(g)
-		// 	rl.BeginMode2D(camera)
-		//
-		// 	for renderable in todo_render {
-		// 		renderable_texture_render(renderable)
-		// 	}
-		//
-		// 	game_debug_draw(g)
-		// 	rl.EndMode2D()
-		// }
-		//
 		imui_draw(&g.imui)
 
-		// rl.EndTextureMode()
-		// rl.DrawTexturePro(
-		// 	screen_buffer.texture,
-		// 	{0, -SCALE_HEIGHT, SCALE_WIDTH, -SCALE_HEIGHT},
-		// 	{0, 0, SCREEN_WIDTH, SCREEN_HEIGHT},
-		// 	rl.Vector2{},
-		// 	0,
-		// 	rl.WHITE,
-		// )
+		rl.EndTextureMode()
+		rl.DrawTexturePro(
+			screen_buffer.texture,
+			{0, -SCALE_HEIGHT, SCALE_WIDTH, -SCALE_HEIGHT},
+			{0, 0, SCREEN_WIDTH, SCREEN_HEIGHT},
+			rl.Vector2{},
+			0,
+			rl.WHITE,
+		)
 
 		rl.EndDrawing()
 
