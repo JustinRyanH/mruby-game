@@ -12,12 +12,21 @@ append :: proc(rb: ^RingBuffer($N, $T), v: T) -> bool {
 		return false
 	}
 
-
 	index := (rb.index + rb.length) % N
 	assert(index < N, "Out of Range Error, this is wrong")
 	rb.items[index] = v
 	rb.length += 1
 	return true
+}
+
+// Appends the RingBuffer, and overwrites the first element
+append_overwrite :: proc(rb: ^RingBuffer($N, $T), v: T) {
+	if (length(rb) == N) {
+		index := (rb.index + rb.length) % N
+		rb.items[index] = v
+		return
+	}
+	append(rb, v)
 }
 
 pop :: proc(rb: ^RingBuffer($N, $T)) -> (val: T, empty: bool) {
