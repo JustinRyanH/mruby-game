@@ -10,13 +10,17 @@
 # $old_game.tick
 #
 
+require 'assets/scripts/assets'
+
 class RevealGame
   def tick
     setup unless ready?
     screen = FrameInput.screen
+    mouse_pos = FrameInput.mouse_pos
 
     text_pos = Vector.new(screen.size.x * 0.5, screen.size.y - 72)
     Draw.text(text: 'Sonar Test', pos: text_pos, halign: :center, size: 60)
+    @dynamic_sprite.pos = mouse_pos
   end
 
   private
@@ -27,6 +31,41 @@ class RevealGame
 
   def setup
     @ready = true
+    screen = FrameInput.screen
+    world_size = Vector.new(64, 64)
+    world_pos = screen.size * 0.5
+
+    @dynamic_sprite = Sprite.create(
+      texture: Textures.copter,
+      pos: world_pos,
+      size: world_size,
+      type: :dynamic,
+      z_offset: 1.1,
+      tint: Color.red,
+    )
+
+    background_sprites << Sprite.create(
+      texture: Textures.platform_middle,
+      pos: world_pos,
+      size: world_size,
+      type: :static,
+    )
+    background_sprites << Sprite.create(
+      texture: Textures.platform_middle_right,
+      pos: world_pos + Vector.new(64, 0),
+      size: world_size,
+      type: :static,
+    )
+    background_sprites << Sprite.create(
+      texture: Textures.platform_middle_left,
+      pos: world_pos - Vector.new(64, 0),
+      size: world_size,
+      type: :static,
+    )
+  end
+
+  def background_sprites
+    @background_sprites = []
   end
 end
 
