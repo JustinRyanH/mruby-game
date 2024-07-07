@@ -162,7 +162,22 @@ class Vector
 end
 
 class Sprite
-  def self.create
+  # @param [Texture] texture
+  # @param [Vector] pos
+  # @param [Vector] size
+  # @param [Color] tint
+  # @param [Float] z_offset
+  # @param [Float] parallax
+  # @param [Symbol] type - :dynamic, :static
+  def self.create(
+    texture:,
+    pos:,
+    size:,
+    tint:,
+    z_offset:,
+    parallax:,
+    type:
+  )
   end
 
   # Returns the Id of the sprite
