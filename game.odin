@@ -12,6 +12,7 @@ import rl "vendor:raylib"
 import dp "./data_pool"
 import "./input"
 import mrb "./mruby"
+import rb "./ring_buffer"
 
 ActiveSoundHandle :: distinct dp.Handle
 
@@ -31,6 +32,12 @@ Sprite :: struct {
 	z_offset, parallax: f32,
 }
 
+RevealSpot :: struct {
+	pos:      Vector2,
+	rotation: f32,
+	texture:  rl.Texture2D,
+}
+
 Collider :: struct {
 	pos:  Vector2,
 	size: Vector2,
@@ -42,6 +49,7 @@ CameraHandle :: distinct dp.Handle
 ColliderPool :: dp.DataPool(128, Collider, ColliderHandle)
 SpritePool :: dp.DataPool(1024, Sprite, SpriteHandle)
 ActiveSoundPool :: dp.DataPool(32, rl.Sound, ActiveSoundHandle)
+RevealRing :: rb.RingBuffer(256, RevealSpot)
 CameraPool :: dp.DataPool(8, rl.Camera2D, CameraHandle)
 
 CollisionTargets :: [dynamic]ColliderHandle
@@ -67,6 +75,7 @@ Game :: struct {
 	active_sounds:    ActiveSoundPool,
 	sprites:          SpritePool,
 	cameras:          CameraPool,
+	reveal_spots:     RevealRing,
 }
 
 game_init :: proc(game: ^Game) {
