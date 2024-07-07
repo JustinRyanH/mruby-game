@@ -2020,6 +2020,7 @@ setup_sprite_class :: proc(state: ^mrb.State) {
 
 	mrb.define_method(state, sprite_class, "visible=", sprite_visible_set, mrb.args_req(1))
 	mrb.define_method(state, sprite_class, "visible?", sprite_visible_get, mrb.args_none())
+	mrb.define_alias(state, sprite_class, "visible", "visible?")
 	mrb.define_method(state, sprite_class, "destroy", sprite_destroy, mrb.args_none())
 }
 
