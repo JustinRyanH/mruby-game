@@ -161,6 +161,104 @@ class Vector
   end
 end
 
+class Sprite
+  def self.create
+  end
+
+  # Returns the Id of the sprite
+  # @return [Integer]
+  def id
+  end
+
+  # Sets the position of the Vector
+  #
+  # @param [Vector] value
+  def pos=(value)
+  end
+
+  # Returns the position of the Vector
+  #
+  # @return [Vector]
+  def pos
+  end
+
+  # Sets the size of the Sprite
+  #
+  # @param [Vector] value
+  def size=(value)
+  end
+
+  # Returns the size of the Sprite
+  #
+  # @return [Vector]
+  def size
+  end
+
+  # Returns the z position of the sprite
+  #
+  # @return [Float]
+  def z_offset
+  end
+
+  # Sets the value of the sprite
+  #
+  # @param [Float] value
+  def z_offset=(value)
+  end
+
+  # Sets the parallax of the sprite
+  # @param [Float] value
+  def parallax=(value)
+  end
+
+  # Returns the parallax offset
+  # @return [Float]
+  def parallax
+  end
+
+  # Returns the position adjusted for parallax
+  # @return [Vector]
+  def parallax_pos
+  end
+
+  # Sets the Texture of the sprite
+  # @param [Texture] value
+  def texture=(value)
+  end
+
+  # Returns the texture of the sprite
+  # @return [Texture]
+  def texture
+  end
+
+  # Sets the color of the sprite
+  # @param [Color] value
+  def tint=(value)
+  end
+
+  # Returns the color of the sprite
+  # @return [Color]
+  def tint
+  end
+
+  # If the sprite is a valid sprite
+  def valid?
+  end
+
+  # Sets the sprite visisble state
+  # @param [TrueClass|FalseClass]
+  def visible=(value)
+  end
+
+  # Returns wether the Sprite is visible
+  def visible?
+  end
+
+  # Destroys the sprite
+  def destroy
+  end
+end
+
 class Collider
   # Create a Collider
   #
