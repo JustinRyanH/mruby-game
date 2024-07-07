@@ -213,19 +213,6 @@ main :: proc() {
 
 	rl.SetTargetFPS(TargetFPS)
 
-
-	texture_one_handle, texture_one_loaded := as_load_texture(
-		&g.assets,
-		"assets/textures/copter_1.png",
-	)
-	assert(texture_one_loaded, "Texture failed to load")
-
-	texture_two_handle, texture_two_loaded := as_load_texture(
-		&g.assets,
-		"assets/textures/platform_m.png",
-	)
-	assert(texture_one_loaded, "Texture failed to load")
-
 	for !g.should_exit {
 		defer {
 			is_bad := track_bad_free_tracking_allocator(&tracking_allocator)
