@@ -21,6 +21,14 @@ class RevealGame
     text_pos = Vector.new(screen.size.x * 0.5, screen.size.y - 72)
     Draw.text(text: 'Sonar Test', pos: text_pos, halign: :center, size: 60)
     @dynamic_sprite.pos = mouse_pos
+
+    return unless FrameInput.mouse_just_pressed?(:left)
+
+    Echolocation.reveal(
+      pos: FrameInput.mouse_pos,
+      rotation: 0,
+      texture: Textures.copter,
+    )
   end
 
   private
