@@ -35,7 +35,7 @@ Sprite :: struct {
 RevealSpot :: struct {
 	pos:      Vector2,
 	rotation: f32,
-	texture:  rl.Texture2D,
+	texture:  TextureHandle,
 }
 
 Collider :: struct {

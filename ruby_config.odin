@@ -2743,7 +2743,30 @@ setup_echo_location :: proc(st: ^mrb.State) {
 @(private = "file")
 echo_reveal :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
+	KValues :: struct {
+		pos:      mrb.Value,
+		rotation: mrb.Value,
+		texture:  mrb.Value,
+	}
+	values: KValues
+	load_kwargs(KValues, state, &values)
 
-	fmt.println("Reveal Spot")
+	if mrb.undef_p(values.pos) && !mrb.obj_is_kind_of(state, values.pos, engine_classes.vector) {
+		mrb.raise_exception(state, "pos: of a Vector is expected for `reveal`")
+	}
+
+	if mrb.undef_p(values.rotation) && !mrb.float_p(values.rotation) {
+		mrb.raise_exception(state, "rotation: of a Float is expected for `reveal`")
+	}
+
+	if mrb.undef_p(values.texture) &&
+	   !mrb.obj_is_kind_of(state, values.texture, engine_classes.texture_asset) {
+		mrb.raise_exception(state, "texture: of a Texture is expected for `reveal`")
+	}
+
+	pos := vector_from_object(state, values.pos)
+	rotation := mrb.as_float(state, values.rotation)
+	texture := texture_from_object(state, values.texture)
+
 	return mrb.nil_value()
 }
