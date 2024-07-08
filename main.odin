@@ -331,14 +331,6 @@ main :: proc() {
 			rl.WHITE,
 		)
 
-		rl.DrawText(
-			fmt.ctprintf("Reveal Spot Count %d", rb.length(&g.reveal_spots)),
-			100,
-			100,
-			48,
-			rl.WHITE,
-		)
-
 		rl.EndDrawing()
 
 		// Check for asset change every second or so
