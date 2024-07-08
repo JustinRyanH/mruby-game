@@ -14,6 +14,7 @@ import rl "vendor:raylib"
 import dp "./data_pool"
 import "./input"
 import mrb "./mruby"
+import rb "./ring_buffer"
 
 GAME_DEV :: #config(GAME_DEV, true)
 
@@ -327,6 +328,14 @@ main :: proc() {
 			{0, 0, SCREEN_WIDTH, SCREEN_HEIGHT},
 			rl.Vector2{},
 			0,
+			rl.WHITE,
+		)
+
+		rl.DrawText(
+			fmt.ctprintf("Reveal Spot Count %d", rb.length(&g.reveal_spots)),
+			100,
+			100,
+			48,
 			rl.WHITE,
 		)
 

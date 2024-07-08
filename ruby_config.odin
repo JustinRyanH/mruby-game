@@ -15,6 +15,7 @@ import dp "./data_pool"
 import "./input"
 import mrb "./mruby"
 import rp "./rect_pack"
+import rb "./ring_buffer"
 import "./utils"
 
 
@@ -2767,6 +2768,11 @@ echo_reveal :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	pos := vector_from_object(state, values.pos)
 	rotation := mrb.as_float(state, values.rotation)
 	texture := texture_from_object(state, values.texture)
+
+
+	spot := RevealSpot{pos, rotation, texture}
+
+	rb.append_overwrite(&g.reveal_spots, spot)
 
 	return mrb.nil_value()
 }
