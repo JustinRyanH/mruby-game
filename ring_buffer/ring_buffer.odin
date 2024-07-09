@@ -56,6 +56,9 @@ new_iter :: proc "contextless" (rb: ^RingBuffer($N, $T)) -> RingBufferIterator(N
 }
 
 iter_next :: proc "contextless" (iter: ^RingBufferIterator($N, $T)) -> (value: T, has_more: bool) {
+	if iter.rb.length == 0 {
+		return
+	}
 	index := (iter.index + iter.length) % N
 	value = iter.rb.items[index]
 	iter.length += 1

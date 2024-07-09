@@ -117,6 +117,21 @@ test_can_i_iter_ring_buffer :: proc(t: ^testing.T) {
 
 
 @(test)
+test_ring_buffer_iterator_empty :: proc(t: ^testing.T) {
+	using testing
+	ByteRingBuffer :: RingBuffer(3, u8)
+	buffer := ByteRingBuffer{}
+
+	iter := new_iter(&buffer)
+	expect(t, iter.index == 0, "Starts off the same start index")
+
+	v1, v1_has_more := iter_next(&iter)
+
+	expect(t, v1 == 0, "Expect the value to be the 'zero' version")
+	expect(t, v1_has_more == false, "Expect the has_more to be false")
+}
+
+@(test)
 test_ring_buffer_iterator_simple :: proc(t: ^testing.T) {
 	using testing
 	ByteRingBuffer :: RingBuffer(3, u8)
