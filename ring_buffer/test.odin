@@ -114,3 +114,19 @@ test_can_i_iter_ring_buffer :: proc(t: ^testing.T) {
 
 	expect(t, length(&buffer) == 0, "Ring Buffer should be empty")
 }
+
+
+@(test)
+test_ring_buffer_iterator_simple :: proc(t: ^testing.T) {
+	using testing
+	ByteRingBuffer :: RingBuffer(3, u8)
+	buffer := ByteRingBuffer{}
+
+	append(&buffer, 1)
+	append(&buffer, 2)
+	append(&buffer, 3)
+
+	iter := new_iter(&buffer)
+
+	expect(t, iter.index == 0, "Starts off the same start index")
+}

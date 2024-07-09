@@ -7,6 +7,11 @@ RingBuffer :: struct($N: u32, $T: typeid) {
 	items:  [N]T,
 }
 
+RingBufferIterator :: struct($N: u32, $T: typeid) {
+	rb:    ^RingBuffer(N, T),
+	index: u32,
+}
+
 append :: proc(rb: ^RingBuffer($N, $T), v: T) -> bool {
 	if (length(rb) == N) {
 		return false
@@ -42,4 +47,8 @@ pop :: proc(rb: ^RingBuffer($N, $T)) -> (val: T, empty: bool) {
 
 length :: proc(rb: ^RingBuffer($N, $T)) -> u32 {
 	return rb.length
+}
+
+new_iter :: proc "contextless" (rb: ^RingBuffer($N, $T)) -> RingBufferIterator(N, T) {
+	return RingBufferIterator(N, T){rb = rb, index = rb.index}
 }
