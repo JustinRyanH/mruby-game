@@ -157,6 +157,16 @@ renderable_from_sprint :: proc(
 	return out, true
 }
 
+renderable_from_reveal_spot :: proc(
+	game: ^Game,
+	spr: RevealSpot,
+) -> (
+	out: RenderableTexture,
+	success: bool,
+) {
+	return
+}
+
 renderable_texture_render :: proc(renderable: RenderableTexture) {
 	rl.DrawTexturePro(
 		renderable.texture,
@@ -280,6 +290,35 @@ main :: proc() {
 
 		game_check_collisions(g)
 		game_run_code(g, tick_handle)
+
+		reveal_iter := rb.new_iter(&g.reveal_spots)
+		for spot in rb.iter_next(&reveal_iter) {
+			renderable, success := renderable_from_reveal_spot(g, spot)
+			if !success {
+				continue
+			}
+			append(&todo_render, renderable)
+		}
+
+		// TODO: This shoulk be a method, we've done this 3 times
+		slice.sort_by(
+			todo_render[:],
+			proc(i, j: RenderableTexture) -> bool {return i.z_offset < j.z_offset},
+		)
+
+		{
+			camera := game_get_camera(g)
+			rl.BeginMode2D(camera)
+
+			for renderable in todo_render {
+				renderable_texture_render(renderable)
+			}
+
+			game_debug_draw(g)
+			rl.EndMode2D()
+		}
+
+		clear(&todo_render)
 
 		sprt_iter := dp.new_iter(&g.sprites)
 		for spr in dp.iter_next(&sprt_iter) {
