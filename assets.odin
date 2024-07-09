@@ -420,7 +420,7 @@ as_load_shader :: proc(
 	return handle, true
 }
 
-as_get_shader :: proc(as: ^AssetSystem, handle: ShaderHandle) -> (ShaderAsset, bool) {
+as_get_shader :: proc(as: ^AssetSystem, handle: ShaderHandle) -> (ShaderAsset, bool) #optional_ok {
 	iter := dp.new_iter(&as.shaders)
 	for data, maybe_handle in dp.iter_next(&iter) {
 		if handle == maybe_handle {
