@@ -101,6 +101,25 @@ game_run_code :: proc(game: ^Game, handle: RubyCodeHandle, loc := #caller_locati
 
 game_ctx: runtime.Context
 
+game_draw_renderables :: proc(game: ^Game, renderables: []RenderableTexture) {
+	slice.sort_by(
+		renderables,
+		proc(i, j: RenderableTexture) -> bool {return i.z_offset < j.z_offset},
+	)
+
+	{
+		camera := game_get_camera(g)
+		rl.BeginMode2D(camera)
+
+		for renderable in todo_render {
+			renderable_texture_render(renderable)
+		}
+
+		game_debug_draw(g)
+		rl.EndMode2D()
+	}
+}
+
 game_check_collisions :: proc(game: ^Game) {
 	iter_a := dp.new_iter(&game.colliders)
 	for entity_a, handle_a in dp.iter_next(&iter_a) {
@@ -278,22 +297,7 @@ main :: proc() {
 				}
 				append(&todo_render, renderable)
 			}
-			slice.sort_by(
-				todo_render[:],
-				proc(i, j: RenderableTexture) -> bool {return i.z_offset < j.z_offset},
-			)
-
-			{
-				camera := game_get_camera(g)
-				rl.BeginMode2D(camera)
-
-				for renderable in todo_render {
-					renderable_texture_render(renderable)
-				}
-
-				game_debug_draw(g)
-				rl.EndMode2D()
-			}
+			game_draw_renderables(g, todo_render[:])
 
 
 		}
@@ -316,24 +320,8 @@ main :: proc() {
 			append(&todo_render, renderable)
 		}
 
-		// TODO: This shoulk be a method, we've done this 3 times
-		slice.sort_by(
-			todo_render[:],
-			proc(i, j: RenderableTexture) -> bool {return i.z_offset < j.z_offset},
-		)
 
-		{
-			camera := game_get_camera(g)
-			rl.BeginMode2D(camera)
-
-			for renderable in todo_render {
-				renderable_texture_render(renderable)
-			}
-
-			game_debug_draw(g)
-			rl.EndMode2D()
-		}
-
+		game_draw_renderables(g, todo_render[:])
 		clear(&todo_render)
 
 		sprt_iter := dp.new_iter(&g.sprites)
@@ -347,22 +335,7 @@ main :: proc() {
 			}
 			append(&todo_render, renderable)
 		}
-		slice.sort_by(
-			todo_render[:],
-			proc(i, j: RenderableTexture) -> bool {return i.z_offset < j.z_offset},
-		)
-
-		{
-			camera := game_get_camera(g)
-			rl.BeginMode2D(camera)
-
-			for renderable in todo_render {
-				renderable_texture_render(renderable)
-			}
-
-			game_debug_draw(g)
-			rl.EndMode2D()
-		}
+		game_draw_renderables(g, todo_render[:])
 
 		imui_draw(&g.imui)
 
