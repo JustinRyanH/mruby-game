@@ -17,7 +17,7 @@ void main()
     vec4 texel_color_a = texture(texture0, fragTexCoord)*fragColor;
     vec4 texel_color_b = texture(texture1, fragTexCoord)*fragColor;
 
-    vec4 shader_out_test = vec4(texel_color_a.r, texel_color_b.b, 0, 1);
+    vec4 shader_out_test = vec4(texel_color_a.r, 0, 0, 1) - vec4(texel_color_b.r, 0, 0, texel_color_b.a);
 
     finalColor = shader_out_test;
 }

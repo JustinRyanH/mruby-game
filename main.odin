@@ -252,6 +252,9 @@ main :: proc() {
 		rl.SetWindowMonitor(1)
 	}
 
+	shader, shader_loaded := as_load_shader(&g.assets, nil, "assets/shaders/simple.frag")
+	assert(shader_loaded, "Failed to load shader")
+
 	screen_buffer := rl.LoadRenderTexture(SCALE_WIDTH, SCALE_HEIGHT)
 	static_element_buffer := rl.LoadRenderTexture(SCALE_WIDTH, SCALE_HEIGHT)
 	static_element_effect_buffer := rl.LoadRenderTexture(SCALE_WIDTH, SCALE_HEIGHT)
@@ -346,14 +349,29 @@ main :: proc() {
 		rl.EndTextureMode()
 
 		rl.ClearBackground(g.bg_color)
-		rl.DrawTexturePro(
-			static_element_buffer.texture,
-			{0, -SCALE_HEIGHT, SCALE_WIDTH, -SCALE_HEIGHT},
-			{0, 0, SCREEN_WIDTH, SCREEN_HEIGHT},
-			rl.Vector2{},
-			0,
-			rl.WHITE,
-		)
+		{
+			shader_asset := as_get_shader(&g.assets, shader)
+
+			rl.BeginShaderMode(shader_asset.shader)
+			texture1_loc := rl.GetShaderLocation(shader_asset.shader, "texture1")
+
+			rl.SetShaderValueTexture(
+				shader_asset.shader,
+				texture1_loc,
+				static_element_effect_buffer.texture,
+			)
+
+			rl.DrawTexturePro(
+				static_element_buffer.texture,
+				{0, -SCALE_HEIGHT, SCALE_WIDTH, -SCALE_HEIGHT},
+				{0, 0, SCREEN_WIDTH, SCREEN_HEIGHT},
+				rl.Vector2{},
+				0,
+				rl.WHITE,
+			)
+
+			defer rl.EndShaderMode()
+		}
 		rl.DrawTexturePro(
 			screen_buffer.texture,
 			{0, -SCALE_HEIGHT, SCALE_WIDTH, -SCALE_HEIGHT},
@@ -361,14 +379,6 @@ main :: proc() {
 			rl.Vector2{},
 			0,
 			rl.WHITE,
-		)
-		rl.DrawTexturePro(
-			static_element_effect_buffer.texture,
-			{0, -SCALE_HEIGHT, SCALE_WIDTH, -SCALE_HEIGHT},
-			{0, 0, SCREEN_WIDTH, SCREEN_HEIGHT},
-			rl.Vector2{},
-			0,
-			rl.PINK,
 		)
 
 		rl.EndDrawing()
