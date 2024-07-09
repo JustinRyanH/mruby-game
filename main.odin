@@ -281,6 +281,9 @@ main :: proc() {
 		g.input.current_frame.meta.screen_height = SCALE_HEIGHT
 		rl.BeginDrawing()
 
+		game_check_collisions(g)
+		game_run_code(g, tick_handle)
+
 		{
 			rl.BeginTextureMode(static_element_buffer)
 			defer rl.EndTextureMode()
@@ -303,26 +306,27 @@ main :: proc() {
 		}
 		clear(&todo_render)
 
+		{
+			rl.BeginTextureMode(static_element_effect_buffer)
+			defer rl.EndTextureMode()
+
+			reveal_iter := rb.new_iter(&g.reveal_spots)
+			for spot in rb.iter_next(&reveal_iter) {
+				renderable, success := renderable_from_reveal_spot(g, spot)
+				if !success {
+					continue
+				}
+				append(&todo_render, renderable)
+			}
+
+			game_draw_renderables(g, todo_render[:])
+		}
+		clear(&todo_render)
+
 
 		rl.BeginTextureMode(screen_buffer)
-
 		rl.ClearBackground(rl.BLANK)
 
-		game_check_collisions(g)
-		game_run_code(g, tick_handle)
-
-		reveal_iter := rb.new_iter(&g.reveal_spots)
-		for spot in rb.iter_next(&reveal_iter) {
-			renderable, success := renderable_from_reveal_spot(g, spot)
-			if !success {
-				continue
-			}
-			append(&todo_render, renderable)
-		}
-
-
-		game_draw_renderables(g, todo_render[:])
-		clear(&todo_render)
 
 		sprt_iter := dp.new_iter(&g.sprites)
 		for spr in dp.iter_next(&sprt_iter) {
@@ -357,6 +361,14 @@ main :: proc() {
 			rl.Vector2{},
 			0,
 			rl.WHITE,
+		)
+		rl.DrawTexturePro(
+			static_element_effect_buffer.texture,
+			{0, -SCALE_HEIGHT, SCALE_WIDTH, -SCALE_HEIGHT},
+			{0, 0, SCREEN_WIDTH, SCREEN_HEIGHT},
+			rl.Vector2{},
+			0,
+			rl.PINK,
 		)
 
 		rl.EndDrawing()
