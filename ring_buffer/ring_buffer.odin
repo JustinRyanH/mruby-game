@@ -8,8 +8,9 @@ RingBuffer :: struct($N: u32, $T: typeid) {
 }
 
 RingBufferIterator :: struct($N: u32, $T: typeid) {
-	rb:    ^RingBuffer(N, T),
-	index: u32,
+	rb:     ^RingBuffer(N, T),
+	index:  u32,
+	length: u32,
 }
 
 append :: proc(rb: ^RingBuffer($N, $T), v: T) -> bool {
@@ -50,5 +51,13 @@ length :: proc(rb: ^RingBuffer($N, $T)) -> u32 {
 }
 
 new_iter :: proc "contextless" (rb: ^RingBuffer($N, $T)) -> RingBufferIterator(N, T) {
-	return RingBufferIterator(N, T){rb = rb, index = rb.index}
+	return RingBufferIterator(N, T){rb = rb, index = rb.index, length = 0}
+}
+
+iter_next :: proc "contextless" (iter: ^RingBufferIterator($N, $T)) -> (value: T, has_more: bool) {
+	value = iter.rb.items[iter.index + iter.length]
+	iter.length += 1
+	has_more = iter.length != iter.rb.length
+
+	return
 }

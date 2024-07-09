@@ -129,4 +129,17 @@ test_ring_buffer_iterator_simple :: proc(t: ^testing.T) {
 	iter := new_iter(&buffer)
 
 	expect(t, iter.index == 0, "Starts off the same start index")
+
+	v1, v1_has_more := iter_next(&iter)
+
+	expect(t, v1 == 1)
+	expect(t, v1_has_more == true)
+
+	v2, v2_has_more := iter_next(&iter)
+	expect(t, v2 == 2)
+	expect(t, v2_has_more == true)
+
+	v3, v3_has_more := iter_next(&iter)
+	expect(t, v3 == 3)
+	expect(t, v3_has_more == false)
 }
