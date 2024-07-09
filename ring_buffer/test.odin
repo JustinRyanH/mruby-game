@@ -143,3 +143,40 @@ test_ring_buffer_iterator_simple :: proc(t: ^testing.T) {
 	expect(t, v3 == 3)
 	expect(t, v3_has_more == false)
 }
+
+
+@(test)
+test_ring_buffer_iterator_loop :: proc(t: ^testing.T) {
+	using testing
+	ByteRingBuffer :: RingBuffer(3, u8)
+	buffer := ByteRingBuffer{}
+
+	append(&buffer, 1)
+	append(&buffer, 2)
+	append(&buffer, 3)
+
+	pop(&buffer)
+	pop(&buffer)
+
+	append(&buffer, 4)
+	append(&buffer, 5)
+
+	iter := new_iter(&buffer)
+
+	expect(t, iter.index == 2, "Starts off the same start index")
+
+	v1, v1_has_more := iter_next(&iter)
+
+	expect(t, v1 == 3)
+	expect(t, v1_has_more == true)
+
+	v2, v2_has_more := iter_next(&iter)
+
+	expect(t, v2 == 4)
+	expect(t, v2_has_more == true)
+
+	v3, v3_has_more := iter_next(&iter)
+
+	expect(t, v3 == 5)
+	expect(t, v3_has_more == false)
+}
