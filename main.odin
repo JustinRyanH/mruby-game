@@ -159,12 +159,28 @@ renderable_from_sprint :: proc(
 
 renderable_from_reveal_spot :: proc(
 	game: ^Game,
-	spr: RevealSpot,
+	spot: RevealSpot,
 ) -> (
 	out: RenderableTexture,
 	success: bool,
 ) {
-	return
+	asset, texture_success := as_get_texture(&game.assets, spot.texture)
+	if !texture_success {
+		return
+	}
+
+
+	out.texture = asset.texture
+	out.src = asset.src
+	out.dest =  {
+		spot.pos.x,
+		spot.pos.y,
+		cast(f32)asset.texture.width,
+		cast(f32)asset.texture.height,
+	}
+	out.tint = rl.WHITE
+
+	return out, true
 }
 
 renderable_texture_render :: proc(renderable: RenderableTexture) {
