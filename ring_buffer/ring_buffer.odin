@@ -30,6 +30,7 @@ append_overwrite :: proc(rb: ^RingBuffer($N, $T), v: T) {
 	if (length(rb) == N) {
 		index := (rb.index + rb.length) % N
 		rb.items[index] = v
+		rb.index = (rb.index + 1) % N
 		return
 	}
 	append(rb, v)

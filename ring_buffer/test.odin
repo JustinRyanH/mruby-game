@@ -155,11 +155,8 @@ test_ring_buffer_iterator_loop :: proc(t: ^testing.T) {
 	append(&buffer, 2)
 	append(&buffer, 3)
 
-	pop(&buffer)
-	pop(&buffer)
-
-	append(&buffer, 4)
-	append(&buffer, 5)
+	append_overwrite(&buffer, 4)
+	append_overwrite(&buffer, 5)
 
 	iter := new_iter(&buffer)
 
