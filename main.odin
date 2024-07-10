@@ -169,7 +169,7 @@ renderable_from_sprint :: proc(
 	out.src = asset.src
 	out.dest = {new_pos.x, new_pos.y, spr.size.x, spr.size.y}
 	out.tint = spr.tint
-	out.offset = spr.size * 0.5
+	out.offset = Vector2{spr.size.x * 0.5, spr.size.y * 0.5}
 	out.rotation = 0
 	out.z_offset = spr.z_offset
 
