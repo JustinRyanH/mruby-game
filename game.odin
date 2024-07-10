@@ -50,7 +50,7 @@ CameraHandle :: distinct dp.Handle
 ColliderPool :: dp.DataPool(128, Collider, ColliderHandle)
 SpritePool :: dp.DataPool(1024, Sprite, SpriteHandle)
 ActiveSoundPool :: dp.DataPool(32, rl.Sound, ActiveSoundHandle)
-RevealRing :: rb.RingBuffer(256, RevealSpot)
+RevealRing :: rb.RingBuffer(32, RevealSpot)
 CameraPool :: dp.DataPool(8, rl.Camera2D, CameraHandle)
 
 CollisionTargets :: [dynamic]ColliderHandle
