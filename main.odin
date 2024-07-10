@@ -219,8 +219,8 @@ g: ^Game
 
 SCREEN_HEIGHT :: 800
 SCREEN_WIDTH :: 1280
-SCALE_WIDTH :: SCREEN_WIDTH
-SCALE_HEIGHT :: SCREEN_HEIGHT
+SCALE_WIDTH :: SCREEN_WIDTH / 4
+SCALE_HEIGHT :: SCREEN_HEIGHT / 4
 main :: proc() {
 	default_allocator := context.allocator
 	tracking_allocator: mem.Tracking_Allocator
@@ -281,6 +281,7 @@ main :: proc() {
 
 		input.update_input(&g.input, 1.0 / TargetFPS)
 		g.input.current_frame.meta.screen_width = SCALE_WIDTH
+		g.input.current_frame.mouse.pos *= 1.0 / 4.0
 		g.input.current_frame.meta.screen_height = SCALE_HEIGHT
 		rl.BeginDrawing()
 

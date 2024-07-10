@@ -19,7 +19,7 @@ class RevealGame
     mouse_pos = FrameInput.mouse_pos
 
     text_pos = Vector.new(screen.size.x * 0.5, screen.size.y - 72)
-    Draw.text(text: 'Sonar Test', pos: text_pos, halign: :center, size: 60)
+    Draw.text(text: 'Sonar Test', pos: text_pos, halign: :center, size: 16)
     @dynamic_sprite.pos = mouse_pos
 
     return unless FrameInput.mouse_just_pressed?(:left)
@@ -40,7 +40,7 @@ class RevealGame
   def setup
     @ready = true
     screen = FrameInput.screen
-    world_size = Vector.new(64, 64)
+    world_size = Vector.new(16, 16)
     world_pos = screen.size * 0.5
 
     @dynamic_sprite = Sprite.create(
@@ -60,13 +60,13 @@ class RevealGame
     )
     background_sprites << Sprite.create(
       texture: Textures.platform_middle_right,
-      pos: world_pos + Vector.new(64, 0),
+      pos: world_pos + Vector.new(16, 0),
       size: world_size,
       type: :static,
     )
     background_sprites << Sprite.create(
       texture: Textures.platform_middle_left,
-      pos: world_pos - Vector.new(64, 0),
+      pos: world_pos - Vector.new(16, 0),
       size: world_size,
       type: :static,
     )
