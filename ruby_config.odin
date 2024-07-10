@@ -2054,6 +2054,7 @@ sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		texture:  mrb.Value,
 		pos:      mrb.Value,
 		size:     mrb.Value,
+		anchor:   mrb.Value,
 		tint:     mrb.Value,
 		z_offset: mrb.Value,
 		parallax: mrb.Value,
@@ -2083,6 +2084,7 @@ sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	spr.tint = rl.WHITE
 	spr.visible = true
 	spr.type = .Dynamic
+	spr.anchor = Vector2{0.5, 0.5}
 
 	if !mrb.undef_p(values.pos) {
 		assert(

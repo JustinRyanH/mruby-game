@@ -25,6 +25,7 @@ SpriteType :: enum {
 
 Sprite :: struct {
 	pos, size:          Vector2,
+	anchor:             Vector2,
 	texture:            TextureHandle,
 	tint:               Color,
 	type:               SpriteType,

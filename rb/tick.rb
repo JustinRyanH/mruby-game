@@ -49,7 +49,7 @@ class RevealGame
       size: world_size,
       type: :dynamic,
       z_offset: 1.1,
-      tint: Color.red,
+      tint: Color.purple,
     )
 
     background_sprites << Sprite.create(
