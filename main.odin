@@ -312,6 +312,7 @@ main :: proc() {
 
 		{
 			rl.BeginTextureMode(static_element_effect_buffer)
+			rl.ClearBackground(rl.BLANK)
 			defer rl.EndTextureMode()
 
 			reveal_iter := rb.new_iter(&g.reveal_spots)
