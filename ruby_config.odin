@@ -2112,6 +2112,11 @@ sprite_create :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 		spr.parallax = cast(f32)mrb.as_float(state, values.parallax)
 	}
 
+	if !mrb.undef_p(values.anchor) &&
+	   mrb.obj_is_kind_of(state, values.anchor, engine_classes.vector) {
+		spr.anchor = vector_from_object(state, values.anchor)
+	}
+
 	if !mrb.undef_p(values.type) {
 		if !mrb.symbol_p(values.type) {
 			mrb.raise_exception(state, "Expected `type:` to a symbol of :dynamic, :static")

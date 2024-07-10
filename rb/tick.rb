@@ -50,6 +50,7 @@ class RevealGame
       type: :dynamic,
       z_offset: 1.1,
       tint: Color.purple,
+      anchor: Vector.new(0, 0),
     )
 
     background_sprites << Sprite.create(
