@@ -58,18 +58,21 @@ class RevealGame
       pos: world_pos,
       size: world_size,
       type: :static,
+      tint: Color.affinity,
     )
     background_sprites << Sprite.create(
       texture: Textures.platform_middle_right,
       pos: world_pos + Vector.new(16, 0),
       size: world_size,
       type: :static,
+      tint: Color.affinity,
     )
     background_sprites << Sprite.create(
       texture: Textures.platform_middle_left,
       pos: world_pos - Vector.new(16, 0),
       size: world_size,
       type: :static,
+      tint: Color.affinity,
     )
   end
 
