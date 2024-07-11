@@ -3,6 +3,8 @@
 ## Current
 
 * Echolocation
+  - In Ruby, create an object, and send it in a direction
+  - Prototype - Echo Location all in Ruby
 * Particle Emission
 
 ## Nice to Have
