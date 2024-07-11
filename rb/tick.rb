@@ -8,7 +8,6 @@
 
 # $old_game ||= Game.new
 # $old_game.tick
-#
 
 require 'assets/scripts/assets'
 
@@ -27,7 +26,7 @@ class RevealGame
     Echolocation.reveal(
       pos: FrameInput.mouse_pos,
       rotation: 0,
-      texture: Textures.copter,
+      texture: Textures.echo,
     )
   end
 
@@ -44,9 +43,9 @@ class RevealGame
     world_pos = screen.size * 0.5
 
     @dynamic_sprite = Sprite.create(
-      texture: Textures.copter,
+      texture: Textures.echo,
       pos: world_pos,
-      size: world_size,
+      size: Vector.new(16, 2),
       type: :dynamic,
       z_offset: 1.1,
       tint: Color.purple,
