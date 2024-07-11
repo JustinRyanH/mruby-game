@@ -11,6 +11,27 @@
 
 require 'assets/scripts/assets'
 
+class Terrain
+  def initialize(pos:, side:)
+    texture = case side
+              when :left
+                Textures.platform_middle_left
+              when :right
+                Textures.platform_middle_right
+              else
+                Textures.platform_middle
+              end
+
+    @sprite = Sprite.create(
+      texture:,
+      pos:,
+      size: Vector.new(16, 16),
+      type: :static,
+      tint: Color.affinity,
+    )
+  end
+end
+
 class RevealGame
   def tick
     setup unless ready?
@@ -51,28 +72,9 @@ class RevealGame
       tint: Color.purple,
       anchor: Vector.zero,
     )
-
-    background_sprites << Sprite.create(
-      texture: Textures.platform_middle,
-      pos: world_pos,
-      size: world_size,
-      type: :static,
-      tint: Color.affinity,
-    )
-    background_sprites << Sprite.create(
-      texture: Textures.platform_middle_right,
-      pos: world_pos + Vector.new(16, 0),
-      size: world_size,
-      type: :static,
-      tint: Color.affinity,
-    )
-    background_sprites << Sprite.create(
-      texture: Textures.platform_middle_left,
-      pos: world_pos - Vector.new(16, 0),
-      size: world_size,
-      type: :static,
-      tint: Color.affinity,
-    )
+    Terrain.new(pos: world_pos, side: :middle)
+    Terrain.new(pos: world_pos - Vector.new(16, 0), side: :left)
+    Terrain.new(pos: world_pos + Vector.new(16, 0), side: :right)
   end
 
   def background_sprites
