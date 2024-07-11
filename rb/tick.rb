@@ -13,13 +13,15 @@ require 'assets/scripts/assets'
 
 class Terrain
   def initialize(pos:)
+    size = Vector.new(16, 16)
     @sprite = Sprite.create(
       texture: Textures.square,
       pos:,
-      size: Vector.new(16, 16),
+      size:,
       type: :static,
       tint: Color.affinity,
     )
+    @collider = Collider.create(pos:, size:)
   end
 end
 
@@ -63,9 +65,9 @@ class RevealGame
       tint: Color.purple,
       anchor: Vector.zero,
     )
-    Terrain.new(pos: world_pos, side: :middle)
-    Terrain.new(pos: world_pos - Vector.new(16, 0), side: :left)
-    Terrain.new(pos: world_pos + Vector.new(16, 0), side: :right)
+    Terrain.new(pos: world_pos)
+    Terrain.new(pos: world_pos - Vector.new(16, 0))
+    Terrain.new(pos: world_pos + Vector.new(16, 0))
   end
 
   def background_sprites
