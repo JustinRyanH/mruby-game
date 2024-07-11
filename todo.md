@@ -2,11 +2,6 @@
 
 ## Current
 
-* Draw Background Static Items to the Static Buffer
-* Draw Dynamic Regular Buffer
-* Make sure that I can still do proper z-index
-* Hide/Reveal Enviormnent Debug
-  - Create Render Texture
 * Echolocation
 * Particle Emission
 
@@ -122,6 +117,11 @@
 * Texture Packing
   - Fix the texture packing border issue... https://gist.github.com/karl-zylinski/a5f996ef03f46998b9886fb456279e08
 * Loading/Unloading and hot reloading shaders
+* Draw Background Static Items to the Static Buffer
+* Draw Dynamic Regular Buffer
+* Make sure that I can still do proper z-index
+* Hide/Reveal Enviormnent Debug
+  - Create Render Texture
 
 ## AOR
 
