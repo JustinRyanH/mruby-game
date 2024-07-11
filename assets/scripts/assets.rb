@@ -49,6 +49,10 @@ class Textures
     @square ||= AssetSystem.load_texture('assets/textures/square.png')
   end
 
+  def self.echo
+    @echo ||= AssetSystem.load_texture('assets/textures/echo_effect_1.png')
+  end
+
   def self.platform_top_middle
     @platform_top_middle ||= AssetSystem.load_texture('assets/textures/platform_um.png')
   end
