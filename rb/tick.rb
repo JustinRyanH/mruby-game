@@ -36,7 +36,7 @@ class RevealGame
   def tick
     setup unless ready?
     screen = FrameInput.screen
-    mouse_pos = FrameInput.mouse_pos
+    mouse_pos = FrameInput.mouse_pos.floor!
 
     text_pos = Vector.new(screen.size.x * 0.5, screen.size.y - 72)
     Draw.text(text: 'Sonar Test', pos: text_pos, halign: :center, size: 16)
@@ -45,7 +45,7 @@ class RevealGame
     return unless FrameInput.mouse_just_pressed?(:left)
 
     Echolocation.reveal(
-      pos: FrameInput.mouse_pos,
+      pos: mouse_pos,
       rotation: 0,
       texture: Textures.echo,
     )
