@@ -13,17 +13,8 @@ require 'assets/scripts/assets'
 
 class Terrain
   def initialize(pos:, side:)
-    texture = case side
-              when :left
-                Textures.platform_middle_left
-              when :right
-                Textures.platform_middle_right
-              else
-                Textures.platform_middle
-              end
-
     @sprite = Sprite.create(
-      texture:,
+      texture: Textures.square,
       pos:,
       size: Vector.new(16, 16),
       type: :static,
