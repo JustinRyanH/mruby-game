@@ -12,7 +12,7 @@
 require 'assets/scripts/assets'
 
 class Terrain
-  def initialize(pos:, side:)
+  def initialize(pos:)
     @sprite = Sprite.create(
       texture: Textures.square,
       pos:,
