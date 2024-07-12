@@ -27,6 +27,22 @@ Vector.class_eval do
     new(v, v)
   end
 
+  def self.left
+    new(-1, 0)
+  end
+
+  def self.right
+    new(1, 0)
+  end
+
+  def self.up
+    new(0, 1)
+  end
+
+  def self.down
+    new(0, -1)
+  end
+
   def inspect
     { name: 'Vector', x:, y: }
   end
