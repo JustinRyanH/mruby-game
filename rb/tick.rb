@@ -70,21 +70,27 @@ class Terrain
 end
 
 class RevealGame
+  attr_reader :mouse_pos
+
   def tick
     setup unless ready?
     screen = FrameInput.screen
-    mouse_pos = FrameInput.mouse_pos.floor!
+    @mouse_pos = FrameInput.mouse_pos.floor!
 
     text_pos = Vector.new(screen.size.x * 0.5, screen.size.y - 72)
     Draw.text(text: 'Sonar Test', pos: text_pos, halign: :center, size: 16)
     @dynamic_sprite.pos = mouse_pos
 
-    entities << Block.new(self, pos: mouse_pos, size: Vector.all(2)) if FrameInput.mouse_just_pressed?(:left)
+    spawn_echo if FrameInput.mouse_just_pressed?(:left)
 
     entities.each(&:update)
   end
 
   private
+
+  def spawn_echo
+    entities << Block.new(self, pos: mouse_pos, size: Vector.all(2)) if FrameInput.mouse_just_pressed?(:left)
+  end
 
   def ready?
     @ready || false
@@ -99,7 +105,7 @@ class RevealGame
     @dynamic_sprite = Sprite.create(
       texture: Textures.square,
       pos: world_pos,
-      size: Vector.new(8, 8),
+      size: Vector.new(1, 1),
       type: :dynamic,
       z_offset: 1.1,
       tint: Color.purple,
