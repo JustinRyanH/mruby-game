@@ -6,6 +6,7 @@
   - In Ruby, create an object, and send it in a direction
   - Prototype - Echo Location all in Ruby
 * Particle Emission
+* Figure out why Background color isn't set
 
 ## Nice to Have
 

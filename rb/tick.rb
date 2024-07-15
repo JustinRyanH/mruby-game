@@ -9,7 +9,47 @@
 # $old_game ||= Game.new
 # $old_game.tick
 
+require 'assets/scripts/engine_override'
 require 'assets/scripts/assets'
+
+class Block
+  attr_reader :velocity, :game
+
+  def initialize(game, pos:, size:, velocity: Vector.new(1, 0))
+    @game = game
+    @sprite = Sprite.create(
+      texture: Textures.square,
+      pos:,
+      size:,
+      type: :dynamic,
+      tint: Color.crushed_cashew,
+    )
+    @collider = Collider.create(pos:, size:)
+    @velocity = velocity
+  end
+
+  def update
+    self.pos += velocity
+    collisions = @collider.collisions
+    return unless collisions.any?
+
+    game.destroy_entity(self)
+  end
+
+  def pos
+    @sprite.pos
+  end
+
+  def pos=(value)
+    @sprite.pos = value
+    @collider.pos = value
+  end
+
+  def destroy
+    @sprite.destroy
+    @collider.destroy
+  end
+end
 
 class Terrain
   def initialize(pos:)
@@ -35,13 +75,9 @@ class RevealGame
     Draw.text(text: 'Sonar Test', pos: text_pos, halign: :center, size: 16)
     @dynamic_sprite.pos = mouse_pos
 
-    return unless FrameInput.mouse_just_pressed?(:left)
+    entities << Block.new(self, pos: mouse_pos, size: Vector.all(2)) if FrameInput.mouse_just_pressed?(:left)
 
-    Echolocation.reveal(
-      pos: mouse_pos,
-      rotation: 0,
-      texture: Textures.echo,
-    )
+    entities.each(&:update)
   end
 
   private
@@ -52,26 +88,34 @@ class RevealGame
 
   def setup
     @ready = true
+    Engine.background_color = Color.dreamy_sunset
     screen = FrameInput.screen
-    world_size = Vector.new(16, 16)
     world_pos = screen.size * 0.5
 
     @dynamic_sprite = Sprite.create(
-      texture: Textures.echo,
+      texture: Textures.square,
       pos: world_pos,
-      size: Vector.new(16, 2),
+      size: Vector.new(8, 8),
       type: :dynamic,
       z_offset: 1.1,
       tint: Color.purple,
-      anchor: Vector.zero,
     )
-    Terrain.new(pos: world_pos)
-    Terrain.new(pos: world_pos - Vector.new(16, 0))
-    Terrain.new(pos: world_pos + Vector.new(16, 0))
+    background_sprites << Terrain.new(pos: world_pos)
+    background_sprites << Terrain.new(pos: world_pos - Vector.new(16, 0))
+    background_sprites << Terrain.new(pos: world_pos + Vector.new(16, 0))
+  end
+
+  def destroy_entity(entity)
+    entities.reject! { |ent| ent == entity }
+    entity.destroy
   end
 
   def background_sprites
-    @background_sprites = []
+    @background_sprites ||= []
+  end
+
+  def entities
+    @entities ||= []
   end
 end
 
