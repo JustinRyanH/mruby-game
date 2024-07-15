@@ -1195,7 +1195,7 @@ draw_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	// TODO: I can totally do this with generics and reflection
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
@@ -1426,7 +1426,7 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 		font: mrb.Value,
 	}
 
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "font"),
@@ -2742,9 +2742,9 @@ rect_pack_pack :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 
 
 setup_echo_location :: proc(st: ^mrb.State) {
-	echolocation_modoule := mrb.define_module(st, "Echolocation")
-	mrb.define_class_method(st, echolocation_modoule, "reveal", echo_reveal, mrb.args_key(3, 0))
-	engine_classes.echolocation = echolocation_modoule
+	echolocation_module := mrb.define_module(st, "Echolocation")
+	mrb.define_class_method(st, echolocation_module, "reveal", echo_reveal, mrb.args_key(3, 0))
+	engine_classes.echolocation = echolocation_module
 }
 
 
