@@ -89,7 +89,7 @@ class RevealGame
   private
 
   def spawn_echo
-    entities << Block.new(self, pos: mouse_pos, size: Vector.all(2)) if FrameInput.mouse_just_pressed?(:left)
+    entities << Block.new(self, pos: mouse_pos, size: Vector.all(2))
   end
 
   def ready?
