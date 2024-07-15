@@ -9,14 +9,18 @@
 # $old_game ||= Game.new
 # $old_game.tick
 
+require 'assets/scripts/common'
 require 'assets/scripts/engine_override'
 require 'assets/scripts/assets'
 
 class Block
-  attr_reader :velocity, :game
+  include Bounds
+
+  attr_reader :velocity, :game, :size
 
   def initialize(game, pos:, size:, velocity: Vector.new(1, 0))
     @game = game
+    @size = size
     @sprite = Sprite.create(
       texture: Textures.square,
       pos:,
@@ -33,7 +37,7 @@ class Block
     collisions = @collider.collisions
     return unless collisions.any?
 
-    game.destroy_entity(self)
+    game.collide_entity(self)
   end
 
   def pos
@@ -88,7 +92,7 @@ class RevealGame
 
   def setup
     @ready = true
-    Engine.background_color = Color.dreamy_sunset
+    Engine.background_color = Color.crow_black_blue
     screen = FrameInput.screen
     world_pos = screen.size * 0.5
 
@@ -105,8 +109,10 @@ class RevealGame
     background_sprites << Terrain.new(pos: world_pos + Vector.new(16, 0))
   end
 
-  def destroy_entity(entity)
+  def collide_entity(entity)
     entities.reject! { |ent| ent == entity }
+    Echolocation.reveal(pos: Vector.new(entity.left, entity.pos.y), rotation: 0, texture: Textures.echo)
+
     entity.destroy
   end
 
