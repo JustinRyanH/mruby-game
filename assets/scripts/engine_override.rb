@@ -8,7 +8,7 @@ Math.module_eval do
   end
 
   def self.tau
-    @tau ||= @pi * 2
+    @tau ||= pi * 2
   end
 end
 
