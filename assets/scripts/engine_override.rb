@@ -2,6 +2,16 @@
 
 require 'assets/scripts/common'
 
+Math.module_eval do
+  def self.pi
+    3.1415926535897932385
+  end
+
+  def self.tau
+    @tau ||= @pi * 2
+  end
+end
+
 Array.class_eval do
   # TODO: Sample count
   def sample
