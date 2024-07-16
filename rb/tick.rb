@@ -28,6 +28,7 @@ class Block
       type: :dynamic,
       tint: Color.crushed_cashew,
     )
+    @source = pos
     @collider = Collider.create(pos:, size:)
     @velocity = velocity
   end
@@ -40,7 +41,8 @@ class Block
       return
     end
 
-    game.destroy_entity(self) if self.pos.x > 500
+    puts "distance_travelled: #{distance_travelled}"
+    game.destroy_entity(self) if distance_travelled > 200
   end
 
   def pos
@@ -55,6 +57,10 @@ class Block
   def destroy
     @sprite.destroy
     @collider.destroy
+  end
+
+  def distance_travelled
+    (@source - pos).length
   end
 end
 
@@ -130,6 +136,7 @@ class RevealGame
 
   def collide_entity(entity)
     puts 'Collide Entity'
+    puts entity.velocity.inspect
     Echolocation.reveal(pos: Vector.new(entity.left, entity.pos.y), rotation: 0, texture: Textures.echo)
     destroy_entity(entity)
   end

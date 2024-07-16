@@ -191,7 +191,7 @@ renderable_from_reveal_spot :: proc(
 
 	out.texture = asset.texture
 	out.src = asset.src
-	out.dest =  {
+	out.dest = {
 		spot.pos.x,
 		spot.pos.y,
 		cast(f32)asset.texture.width,
@@ -382,6 +382,8 @@ main :: proc() {
 			0,
 			rl.WHITE,
 		)
+
+		rl.DrawText(fmt.ctprintf("Sprites: %d", dp.length(&g.sprites)), 100, 100, 32, rl.RED)
 
 		rl.EndDrawing()
 
