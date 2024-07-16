@@ -30,7 +30,7 @@ game_add_collision :: proc(game: ^Game, a, b: ColliderHandle, contact: ContactEv
 	}
 
 	append(&game.collision_evts_t[a], CollisionEvent{b, contact.normal, contact.depth})
-	append(&game.collision_evts_t[b], CollisionEvent{a, contact.normal, contact.depth})
+	append(&game.collision_evts_t[b], CollisionEvent{a, -contact.normal, -contact.depth})
 }
 
 
