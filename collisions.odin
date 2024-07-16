@@ -3,12 +3,14 @@ package main
 import dp "./data_pool"
 
 CollisionEvent :: struct {
-	other: ColliderHandle,
+	other:  ColliderHandle,
+	normal: Vector2,
+	depth:  f32,
 }
 CollisionTargets :: [dynamic]CollisionEvent
 Collisions :: map[ColliderHandle]CollisionTargets
 
-game_add_collision :: proc(game: ^Game, a, b: ColliderHandle) {
+game_add_collision :: proc(game: ^Game, a, b: ColliderHandle, contact: ContactEvent) {
 	if !(a in game.collision_evts_t) {
 		game.collision_evts_t[a] = make(CollisionTargets, 0, 16, context.temp_allocator)
 	}
@@ -27,8 +29,8 @@ game_add_collision :: proc(game: ^Game, a, b: ColliderHandle) {
 		}
 	}
 
-	append(&game.collision_evts_t[a], CollisionEvent{b})
-	append(&game.collision_evts_t[b], CollisionEvent{a})
+	append(&game.collision_evts_t[a], CollisionEvent{b, contact.normal, contact.depth})
+	append(&game.collision_evts_t[b], CollisionEvent{a, contact.normal, contact.depth})
 }
 
 
@@ -43,11 +45,11 @@ game_check_collisions :: proc(game: ^Game) {
 			rect_a := Rectangle{entity_a.pos, entity_a.size}
 			rect_b := Rectangle{entity_b.pos, entity_b.size}
 
-			_, collide := shape_are_rects_colliding_obb(rect_a, rect_b)
+			contact, collide := shape_are_rects_colliding_obb(rect_a, rect_b)
 			if !collide {
 				continue
 			}
-			game_add_collision(game, handle_a, handle_b)
+			game_add_collision(game, handle_a, handle_b, contact)
 		}
 	}
 }
