@@ -2,6 +2,36 @@ package main
 
 import dp "./data_pool"
 
+CollisionEvent :: struct {
+	other: ColliderHandle,
+}
+CollisionTargets :: [dynamic]CollisionEvent
+Collisions :: map[ColliderHandle]CollisionTargets
+
+game_add_collision :: proc(game: ^Game, a, b: ColliderHandle) {
+	if !(a in game.collision_evts_t) {
+		game.collision_evts_t[a] = make(CollisionTargets, 0, 16, context.temp_allocator)
+	}
+	if !(b in game.collision_evts_t) {
+		game.collision_evts_t[b] = make(CollisionTargets, 0, 16, context.temp_allocator)
+	}
+
+	when !ODIN_DISABLE_ASSERT {
+		for v in game.collision_evts_t[a] {
+			assert(v.other != a, "Item should not collide with itself")
+			assert(v.other != b, "An item should not collide with itself twice")
+		}
+		for v in game.collision_evts_t[b] {
+			assert(v.other != b, "Item should not collide with itself")
+			assert(v.other != a, "An item should not collide with itself twice")
+		}
+	}
+
+	append(&game.collision_evts_t[a], CollisionEvent{b})
+	append(&game.collision_evts_t[b], CollisionEvent{a})
+}
+
+
 game_check_collisions :: proc(game: ^Game) {
 	iter_a := dp.new_iter(&game.colliders)
 	for entity_a, handle_a in dp.iter_next(&iter_a) {

@@ -53,8 +53,6 @@ ActiveSoundPool :: dp.DataPool(32, rl.Sound, ActiveSoundHandle)
 RevealRing :: rb.RingBuffer(512, RevealSpot)
 CameraPool :: dp.DataPool(8, rl.Camera2D, CameraHandle)
 
-CollisionTargets :: [dynamic]ColliderHandle
-
 Game :: struct {
 	ruby:             ^mrb.State,
 	ctx:              runtime.Context,
@@ -67,7 +65,7 @@ Game :: struct {
 	should_exit:      bool,
 
 	// Temp Data
-	collision_evts_t: map[ColliderHandle]CollisionTargets,
+	collision_evts_t: Collisions,
 
 	// Game Data
 	camera:           CameraHandle,
@@ -109,29 +107,6 @@ game_get_camera :: proc(game: ^Game) -> rl.Camera2D {
 	camera, success := dp.get(&game.cameras, game.camera)
 	assert(success, "Camera could not be found")
 	return camera
-}
-
-game_add_collision :: proc(game: ^Game, a, b: ColliderHandle) {
-	if !(a in game.collision_evts_t) {
-		game.collision_evts_t[a] = make(CollisionTargets, 0, 8, context.temp_allocator)
-	}
-	if !(b in game.collision_evts_t) {
-		game.collision_evts_t[b] = make(CollisionTargets, 0, 8, context.temp_allocator)
-	}
-
-	when !ODIN_DISABLE_ASSERT {
-		for v in game.collision_evts_t[a] {
-			assert(v != a, "Item should not collide with itself")
-			assert(v != b, "An item should not collide with itself twice")
-		}
-		for v in game.collision_evts_t[b] {
-			assert(v != b, "Item should not collide with itself")
-			assert(v != a, "An item should not collide with itself twice")
-		}
-	}
-
-	append(&game.collision_evts_t[a], b)
-	append(&game.collision_evts_t[b], a)
 }
 
 game_deinit :: proc(game: ^Game) {

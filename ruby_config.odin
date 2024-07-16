@@ -651,7 +651,7 @@ collider_other_collisions :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mr
 	collided_with := g.collision_evts_t[handle]
 	out := make([]mrb.Value, len(collided_with), context.temp_allocator)
 	for e, idx in collided_with {
-		mrb_v := mrb.int_value(state, cast(mrb.Int)e)
+		mrb_v := mrb.int_value(state, cast(mrb.Int)e.other)
 		mrb_e := mrb.obj_new(state, engine_classes.collider, 1, &mrb_v)
 		out[idx] = mrb_e
 	}
@@ -1195,7 +1195,7 @@ draw_draw_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	}
 
 	// TODO: I can totally do this with generics and reflection
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "pos"),
 		mrb.sym_from_string(state, "size"),
@@ -1426,7 +1426,7 @@ draw_measure_text :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value 
 		font: mrb.Value,
 	}
 
-	names: []mrb.Sym =  {
+	names: []mrb.Sym = {
 		mrb.sym_from_string(state, "text"),
 		mrb.sym_from_string(state, "size"),
 		mrb.sym_from_string(state, "font"),
