@@ -92,14 +92,14 @@ class RevealGame
   private
 
   def spawn_echo
-    puts Math.pi
-    sections = 4
+    sections = 16
+    scale = 10
     sections.times do |v|
       distance_travelled = v.to_f / sections
       x_pos = Math.cos(Math.tau * distance_travelled)
       y_pos = Math.sin(Math.tau * distance_travelled)
 
-      pos = (Vector.new(x_pos, y_pos) * 4) + mouse_pos
+      pos = (Vector.new(x_pos, y_pos) * scale) + mouse_pos
       entities << Block.new(self, pos:, size: Vector.all(2))
     end
   end
@@ -128,6 +128,7 @@ class RevealGame
   end
 
   def collide_entity(entity)
+    puts 'Collide Entity'
     Echolocation.reveal(pos: Vector.new(entity.left, entity.pos.y), rotation: 0, texture: Textures.echo)
     destroy_entity(entity)
   end
