@@ -92,15 +92,16 @@ class RevealGame
   private
 
   def spawn_echo
-    sections = 16
+    sections = 40
     scale = 10
     sections.times do |v|
       distance_travelled = v.to_f / sections
       x_pos = Math.cos(Math.tau * distance_travelled)
       y_pos = Math.sin(Math.tau * distance_travelled)
 
-      pos = (Vector.new(x_pos, y_pos) * scale) + mouse_pos
-      entities << Block.new(self, pos:, size: Vector.all(2))
+      unit_pos = Vector.new(x_pos, y_pos)
+      pos = (unit_pos * scale) + mouse_pos
+      entities << Block.new(self, pos:, size: Vector.all(1), velocity: unit_pos)
     end
   end
 
