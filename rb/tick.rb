@@ -35,9 +35,12 @@ class Block
   def update
     self.pos += velocity
     collisions = @collider.collisions
-    return unless collisions.any?
+    if collisions.any?
+      game.collide_entity(self)
+      return
+    end
 
-    game.collide_entity(self)
+    game.destroy_entity(self) if self.pos.x > 500
   end
 
   def pos
@@ -89,7 +92,16 @@ class RevealGame
   private
 
   def spawn_echo
-    entities << Block.new(self, pos: mouse_pos, size: Vector.all(2))
+    puts Math.pi
+    sections = 4
+    sections.times do |v|
+      distance_travelled = v.to_f / sections
+      x_pos = Math.cos(Math.tau * distance_travelled)
+      y_pos = Math.sin(Math.tau * distance_travelled)
+
+      pos = (Vector.new(x_pos, y_pos) * 4) + mouse_pos
+      entities << Block.new(self, pos:, size: Vector.all(2))
+    end
   end
 
   def ready?
@@ -116,9 +128,12 @@ class RevealGame
   end
 
   def collide_entity(entity)
-    entities.reject! { |ent| ent == entity }
     Echolocation.reveal(pos: Vector.new(entity.left, entity.pos.y), rotation: 0, texture: Textures.echo)
+    destroy_entity(entity)
+  end
 
+  def destroy_entity(entity)
+    entities.reject! { |ent| ent == entity }
     entity.destroy
   end
 
