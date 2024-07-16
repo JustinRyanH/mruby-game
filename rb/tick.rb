@@ -41,7 +41,6 @@ class Block
       return
     end
 
-    puts "distance_travelled: #{distance_travelled}"
     game.destroy_entity(self) if distance_travelled > 200
   end
 
