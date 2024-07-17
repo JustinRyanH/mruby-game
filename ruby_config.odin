@@ -730,8 +730,8 @@ collider_other_collisions :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mr
 	out := make([]mrb.Value, len(collided_with), context.temp_allocator)
 	for e, idx in collided_with {
 		mrb_v := mrb.int_value(state, cast(mrb.Int)e.other)
-		mrb_e := mrb.obj_new(state, engine_classes.collider, 1, &mrb_v)
-		out[idx] = mrb_e
+		collider := mrb.obj_new(state, engine_classes.collider, 1, &mrb_v)
+		out[idx] = collider
 	}
 	values := mrb.ary_new_from_values(state, len(out), raw_data(out))
 
