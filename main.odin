@@ -309,6 +309,7 @@ main :: proc() {
 		}
 
 		{
+			// Render the Sprites, and IMGUI, to texture
 			rl.BeginTextureMode(screen_buffer)
 			defer rl.EndTextureMode()
 			rl.ClearBackground(rl.BLANK)
