@@ -2,6 +2,7 @@
 
 ## Current
 
+* Improve Collision https://x.com/falconerd/status/1813278682678763731
 * Echolocation
   - Port my echo-particles to odin code
 * Particle Emission
