@@ -89,6 +89,10 @@ CollisionEvent.class_eval do
       depth:
     }
   end
+
+  def hash
+    inspect.hash
+  end
 end
 
 Collider.class_eval do
