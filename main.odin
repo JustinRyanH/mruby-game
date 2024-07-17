@@ -289,10 +289,8 @@ main :: proc() {
 			clear(&todo_render)
 		}
 
-		rl.BeginDrawing()
-
-
 		{
+			// Render the Effects on Background/Terrain
 			rl.BeginTextureMode(static_element_effect_buffer)
 			rl.ClearBackground(rl.BLANK)
 			defer rl.EndTextureMode()
@@ -307,8 +305,11 @@ main :: proc() {
 			}
 
 			game_draw_renderables(g, todo_render[:])
+			clear(&todo_render)
 		}
-		clear(&todo_render)
+
+		rl.BeginDrawing()
+
 
 		{
 			rl.BeginTextureMode(screen_buffer)
