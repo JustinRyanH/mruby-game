@@ -267,10 +267,8 @@ main :: proc() {
 		game_check_collisions(g)
 		game_run_code(g, tick_handle)
 
-		rl.BeginDrawing()
-
-
 		{
+			// Static Elements - Background/Terrain
 			rl.BeginTextureMode(static_element_buffer)
 			defer rl.EndTextureMode()
 			rl.ClearBackground(rl.BLANK)
@@ -288,9 +286,11 @@ main :: proc() {
 			}
 			game_draw_renderables(g, todo_render[:])
 
-
+			clear(&todo_render)
 		}
-		clear(&todo_render)
+
+		rl.BeginDrawing()
+
 
 		{
 			rl.BeginTextureMode(static_element_effect_buffer)
