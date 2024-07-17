@@ -308,9 +308,6 @@ main :: proc() {
 			clear(&todo_render)
 		}
 
-		rl.BeginDrawing()
-
-
 		{
 			rl.BeginTextureMode(screen_buffer)
 			defer rl.EndTextureMode()
@@ -330,6 +327,9 @@ main :: proc() {
 
 			imui_draw(&g.imui)
 		}
+
+		rl.BeginDrawing()
+
 
 		rl.ClearBackground(g.bg_color)
 		{
