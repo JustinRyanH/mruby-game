@@ -75,6 +75,7 @@ get_curent_game :: proc "contextless" (state: ^mrb.State) -> mrb.Value {
 
 mrb_camera_tpye: mrb.DataType = {"Camera", mrb.free}
 mrb_collider_type: mrb.DataType = {"Collider", mrb.free}
+mrb_collider_event_type: mrb.DataType = {"CollisionEvent", mrb.free}
 mrb_color_type: mrb.DataType = {"Color", mrb.free}
 mrb_font_handle_type: mrb.DataType = {"Font", mrb.free}
 mrb_frame_input_type: mrb.DataType = {"FrameInput", mrb.free}
@@ -82,23 +83,24 @@ mrb_sprite_type: mrb.DataType = {"Sprite", mrb.free}
 mrb_vector_type: mrb.DataType = {"Vector", mrb.free}
 
 EngineRClass :: struct {
-	as:            ^mrb.RClass,
-	atlas_asset:   ^mrb.RClass,
-	camera:        ^mrb.RClass,
-	collider:      ^mrb.RClass,
-	color:         ^mrb.RClass,
-	draw_module:   ^mrb.RClass,
-	echolocation:  ^mrb.RClass,
-	engine:        ^mrb.RClass,
-	font_asset:    ^mrb.RClass,
-	frame:         ^mrb.RClass,
-	rect_pack:     ^mrb.RClass,
-	screen:        ^mrb.RClass,
-	set:           ^mrb.RClass,
-	sound:         ^mrb.RClass,
-	sprite:        ^mrb.RClass,
-	texture_asset: ^mrb.RClass,
-	vector:        ^mrb.RClass,
+	as:              ^mrb.RClass,
+	atlas_asset:     ^mrb.RClass,
+	camera:          ^mrb.RClass,
+	collider:        ^mrb.RClass,
+	collision_event: ^mrb.RClass,
+	color:           ^mrb.RClass,
+	draw_module:     ^mrb.RClass,
+	echolocation:    ^mrb.RClass,
+	engine:          ^mrb.RClass,
+	font_asset:      ^mrb.RClass,
+	frame:           ^mrb.RClass,
+	rect_pack:       ^mrb.RClass,
+	screen:          ^mrb.RClass,
+	set:             ^mrb.RClass,
+	sound:           ^mrb.RClass,
+	sprite:          ^mrb.RClass,
+	texture_asset:   ^mrb.RClass,
+	vector:          ^mrb.RClass,
 }
 
 engine_classes: EngineRClass
@@ -113,7 +115,8 @@ game_load_mruby_raylib :: proc(game: ^Game) {
 	setup_draw(st)
 	setup_input(st)
 	setup_log_class(st)
-	setup_entity_class(st)
+	setup_collision_class(st)
+	setup_collision_evt_class(st)
 	setup_sprite_class(st)
 	setup_camera_class(st)
 	setup_screen_class(st)
@@ -505,10 +508,52 @@ logger_fatal :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 }
 
 //////////////////////////////
+//// collider event
+//////////////////////////////
+
+RubyCollisionEvent :: struct {
+	src, target: mrb.Value, // Collider Object
+	normal:      mrb.Value, // Vector Object
+	depth:       mrb.Value, // Float
+}
+
+setup_collision_evt_class :: proc(st: ^mrb.State) {
+	collison_evt_class := mrb.define_class(st, "CollisionEvent", mrb.state_get_object_class(st))
+	mrb.set_data_type(collison_evt_class, .CData)
+	mrb.define_method(st, collison_evt_class, "initialize", collision_init_evt, mrb.args_req(4))
+	engine_classes.collision_event = collison_evt_class
+}
+
+@(private = "file")
+collision_init_evt :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
+	src_collider: mrb.Value
+	target_collider: mrb.Value
+	normal_value: mrb.Value
+	depth: mrb.Value
+
+	mrb.get_args(state, "oooo", &src_collider, &target_collider, &normal_value, &depth)
+
+	i := mrb.get_data_from_value(RubyCollisionEvent, self)
+
+	if (i == nil) {
+		mrb.data_init(self, nil, &mrb_collider_event_type)
+		v := mrb.malloc(state, size_of(RubyCollisionEvent))
+		i = cast(^RubyCollisionEvent)v
+		mrb.data_init(self, i, &mrb_collider_event_type)
+	}
+	i.src = src_collider
+	i.target = target_collider
+	i.normal = normal_value
+	i.depth = depth
+
+	return self
+}
+
+//////////////////////////////
 //// collider
 //////////////////////////////
 
-setup_entity_class :: proc(st: ^mrb.State) {
+setup_collision_class :: proc(st: ^mrb.State) {
 	collider_class := mrb.define_class(st, "Collider", mrb.state_get_object_class(st))
 	mrb.set_data_type(collider_class, .CData)
 	mrb.define_method(st, collider_class, "initialize", collider_init, mrb.args_req(1))
