@@ -74,6 +74,23 @@ Draw.class_eval do
   end
 end
 
+CollisionEvent.class_eval do
+  def valid?
+    target.valid?
+  end
+
+  def inspect
+    return { name: 'CollisionEvent' } unless valid?
+
+    {
+      name: 'CollisionEvent',
+      target: target.inspect,
+      normal: normal.inspect,
+      depth:
+    }
+  end
+end
+
 Collider.class_eval do
   include Bounds
 

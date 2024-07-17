@@ -36,6 +36,9 @@ class Block
   def update
     self.pos += velocity
     collisions = @collider.collisions
+    collisions.each do |evt|
+      puts evt.inspect
+    end
     if collisions.any?
       game.collide_entity(self)
       return

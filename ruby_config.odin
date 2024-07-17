@@ -730,8 +730,16 @@ collider_other_collisions :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mr
 	out := make([]mrb.Value, len(collided_with), context.temp_allocator)
 	for e, idx in collided_with {
 		mrb_v := mrb.int_value(state, cast(mrb.Int)e.other)
+
 		collider := mrb.obj_new(state, engine_classes.collider, 1, &mrb_v)
-		out[idx] = collider
+		normal_v := vector_obj_from_vec(state, e.normal)
+		depth_v := mrb.float_value(state, cast(mrb.Float)e.depth)
+
+		arg_v := []mrb.Value{collider, normal_v, depth_v}
+
+		evt := mrb.obj_new(state, engine_classes.collision_event, 3, raw_data(arg_v))
+
+		out[idx] = evt
 	}
 	values := mrb.ary_new_from_values(state, len(out), raw_data(out))
 
