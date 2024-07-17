@@ -313,9 +313,8 @@ main :: proc() {
 
 		{
 			rl.BeginTextureMode(screen_buffer)
+			defer rl.EndTextureMode()
 			rl.ClearBackground(rl.BLANK)
-
-
 			sprt_iter := dp.new_iter(&g.sprites)
 			for spr in dp.iter_next(&sprt_iter) {
 				if !spr.visible {continue}
@@ -330,8 +329,6 @@ main :: proc() {
 			game_draw_renderables(g, todo_render[:])
 
 			imui_draw(&g.imui)
-
-			rl.EndTextureMode()
 		}
 
 		rl.ClearBackground(g.bg_color)
