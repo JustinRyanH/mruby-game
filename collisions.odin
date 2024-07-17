@@ -2,6 +2,15 @@ package main
 
 import dp "./data_pool"
 
+ColliderRegionPos :: struct {
+	x, y: u32,
+}
+
+RegionColliders :: struct {
+	colliders: []Collider,
+	count:     u32,
+}
+
 CollisionEvent :: struct {
 	other:  ColliderHandle,
 	normal: Vector2,

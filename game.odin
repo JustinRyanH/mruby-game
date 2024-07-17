@@ -44,6 +44,7 @@ Collider :: struct {
 	size: Vector2,
 }
 
+
 ColliderHandle :: distinct dp.Handle
 CameraHandle :: distinct dp.Handle
 
@@ -54,27 +55,28 @@ RevealRing :: rb.RingBuffer(512, RevealSpot)
 CameraPool :: dp.DataPool(8, rl.Camera2D, CameraHandle)
 
 Game :: struct {
-	ruby:             ^mrb.State,
-	ctx:              runtime.Context,
+	ruby:               ^mrb.State,
+	ctx:                runtime.Context,
 
 	// Systems
-	assets:           AssetSystem,
-	imui:             ImUiState,
-	input:            input.FrameInput,
-	debug:            bool,
-	should_exit:      bool,
+	assets:             AssetSystem,
+	imui:               ImUiState,
+	input:              input.FrameInput,
+	debug:              bool,
+	should_exit:        bool,
 
 	// Temp Data
-	collision_evts_t: Collisions,
+	collision_evts_t:   Collisions,
+	collider_regions_t: map[ColliderRegionPos]RegionColliders,
 
 	// Game Data
-	camera:           CameraHandle,
-	bg_color:         rl.Color,
-	colliders:        ColliderPool,
-	active_sounds:    ActiveSoundPool,
-	sprites:          SpritePool,
-	cameras:          CameraPool,
-	reveal_spots:     RevealRing,
+	camera:             CameraHandle,
+	bg_color:           rl.Color,
+	colliders:          ColliderPool,
+	active_sounds:      ActiveSoundPool,
+	sprites:            SpritePool,
+	cameras:            CameraPool,
+	reveal_spots:       RevealRing,
 }
 
 game_init :: proc(game: ^Game) {
@@ -95,6 +97,11 @@ game_init :: proc(game: ^Game) {
 
 game_setup_temp :: proc(game: ^Game) {
 	game.collision_evts_t = make(map[ColliderHandle]CollisionTargets, 16, context.temp_allocator)
+	game.collider_regions_t = make(
+		map[ColliderRegionPos]RegionColliders,
+		64,
+		context.temp_allocator,
+	)
 }
 
 game_get_camera :: proc(game: ^Game) -> rl.Camera2D {
