@@ -366,7 +366,7 @@ main :: proc() {
 		)
 
 		rl.DrawText(fmt.ctprintf("Sprites: %d", dp.length(&g.sprites)), 100, 100, 32, rl.RED)
-		rl.DrawText(fmt.ctprintf("FPS: %d", rl.GetFPS()), 100, 140, 32, rl.RED)
+		rl.DrawFPS(100, 140)
 
 		rl.EndDrawing()
 
