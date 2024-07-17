@@ -512,9 +512,9 @@ logger_fatal :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 //////////////////////////////
 
 RubyCollisionEvent :: struct {
-	src, target: mrb.Value, // Collider Object
-	normal:      mrb.Value, // Vector Object
-	depth:       mrb.Value, // Float
+	target: mrb.Value, // Collider Object
+	normal: mrb.Value, // Vector Object
+	depth:  mrb.Value, // Float
 }
 
 setup_collision_evt_class :: proc(st: ^mrb.State) {
@@ -522,7 +522,6 @@ setup_collision_evt_class :: proc(st: ^mrb.State) {
 	mrb.set_data_type(collison_evt_class, .CData)
 	mrb.define_method(st, collison_evt_class, "initialize", collision_init_evt, mrb.args_req(4))
 	engine_classes.collision_event = collison_evt_class
-	mrb.define_method(st, collison_evt_class, "src", collision_evt_src, mrb.args_none())
 	mrb.define_method(st, collison_evt_class, "target", collision_evt_target, mrb.args_none())
 	mrb.define_method(st, collison_evt_class, "normal", collision_evt_normal, mrb.args_none())
 	mrb.define_method(st, collison_evt_class, "depth", collision_evt_depth, mrb.args_none())
@@ -532,17 +531,12 @@ setup_collision_evt_class :: proc(st: ^mrb.State) {
 collision_init_evt :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	context = load_context(state)
 
-	src_collider: mrb.Value
 	target_collider: mrb.Value
 	normal_value: mrb.Value
 	depth: mrb.Value
 
-	mrb.get_args(state, "oooo", &src_collider, &target_collider, &normal_value, &depth)
+	mrb.get_args(state, "ooo", &target_collider, &normal_value, &depth)
 
-	assert(
-		mrb.obj_is_kind_of(state, src_collider, engine_classes.collider),
-		"Expected src to a collider",
-	)
 	assert(
 		mrb.obj_is_kind_of(state, target_collider, engine_classes.collider),
 		"Expected target to a collider",
@@ -562,17 +556,11 @@ collision_init_evt :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value
 		evt = cast(^RubyCollisionEvent)v
 		mrb.data_init(self, evt, &mrb_collider_event_type)
 	}
-	evt.src = src_collider
 	evt.target = target_collider
 	evt.normal = normal_value
 	evt.depth = depth
 
 	return self
-}
-@(private = "file")
-collision_evt_src :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
-	evt := mrb.get_data_from_value(RubyCollisionEvent, self)
-	return evt.src
 }
 
 @(private = "file")
@@ -580,11 +568,13 @@ collision_evt_target :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Val
 	evt := mrb.get_data_from_value(RubyCollisionEvent, self)
 	return evt.target
 }
+
 @(private = "file")
 collision_evt_normal :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	evt := mrb.get_data_from_value(RubyCollisionEvent, self)
 	return evt.normal
 }
+
 @(private = "file")
 collision_evt_depth :: proc "c" (state: ^mrb.State, self: mrb.Value) -> mrb.Value {
 	evt := mrb.get_data_from_value(RubyCollisionEvent, self)
