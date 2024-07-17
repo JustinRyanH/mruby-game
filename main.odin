@@ -263,10 +263,12 @@ main :: proc() {
 		g.input.current_frame.meta.screen_width = SCALE_WIDTH
 		g.input.current_frame.mouse.pos *= 1.0 / 4.0
 		g.input.current_frame.meta.screen_height = SCALE_HEIGHT
-		rl.BeginDrawing()
 
 		game_check_collisions(g)
 		game_run_code(g, tick_handle)
+
+		rl.BeginDrawing()
+
 
 		{
 			rl.BeginTextureMode(static_element_buffer)
