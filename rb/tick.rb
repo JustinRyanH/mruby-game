@@ -134,8 +134,6 @@ class RevealGame
   end
 
   def collide_entity(entity)
-    puts 'Collide Entity'
-    puts entity.velocity.inspect
     Echolocation.reveal(pos: Vector.new(entity.left, entity.pos.y), rotation: 0, texture: Textures.echo)
     destroy_entity(entity)
   end
