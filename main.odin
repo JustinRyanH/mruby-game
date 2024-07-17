@@ -308,27 +308,28 @@ main :: proc() {
 		}
 		clear(&todo_render)
 
+		{
+			rl.BeginTextureMode(screen_buffer)
+			rl.ClearBackground(rl.BLANK)
 
-		rl.BeginTextureMode(screen_buffer)
-		rl.ClearBackground(rl.BLANK)
 
-
-		sprt_iter := dp.new_iter(&g.sprites)
-		for spr in dp.iter_next(&sprt_iter) {
-			if !spr.visible {continue}
-			if spr.type != .Dynamic {continue}
-			renderable, success := renderable_from_sprint(g, spr)
-			if (!success) {
-				rl.TraceLog(.WARNING, "Could not Render Sprite")
-				continue
+			sprt_iter := dp.new_iter(&g.sprites)
+			for spr in dp.iter_next(&sprt_iter) {
+				if !spr.visible {continue}
+				if spr.type != .Dynamic {continue}
+				renderable, success := renderable_from_sprint(g, spr)
+				if (!success) {
+					rl.TraceLog(.WARNING, "Could not Render Sprite")
+					continue
+				}
+				append(&todo_render, renderable)
 			}
-			append(&todo_render, renderable)
+			game_draw_renderables(g, todo_render[:])
+
+			imui_draw(&g.imui)
+
+			rl.EndTextureMode()
 		}
-		game_draw_renderables(g, todo_render[:])
-
-		imui_draw(&g.imui)
-
-		rl.EndTextureMode()
 
 		rl.ClearBackground(g.bg_color)
 		{
