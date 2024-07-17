@@ -55,34 +55,38 @@ RevealRing :: rb.RingBuffer(512, RevealSpot)
 CameraPool :: dp.DataPool(8, rl.Camera2D, CameraHandle)
 
 Game :: struct {
-	ruby:               ^mrb.State,
-	ctx:                runtime.Context,
+	ruby:                 ^mrb.State,
+	ctx:                  runtime.Context,
+
+	// State
+	collider_region_size: u32,
 
 	// Systems
-	assets:             AssetSystem,
-	imui:               ImUiState,
-	input:              input.FrameInput,
-	debug:              bool,
-	should_exit:        bool,
+	assets:               AssetSystem,
+	imui:                 ImUiState,
+	input:                input.FrameInput,
+	debug:                bool,
+	should_exit:          bool,
 
 	// Temp Data
-	collision_evts_t:   Collisions,
-	collider_regions_t: map[ColliderRegionPos]RegionColliders,
+	collision_evts_t:     Collisions,
+	collider_regions_t:   map[ColliderRegionPos]RegionColliders,
 
 	// Game Data
-	camera:             CameraHandle,
-	bg_color:           rl.Color,
-	colliders:          ColliderPool,
-	active_sounds:      ActiveSoundPool,
-	sprites:            SpritePool,
-	cameras:            CameraPool,
-	reveal_spots:       RevealRing,
+	camera:               CameraHandle,
+	bg_color:             rl.Color,
+	colliders:            ColliderPool,
+	active_sounds:        ActiveSoundPool,
+	sprites:              SpritePool,
+	cameras:              CameraPool,
+	reveal_spots:         RevealRing,
 }
 
 game_init :: proc(game: ^Game) {
 	game.ctx = context
 	rand.reset(1)
 	game.ruby = mrb.open_allocf(mruby_odin_allocf, &game.ctx)
+	game.collider_region_size = 64
 
 	game.bg_color = rl.BLACK
 
