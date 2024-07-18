@@ -37,7 +37,8 @@ class Block
     self.pos += velocity
     collisions = @collider.collisions
     if collisions.any?
-      game.collide_entity(self, Vector.new(1, 0))
+      event = collisions.first
+      game.collide_entity(self, event)
       return
     end
 
@@ -97,7 +98,7 @@ class RevealGame
   private
 
   def spawn_echo
-    sections = 8
+    sections = 40
     scale = 10
     sections.times do |v|
       distance_travelled = v.to_f / sections
@@ -123,7 +124,7 @@ class RevealGame
     @dynamic_sprite = Sprite.create(
       texture: Textures.square,
       pos: world_pos,
-      size: Vector.new(1, 1),
+      size: Vector.new(2, 2),
       type: :dynamic,
       z_offset: 1.1,
       tint: Color.purple,
@@ -133,10 +134,11 @@ class RevealGame
     background_sprites << Terrain.new(pos: world_pos + Vector.new(16, 0))
   end
 
-  def collide_entity(entity, normal = Vector.zero)
-    rotation = normal.angle
-    puts "rotation: #{rotation}"
-    Echolocation.reveal(pos: Vector.new(entity.left, entity.pos.y), rotation:, texture: Textures.echo)
+  def collide_entity(entity, event)
+    normal = event.normal
+    rotation = normal.angle.to_degrees
+    pos = (entity.pos - (normal * event.depth.round))
+    Echolocation.reveal(pos:, rotation:, texture: Textures.echo)
     destroy_entity(entity)
   end
 

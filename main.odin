@@ -171,7 +171,8 @@ renderable_from_reveal_spot :: proc(
 
 	out.texture = asset.texture
 	out.src = asset.src
-	out.dest = {
+	out.rotation = spot.rotation
+	out.dest =  {
 		spot.pos.x,
 		spot.pos.y,
 		cast(f32)asset.texture.width,
