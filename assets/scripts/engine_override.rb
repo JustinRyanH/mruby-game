@@ -12,6 +12,12 @@ Math.module_eval do
   end
 end
 
+Float.class_eval do
+  def to_degrees
+    self * 180 / Math.pi
+  end
+end
+
 Array.class_eval do
   # TODO: Sample count
   def sample
