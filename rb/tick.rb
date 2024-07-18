@@ -36,11 +36,8 @@ class Block
   def update
     self.pos += velocity
     collisions = @collider.collisions
-    collisions.each do |evt|
-      puts evt.inspect
-    end
     if collisions.any?
-      game.collide_entity(self)
+      game.collide_entity(self, Vector.new(1, 0))
       return
     end
 
@@ -100,7 +97,7 @@ class RevealGame
   private
 
   def spawn_echo
-    sections = 40
+    sections = 8
     scale = 10
     sections.times do |v|
       distance_travelled = v.to_f / sections
@@ -136,8 +133,10 @@ class RevealGame
     background_sprites << Terrain.new(pos: world_pos + Vector.new(16, 0))
   end
 
-  def collide_entity(entity)
-    Echolocation.reveal(pos: Vector.new(entity.left, entity.pos.y), rotation: 0, texture: Textures.echo)
+  def collide_entity(entity, normal = Vector.zero)
+    rotation = normal.angle
+    puts "rotation: #{rotation}"
+    Echolocation.reveal(pos: Vector.new(entity.left, entity.pos.y), rotation:, texture: Textures.echo)
     destroy_entity(entity)
   end
 
