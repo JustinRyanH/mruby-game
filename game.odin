@@ -59,7 +59,7 @@ Game :: struct {
 	ctx:                  runtime.Context,
 
 	// State
-	collider_region_size: u32,
+	collider_region_size: i32,
 
 	// Systems
 	assets:               AssetSystem,
@@ -86,7 +86,7 @@ game_init :: proc(game: ^Game) {
 	game.ctx = context
 	rand.reset(1)
 	game.ruby = mrb.open_allocf(mruby_odin_allocf, &game.ctx)
-	game.collider_region_size = 64
+	game.collider_region_size = 16
 
 	game.bg_color = rl.BLACK
 

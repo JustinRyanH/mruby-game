@@ -172,7 +172,7 @@ renderable_from_reveal_spot :: proc(
 	out.texture = asset.texture
 	out.src = asset.src
 	out.rotation = spot.rotation
-	out.dest =  {
+	out.dest = {
 		spot.pos.x,
 		spot.pos.y,
 		cast(f32)asset.texture.width,
@@ -326,6 +326,28 @@ main :: proc() {
 				append(&todo_render, renderable)
 			}
 			game_draw_renderables(g, todo_render[:])
+
+			color := rl.GREEN
+			color.a = 128 + 32
+
+			for i := -20; i < 20; i += 1 {
+				// Horizontal
+				rl.DrawLine(
+					-1000,
+					i32(i) * g.collider_region_size,
+					1000,
+					i32(i) * g.collider_region_size,
+					color,
+				)
+				// Vertical
+				rl.DrawLine(
+					i32(i) * g.collider_region_size,
+					-1000,
+					i32(i) * g.collider_region_size,
+					1000,
+					color,
+				)
+			}
 
 			imui_draw(&g.imui)
 		}
