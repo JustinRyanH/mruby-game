@@ -2,6 +2,8 @@
 
 ## Current
 
+* Fix the Collision Spot
+  - Take the Event, and find the closest edge to the given spot and draw it at edge point
 * Improve Collision https://x.com/falconerd/status/1813278682678763731
 * Echolocation
   - Port my echo-particles to odin code
