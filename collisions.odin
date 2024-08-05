@@ -1,5 +1,8 @@
 package main
 
+import sa "core:container/small_array"
+import "core:fmt"
+
 import dp "./data_pool"
 
 ColliderRegionPos :: struct {
@@ -18,6 +21,20 @@ CollisionEvent :: struct {
 }
 CollisionTargets :: [dynamic]CollisionEvent
 Collisions :: map[ColliderHandle]CollisionTargets
+
+collision_find_colliding_areas :: proc(
+	game: ^Game,
+	collider: Collider,
+) -> (
+	out: sa.Small_Array(32, ColliderRegionPos),
+) {
+	collider_rect := Rectangle{collider.pos, collider.size}
+	edges := shape_get_rect_vertices(collider_rect)
+	for edge in edges {
+		fmt.println("Edge", edge)
+	}
+	return
+}
 
 game_add_collision :: proc(game: ^Game, a, b: ColliderHandle, contact: ContactEvent) {
 	if !(a in game.collision_evts_t) {
@@ -44,21 +61,26 @@ game_add_collision :: proc(game: ^Game, a, b: ColliderHandle, contact: ContactEv
 
 
 game_check_collisions :: proc(game: ^Game) {
-	iter_a := dp.new_iter(&game.colliders)
-	for entity_a, handle_a in dp.iter_next(&iter_a) {
-		iter_b := dp.new_iter_start_at(&game.colliders, handle_a)
-		for entity_b, handle_b in dp.iter_next(&iter_b) {
-			if handle_a == handle_b {
-				continue
-			}
-			rect_a := Rectangle{entity_a.pos, entity_a.size}
-			rect_b := Rectangle{entity_b.pos, entity_b.size}
-
-			contact, collide := shape_are_rects_colliding_obb(rect_a, rect_b)
-			if !collide {
-				continue
-			}
-			game_add_collision(game, handle_a, handle_b, contact)
-		}
+	region_find := dp.new_iter(&game.colliders)
+	for collider, handle in dp.iter_next(&region_find) {
+		collision_find_colliding_areas(game, collider)
 	}
+
+	// iter_a := dp.new_iter(&game.colliders)
+	// for entity_a, handle_a in dp.iter_next(&iter_a) {
+	// 	iter_b := dp.new_iter_start_at(&game.colliders, handle_a)
+	// 	for entity_b, handle_b in dp.iter_next(&iter_b) {
+	// 		if handle_a == handle_b {
+	// 			continue
+	// 		}
+	// 		rect_a := Rectangle{entity_a.pos, entity_a.size}
+	// 		rect_b := Rectangle{entity_b.pos, entity_b.size}
+	//
+	// 		contact, collide := shape_are_rects_colliding_obb(rect_a, rect_b)
+	// 		if !collide {
+	// 			continue
+	// 		}
+	// 		game_add_collision(game, handle_a, handle_b, contact)
+	// 	}
+	// }
 }
