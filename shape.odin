@@ -98,7 +98,6 @@ shape_get_rect_extends :: proc(rect: Rectangle) -> (math.Vector2f32, math.Vector
 
 
 // Get the vertices around a rectangle, clockwise
-@(private = "file")
 shape_get_rect_vertices :: proc(rect: Rectangle) -> (vertices: [4]Vector2) {
 	len := math.length(rect.size) / 2
 	nm_v := math.normalize(rect.size)
