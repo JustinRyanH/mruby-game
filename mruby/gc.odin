@@ -1,7 +1,9 @@
 package mruby
 
 when ODIN_OS == .Darwin {
-	foreign import compat "vendor/darwin/libmruby_compat.a"
+	when ODIN_ARCH == .arm64 {
+		foreign import compat "vendor/darwin/libmruby_compat.a"
+	}
 } else when ODIN_OS == .Windows {
 	@(extra_linker_flags = "/NODEFAULTLIB:libcmt")
 	foreign import compat "vendor/windows/mruby_compat.lib"

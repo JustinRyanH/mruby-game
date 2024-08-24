@@ -3,7 +3,9 @@ package mruby
 import "core:strings"
 
 when ODIN_OS == .Darwin {
-	foreign import lib "vendor/darwin/libmruby.a"
+	when ODIN_ARCH == .arm64 {
+		foreign import lib "vendor/darwin/libmruby.a"
+	}
 } else when ODIN_OS == .Windows {
 	@(extra_linker_flags = "/NODEFAULTLIB:libcmt")
 	foreign import lib "vendor/windows/libmruby.lib"
