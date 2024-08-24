@@ -5,8 +5,16 @@ namespace :compat do
   namespace :darwin do
     task :arm do
       Dir.chdir('./mruby/') do
-        sh 'clang -c mruby_compat.c -Ivendor'
+        sh 'clang -target arm64-darwin -c mruby_compat.c -Ivendor '
         sh 'llvm-ar rc vendor/darwin/arm/libmruby_compat.a mruby_compat.o'
+        FileUtils.rm('mruby_compat.o')
+      end
+    end
+
+    task :amd do
+      Dir.chdir('./mruby/') do
+        sh 'clang -target x86_64-darwin -c mruby_compat.c -Ivendor'
+        sh 'llvm-ar rc vendor/darwin/amd/libmruby_compat.a mruby_compat.o'
         FileUtils.rm('mruby_compat.o')
       end
     end

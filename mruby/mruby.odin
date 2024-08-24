@@ -4,8 +4,11 @@ import "core:strings"
 
 when ODIN_OS == .Darwin {
 	when ODIN_ARCH == .arm64 {
-		foreign import lib "vendor/darwin/libmruby.a"
-		foreign import compat "vendor/darwin/libmruby_compat.a"
+		foreign import lib "vendor/darwin/arm/libmruby.a"
+		foreign import compat "vendor/darwin/arm/libmruby_compat.a"
+	} else when ODIN_ARCH == .amd64 {
+		foreign import lib "vendor/darwin/amd/libmruby.a"
+		foreign import compat "vendor/darwin/amd/libmruby_compat.a"
 	}
 } else when ODIN_OS == .Windows {
 	@(extra_linker_flags = "/NODEFAULTLIB:libcmt")
