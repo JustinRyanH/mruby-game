@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 namespace :compat do
-  desc 'Builds the Compatability Layer for Darwin'
   namespace :darwin do
+    desc 'Builds the Compatability Layer for Arm Darwin'
     task :arm do
       Dir.chdir('./mruby/') do
         sh 'clang -target arm64-darwin -c mruby_compat.c -Ivendor '
@@ -11,6 +11,7 @@ namespace :compat do
       end
     end
 
+    desc 'Builds the Compatability Layer for Intel Darwin'
     task :amd do
       Dir.chdir('./mruby/') do
         sh 'clang -target x86_64-darwin -c mruby_compat.c -Ivendor'
