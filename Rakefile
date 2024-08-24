@@ -2,11 +2,13 @@
 
 namespace :compat do
   desc 'Builds the Compatability Layer for Darwin'
-  task :darwin do
-    Dir.chdir('./mruby/') do
-      sh 'clang -c mruby_compat.c -Ivendor'
-      sh 'llvm-ar rc vendor/darwin/libmruby_compat.a mruby_compat.o'
-      FileUtils.rm('mruby_compat.o')
+  namespace :darwin do
+    task :arm do
+      Dir.chdir('./mruby/') do
+        sh 'clang -c mruby_compat.c -Ivendor'
+        sh 'llvm-ar rc vendor/darwin/arm/libmruby_compat.a mruby_compat.o'
+        FileUtils.rm('mruby_compat.o')
+      end
     end
   end
 
