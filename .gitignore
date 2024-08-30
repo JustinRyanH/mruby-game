@@ -1,6 +1,6 @@
-mruby-game
 *.exe
-mruby-game.exe
+mruby-game
+echogame
 *.pdb
 *.dSYM
 .vscode/
